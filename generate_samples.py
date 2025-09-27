@@ -145,5 +145,12 @@ if __name__ == "__main__":
     plt.ylabel('kai2')
 
     plt.savefig('pmf.png')
-    coords =new_molecules[0]
-    view   =aib9.py3dplot(coords)
+    # --- In your data generation script, after this line ---
+    coords = new_molecules[0:100]
+
+    # --- Add this code to save the array ---
+    try:
+        np.save('molecule_coords.npy', coords)
+        print("\nSUCCESS: Coordinates saved to molecule_coords.npy")
+    except Exception as e:
+        print(f"\nAn error occurred while saving the coordinates: {e}")
