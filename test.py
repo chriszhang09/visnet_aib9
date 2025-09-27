@@ -12,9 +12,7 @@ proj_path = Path().resolve()
 from aib9_lib import aib9_tools as aib9
 import os
 
-if torch.backends.mps.is_available():
-    device = torch.device('mps')
-elif torch.cuda.is_available():
+if torch.cuda.is_available():
     device = torch.device('cuda')
 else:
     device = torch.device('cpu')
