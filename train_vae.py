@@ -28,6 +28,7 @@ import wandb
 from aib9_lib import aib9_tools as aib9
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from torch.amp import autocast, GradScaler
 
 
 def visualize_molecule_3d(coords, atomic_numbers, title="Molecule"):
@@ -191,8 +192,9 @@ def main():
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 30 
     EPOCHS = 50
-    BATCH_SIZE = 128
-    LEARNING_RATE = 1e-3
+    BATCH_SIZE = 512  # Increased from 128 (V100 can handle much more!)
+    LEARNING_RATE = 2e-3  # Scale learning rate with batch size
+    NUM_WORKERS = 4  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
     train_data_np = train_data_np.reshape(-1, 58, 3)
@@ -241,7 +243,14 @@ def main():
         # Add edge_index to each data object
         data = Data(z=z, pos=pos, edge_index=edge_index) 
         train_data_list.append(data)
-    train_loader = DataLoader(train_data_list, batch_size=BATCH_SIZE, shuffle=True)
+    train_loader = DataLoader(
+        train_data_list, 
+        batch_size=BATCH_SIZE, 
+        shuffle=True,
+        num_workers=NUM_WORKERS,  # Parallel data loading
+        pin_memory=True,  # Faster CPU-GPU transfer
+        persistent_workers=True if NUM_WORKERS > 0 else False  # Keep workers alive
+    )
     
     # Determine the maximum atomic number to set the correct atom_feature_dim for one-hot encoding
     max_atomic_number = max(ATOMIC_NUMBERS)  # Should be 53 for Iodine
@@ -269,10 +278,19 @@ def main():
         edge_index_template=edge_index,  # Use covalent bonds in decoder
         visnet_kwargs=visnet_params
     ).to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-5)
+    
+    # Mixed precision training - 2-3x speedup on V100!
+    scaler = GradScaler('cuda')
+    use_amp = torch.cuda.is_available()  # Use AMP if CUDA available
+    
+    # Learning rate scheduler for better convergence
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode='min', factor=0.5, patience=5, verbose=True
+    )
     
     # Watch model with wandb
-    wandb.watch(model, log='all', log_freq=100)
+    wandb.watch(model, log='all', log_freq=200)  # Reduced log frequency
     
     # Keep a fixed validation sample for visualization
     val_sample = train_data_list[0]  # Use first sample for consistent visualization
@@ -289,39 +307,55 @@ def main():
         train_kl_loss = 0
         
         for batch_idx, data in enumerate(train_loader):
-            molecules = data.to(device)
-            optimizer.zero_grad()
+            molecules = data.to(device, non_blocking=True)  # Async GPU transfer
+            optimizer.zero_grad(set_to_none=True)  # Faster than zero_grad()
             
-            recon_batch, mu, logvar = model(molecules)
+            # Mixed precision forward pass
+            with autocast(device_type='cuda', enabled=use_amp):
+                recon_batch, mu, logvar = model(molecules)
+                
+                # Separate reconstruction and KL losses
+                recon_loss = F.mse_loss(recon_batch.view(-1, 3), molecules.pos)
+                kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
+                loss = recon_loss + kl_div
             
-            # Separate reconstruction and KL losses
-            recon_loss = F.mse_loss(recon_batch.view(-1, 3), molecules.pos)
-            kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-            loss = recon_loss + kl_div
+            # Mixed precision backward pass
+            if use_amp:
+                scaler.scale(loss).backward()
+                scaler.unscale_(optimizer)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+                scaler.step(optimizer)
+                scaler.update()
+            else:
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+                optimizer.step()
             
-            loss.backward()
             train_loss += loss.item()
             train_recon_loss += recon_loss.item()
             train_kl_loss += kl_div.item()
-            optimizer.step()
 
         # Compute average losses
         avg_loss = train_loss / len(train_loader.dataset)
         avg_recon_loss = train_recon_loss / len(train_loader.dataset)
         avg_kl_loss = train_kl_loss / len(train_loader.dataset)
         
+        # Step learning rate scheduler
+        scheduler.step(avg_loss)
+        
         # Log to wandb
         wandb.log({
             'train/total_loss': avg_loss,
             'train/reconstruction_loss': avg_recon_loss,
             'train/kl_divergence': avg_kl_loss,
+            'train/learning_rate': optimizer.param_groups[0]['lr'],
             'epoch': epoch
         })
         
-        print(f'Epoch {epoch:3d}: Loss={avg_loss:.4f} (Recon={avg_recon_loss:.4f}, KL={avg_kl_loss:.4f})')
+        print(f'Epoch {epoch:3d}: Loss={avg_loss:.4f} (Recon={avg_recon_loss:.4f}, KL={avg_kl_loss:.4f}) LR={optimizer.param_groups[0]["lr"]:.2e}')
         
-        # Validation and sampling every 5 epochs or at start
-        if epoch == 1 or epoch % 5 == 0:
+        # Validation and sampling every 10 epochs or at start (reduced frequency for speed)
+        if epoch == 1 or epoch % 10 == 0:
             print(f"  → Generating samples and visualizations...")
             metrics, figures = validate_and_sample(
                 model, val_sample, device, z, edge_index, epoch
