@@ -5,13 +5,19 @@ from visnet_vae_encoder import ViSNetEncoder
 from vae_decoder import EGNNDecoder
 
 class MolecularVAE(nn.Module):
-    def __init__(self, latent_dim, num_atoms, atom_feature_dim, visnet_hidden_channels=128, visnet_kwargs=None):
+    def __init__(self, latent_dim, num_atoms, atom_feature_dim, 
+                 visnet_hidden_channels=128, decoder_hidden_dim=128, 
+                 decoder_num_layers=6, edge_index_template=None, 
+                 visnet_kwargs=None):
         """
         Args:
             latent_dim (int): Dimension of the latent space
             num_atoms (int): Number of atoms in each molecule
             atom_feature_dim (int): Dimension for one-hot encoding of atom types (max_atomic_number + 1)
             visnet_hidden_channels (int): Hidden dimension for ViSNet encoder
+            decoder_hidden_dim (int): Hidden dimension for EGNN decoder
+            decoder_num_layers (int): Number of EGNN layers in decoder
+            edge_index_template (Tensor): Fixed edge connectivity for decoder
             visnet_kwargs (dict): Additional parameters for ViSNetBlock
         """
         super().__init__()
@@ -23,7 +29,14 @@ class MolecularVAE(nn.Module):
             visnet_hidden_channels=visnet_hidden_channels,
             **visnet_kwargs
         )
-        self.decoder = EGNNDecoder(latent_dim, num_atoms, atom_feature_dim)
+        self.decoder = EGNNDecoder(
+            latent_dim=latent_dim, 
+            num_atoms=num_atoms, 
+            atom_feature_dim=atom_feature_dim,
+            hidden_dim=decoder_hidden_dim,
+            num_layers=decoder_num_layers,
+            edge_index_template=edge_index_template
+        )
 
     def reparameterize(self, mu, log_var):
         std = torch.exp(0.5 * log_var)
