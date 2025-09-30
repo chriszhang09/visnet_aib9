@@ -48,6 +48,8 @@ class EGNNDecoderLayer(nn.Module):
         
         # Aggregate messages
         agg_messages = torch.zeros_like(h)
+        # Ensure dtype consistency for scatter operation
+        messages = messages.to(h.dtype)
         agg_messages.scatter_add_(0, row.unsqueeze(1).expand(-1, h.size(1)), messages)
         
         # Update node features with residual connection
