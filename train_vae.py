@@ -281,7 +281,7 @@ def main():
     optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-5)
     
     # Mixed precision training - 2-3x speedup on V100!
-    scaler = GradScaler('cuda')
+    scaler = GradScaler()
     use_amp = torch.cuda.is_available()  # Use AMP if CUDA available
     
     # Learning rate scheduler for better convergence
