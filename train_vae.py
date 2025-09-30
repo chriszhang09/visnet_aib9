@@ -193,7 +193,7 @@ def main():
     LATENT_DIM = 30 
     EPOCHS = 50
     BATCH_SIZE = 256  # Increased from 128 (V100 can handle much more!)
-    LEARNING_RATE = 1e-3  # Scale learning rate with batch size
+    LEARNING_RATE = 5e-4  # Reduced to prevent gradient explosion
     NUM_WORKERS = 4  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
@@ -272,13 +272,13 @@ def main():
         latent_dim=LATENT_DIM, 
         num_atoms=ATOM_COUNT, 
         atom_feature_dim=atom_feature_dim,
-        visnet_hidden_channels=128,
-        decoder_hidden_dim=128,      # Larger hidden dimension for decoder
+        visnet_hidden_channels=64,
+        decoder_hidden_dim=64,      # Larger hidden dimension for decoder
         decoder_num_layers=6,         # More layers for better reconstruction
         edge_index_template=edge_index,  # Use covalent bonds in decoder
         visnet_kwargs=visnet_params
     ).to(device)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-5)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)  # Increased weight decay
     
     # Mixed precision training - 2-3x speedup on V100!
     scaler = GradScaler()
@@ -317,24 +317,27 @@ def main():
                 # Separate reconstruction and KL losses
                 recon_loss = F.mse_loss(recon_batch.view(-1, 3), molecules.pos)
                 kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-                loss = recon_loss + kl_div
+                kl_weight = 0.1  # Weight KL loss to prevent it from dominating
+                loss = recon_loss + kl_weight * kl_div
             
             # Mixed precision backward pass
             if use_amp:
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
-                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+                # More aggressive gradient clipping
+                grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
                 scaler.step(optimizer)
                 scaler.update()
             else:
                 loss.backward()
-                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+                # More aggressive gradient clipping
+                grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
                 optimizer.step()
             
             train_loss += loss.item()
             train_recon_loss += recon_loss.item()
             train_kl_loss += kl_div.item()
-            print(f"Epoch {epoch:3d}: Loss={loss.item():.4f} (Recon={recon_loss.item():.4f}, KL={kl_div.item():.4f})")
+            print(f"Epoch {epoch:3d}: Loss={loss.item():.4f} (Recon={recon_loss.item():.4f}, KL={kl_div.item():.4f}, GradNorm={grad_norm:.4f})")
 
         # Compute average losses
         avg_loss = train_loss / len(train_loader.dataset)
