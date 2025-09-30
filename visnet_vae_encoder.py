@@ -10,6 +10,7 @@ from torch.autograd import grad
 from torch import Tensor
 from torch_scatter import scatter
 from visnet.models.output_modules import EquivariantEncoder
+
 class ViSNetEncoder(nn.Module):
     
     def __init__(self, latent_dim, visnet_hidden_channels=128, prior_model=None, mean=None, std=None, **visnet_kwargs):
@@ -26,10 +27,11 @@ class ViSNetEncoder(nn.Module):
         # We need access to atom-level features before they get pooled
         self.representation_model = ViSNetBlock(**visnet_kwargs)
         
-        # EquivariantEncoder processes features through 2 GatedEquivariantBlocks:
-        # hidden_channels → hidden_channels // 2 → output_channels * 2
-        # So with output_channels=latent_dim, it outputs latent_dim * 2 dimensions
-        self.output_model = EquivariantEncoder(visnet_hidden_channels, output_channels=latent_dim)
+        # Get the actual hidden_channels used by ViSNetBlock (may differ from default)
+        actual_hidden_channels = visnet_kwargs.get('hidden_channels', visnet_hidden_channels)
+        
+        # EquivariantEncoder must use the same hidden_channels as ViSNetBlock
+        self.output_model = EquivariantEncoder(actual_hidden_channels, output_channels=latent_dim)
         
         # Split the latent_dim * 2 features into mu and log_var
         self.mu_head = nn.Linear(latent_dim * 2, latent_dim)
@@ -48,7 +50,6 @@ class ViSNetEncoder(nn.Module):
         
         # Pool atom features to get molecule-level representation (maintains invariance)
         global_features = global_add_pool(x, data.batch)
-        # global_features shape: (batch_size, latent_dim * 2)
         
         # Split into mu and log_var for VAE
         mu = self.mu_head(global_features)
