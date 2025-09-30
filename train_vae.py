@@ -311,7 +311,7 @@ def main():
             optimizer.zero_grad(set_to_none=True)  # Faster than zero_grad()
             
             # Mixed precision forward pass
-            with autocast(device_type='cuda', enabled=use_amp):
+            with autocast("cuda",enabled=use_amp):
                 recon_batch, mu, logvar = model(molecules)
                 
                 # Separate reconstruction and KL losses
