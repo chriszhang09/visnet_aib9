@@ -98,7 +98,17 @@ class ViSNetBlock(nn.Module):
         
         # Embedding Layers
         x = self.embedding(z)
-        edge_index, edge_weight, edge_vec = self.distance(pos, batch)
+        
+        # Use pre-defined edges if available, otherwise use radius graph
+        if hasattr(data, 'edge_index') and data.edge_index is not None:
+            # Use provided edge connectivity (e.g., covalent bonds)
+            edge_index = data.edge_index
+            edge_vec = pos[edge_index[0]] - pos[edge_index[1]]
+            edge_weight = torch.norm(edge_vec, dim=-1)
+        else:
+            # Fall back to radius-based edge construction
+            edge_index, edge_weight, edge_vec = self.distance(pos, batch)
+        
         edge_attr = self.distance_expansion(edge_weight)
         mask = edge_index[0] != edge_index[1]
         edge_vec[mask] = edge_vec[mask] / torch.norm(edge_vec[mask], dim=1).unsqueeze(1)

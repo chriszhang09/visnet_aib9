@@ -161,7 +161,9 @@ class EquivariantEncoder(OutputModel):
     def pre_reduce(self, x, v, z, pos, batch):
         for layer in self.output_network:
             x, v = layer(x, v)
-        return v
+        # Return scalar features x (E(3) invariant) instead of vectors v (E(3) equivariant)
+        # Include v.sum() * 0 to ensure all parameters get gradients
+        return x + v.sum() * 0
         
 
 

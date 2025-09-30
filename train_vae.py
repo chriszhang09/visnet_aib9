@@ -43,7 +43,7 @@ def main():
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 30 
     EPOCHS = 50
-    BATCH_SIZE = 64
+    BATCH_SIZE = 128
     LEARNING_RATE = 1e-3
 
     train_data_np = np.load(aib9.FULL_DATA)
@@ -93,8 +93,30 @@ def main():
         data = Data(z=z, pos=pos, edge_index=edge_index) 
         train_data_list.append(data)
     train_loader = DataLoader(train_data_list, batch_size=BATCH_SIZE, shuffle=True)
-    model = MolecularVAE(visnet_model=ViSNetEncoder, latent_dim=LATENT_DIM, num_atoms=ATOM_COUNT, atom_feature_dim=1).to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE )
+    
+    # Determine the maximum atomic number to set the correct atom_feature_dim for one-hot encoding
+    max_atomic_number = max(ATOMIC_NUMBERS)  # Should be 53 for Iodine
+    atom_feature_dim = max_atomic_number + 1  # Need +1 for zero-indexing (0 to max_z)
+    
+    # Create the encoder with proper ViSNet parameters
+    # Note: cutoff is no longer used since we provide explicit edge_index (covalent bonds)
+    # The model will use the edges defined by identify_all_covalent_edges()
+    visnet_params = {
+        'hidden_channels': 256,
+        'num_layers': 9,
+        'num_rbf': 32,
+        'cutoff': 5.0,  # Kept for compatibility but not used with edge_index
+        'max_z': max_atomic_number + 1,
+    }
+    
+    model = MolecularVAE(
+        latent_dim=LATENT_DIM, 
+        num_atoms=ATOM_COUNT, 
+        atom_feature_dim=atom_feature_dim,
+        visnet_hidden_channels=128,
+        visnet_kwargs=visnet_params
+    ).to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
     
     for epoch in range(1, EPOCHS + 1):
         train_loss = 0

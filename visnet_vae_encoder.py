@@ -9,9 +9,10 @@ from pytorch_lightning.utilities import rank_zero_warn
 from torch.autograd import grad
 from torch import Tensor
 from torch_scatter import scatter
+from visnet.models.output_modules import EquivariantEncoder
 class ViSNetEncoder(nn.Module):
     
-    def __init__(self, hparams, latent_dim, visnet_hidden_channels=128, prior_model = None, mean = None, std = None, **visnet_kwargs):
+    def __init__(self, latent_dim, visnet_hidden_channels=128, prior_model=None, mean=None, std=None, **visnet_kwargs):
         """
         Args:
             latent_dim (int): The dimension of the latent space.
@@ -19,16 +20,37 @@ class ViSNetEncoder(nn.Module):
             **visnet_kwargs: Additional arguments to pass to the ViSNet model constructor.
         """
         super().__init__()
-        self.hparams = hparams
-        output_model = EquivariantEncoder(visnet_hidden_channels, output_channels=latent_dim * 2)
-
-        representation_model = ViSNetBlock()
-        self.visnet_model = ViSNet(representation_model, output_model, prior_model, mean, std)
+        self.latent_dim = latent_dim
+        
+        # Store the representation model (ViSNetBlock) directly
+        # We need access to atom-level features before they get pooled
+        self.representation_model = ViSNetBlock(**visnet_kwargs)
+        
+        # EquivariantEncoder processes features through 2 GatedEquivariantBlocks:
+        # hidden_channels → hidden_channels // 2 → output_channels * 2
+        # So with output_channels=latent_dim, it outputs latent_dim * 2 dimensions
+        self.output_model = EquivariantEncoder(visnet_hidden_channels, output_channels=latent_dim)
+        
+        # Split the latent_dim * 2 features into mu and log_var
+        self.mu_head = nn.Linear(latent_dim * 2, latent_dim)
+        self.log_var_head = nn.Linear(latent_dim * 2, latent_dim)
 
 
     def forward(self, data):
-        atom_features = self.visnet_model(data)
-        global_features = global_add_pool(atom_features, data.batch)
+        # Get atom-level features from ViSNetBlock
+        x, v = self.representation_model(data)
+        # x shape: (num_atoms_in_batch, hidden_channels)
+        # v shape: (num_atoms_in_batch, num_spherical_harmonics, hidden_channels)
+        
+        # Process through EquivariantEncoder to get E(3) invariant features
+        x = self.output_model.pre_reduce(x, v, data.z, data.pos, data.batch)
+        # x shape: (num_atoms_in_batch, latent_dim * 2) - now E(3) invariant scalars
+        
+        # Pool atom features to get molecule-level representation (maintains invariance)
+        global_features = global_add_pool(x, data.batch)
+        # global_features shape: (batch_size, latent_dim * 2)
+        
+        # Split into mu and log_var for VAE
         mu = self.mu_head(global_features)
         log_var = self.log_var_head(global_features)
         return mu, log_var

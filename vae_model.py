@@ -4,12 +4,25 @@ import torch.nn.functional as F
 from visnet_vae_encoder import ViSNetEncoder
 from vae_decoder import EGNNDecoder
 
-# Assume ViSNetEncoder and EGNNNablaDecoder are defined as above
-
 class MolecularVAE(nn.Module):
-    def __init__(self, visnet_model, latent_dim, num_atoms, atom_feature_dim):
+    def __init__(self, latent_dim, num_atoms, atom_feature_dim, visnet_hidden_channels=128, visnet_kwargs=None):
+        """
+        Args:
+            latent_dim (int): Dimension of the latent space
+            num_atoms (int): Number of atoms in each molecule
+            atom_feature_dim (int): Dimension for one-hot encoding of atom types (max_atomic_number + 1)
+            visnet_hidden_channels (int): Hidden dimension for ViSNet encoder
+            visnet_kwargs (dict): Additional parameters for ViSNetBlock
+        """
         super().__init__()
-        self.encoder = ViSNetEncoder(visnet_model, latent_dim)
+        if visnet_kwargs is None:
+            visnet_kwargs = {}
+        
+        self.encoder = ViSNetEncoder(
+            latent_dim=latent_dim,
+            visnet_hidden_channels=visnet_hidden_channels,
+            **visnet_kwargs
+        )
         self.decoder = EGNNDecoder(latent_dim, num_atoms, atom_feature_dim)
 
     def reparameterize(self, mu, log_var):
