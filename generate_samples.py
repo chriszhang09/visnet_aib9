@@ -20,6 +20,12 @@ ORIGINAL_DIM = ATOM_COUNT * COORD_DIM
 LATENT_DIM = 4
 MODEL_PATH = 'model.pth' # The path to your saved model file
 
+if torch.cuda.is_available():
+    device = torch.device('cuda')
+else:
+    device = torch.device('cpu')
+print(f'Using device: {device}')
+
 # --- 2. VAE Model Definition (Must match the trained model) ---
 # This class defines the neural network architecture. You must use the
 # exact same structure as the model you saved, otherwise the saved
