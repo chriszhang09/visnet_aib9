@@ -260,8 +260,8 @@ def main():
     # Note: cutoff is no longer used since we provide explicit edge_index (covalent bonds)
     # The model will use the edges defined by identify_all_covalent_edges()
     visnet_params = {
-        'hidden_channels': 256,
-        'num_layers': 9,
+        'hidden_channels': 128,
+        'num_layers': 6,
         'num_rbf': 32,
         'cutoff': 5.0,  # Kept for compatibility but not used with edge_index
         'max_z': max_atomic_number + 1,
@@ -273,8 +273,8 @@ def main():
         num_atoms=ATOM_COUNT, 
         atom_feature_dim=atom_feature_dim,
         visnet_hidden_channels=128,
-        decoder_hidden_dim=256,      # Larger hidden dimension for decoder
-        decoder_num_layers=8,         # More layers for better reconstruction
+        decoder_hidden_dim=128,      # Larger hidden dimension for decoder
+        decoder_num_layers=6,         # More layers for better reconstruction
         edge_index_template=edge_index,  # Use covalent bonds in decoder
         visnet_kwargs=visnet_params
     ).to(device)
@@ -334,6 +334,7 @@ def main():
             train_loss += loss.item()
             train_recon_loss += recon_loss.item()
             train_kl_loss += kl_div.item()
+            print(f"Epoch {epoch:3d}: Loss={loss.item():.4f} (Recon={recon_loss.item():.4f}, KL={kl_div.item():.4f})")
 
         # Compute average losses
         avg_loss = train_loss / len(train_loader.dataset)
