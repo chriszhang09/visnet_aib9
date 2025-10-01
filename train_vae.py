@@ -366,7 +366,7 @@ def main():
             recon_loss = e3_invariant_loss(recon_batch, molecules.pos)
             kl_weight = 0.1  # Weight KL loss to prevent it from dominating
             loss = recon_loss + kl_weight * kl_div
-            
+            print(f"Loss: {loss.item()}")
             # Mixed precision backward pass
             if torch.isnan(loss):
                 print(f"NaN detected at epoch {epoch}, skipping...")
