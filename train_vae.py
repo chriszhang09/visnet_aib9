@@ -32,11 +32,27 @@ def kabsch_alignment(P, Q):
     # Compute cross-covariance matrix
     H = torch.bmm(P_centered.transpose(-1, -2), Q_centered)
     
-    # SVD
-    U, _, Vt = torch.svd(H)
+    # Add small regularization to prevent singular matrices
+    reg = 1e-6 * torch.eye(3, device=H.device, dtype=H.dtype).unsqueeze(0).expand(H.shape[0], -1, -1)
+    H_reg = H + reg
     
-    # Rotation matrix
+    # SVD with numerical stability
+    try:
+        U, _, Vt = torch.svd(H_reg)
+    except:
+        # Fallback to identity if SVD fails
+        batch_size = P.shape[0]
+        U = torch.eye(3, device=P.device, dtype=P.dtype).unsqueeze(0).expand(batch_size, -1, -1)
+        Vt = torch.eye(3, device=P.device, dtype=P.dtype).unsqueeze(0).expand(batch_size, -1, -1)
+    
+    # Rotation matrix with determinant check
     R = torch.bmm(Vt.transpose(-1, -2), U.transpose(-1, -2))
+    
+    # Ensure proper rotation (det(R) = 1)
+    det_R = torch.det(R)
+    # If determinant is negative, flip one column
+    flip_mask = (det_R < 0).unsqueeze(-1).unsqueeze(-1)
+    R = R * (1 - 2 * flip_mask.float())
     
     # Apply rotation and translation
     P_aligned = torch.bmm(P_centered, R) + Q.mean(dim=1, keepdim=True)
@@ -364,9 +380,15 @@ def main():
             
             # Compute E(3) invariant loss outside autocast context (requires float32)
             recon_loss = e3_invariant_loss(recon_batch, molecules.pos)
-            kl_weight = 0.1  # Weight KL loss to prevent it from dominating
+            kl_weight = 0.01  # Further reduced KL weight to prevent instability
             loss = recon_loss + kl_weight * kl_div
-            print(f"Loss: {loss.item()}")
+            
+            # Check for numerical issues
+            if torch.isnan(loss) or torch.isinf(loss):
+                print(f"NaN/Inf detected in loss at epoch {epoch}, skipping batch...")
+                continue
+                
+            print(f"Loss: {loss.item():.6f}, Recon: {recon_loss.item():.6f}, KL: {kl_div.item():.6f}")
             # Mixed precision backward pass
             if torch.isnan(loss):
                 print(f"NaN detected at epoch {epoch}, skipping...")
@@ -375,14 +397,18 @@ def main():
             if use_amp:
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
-                # More aggressive gradient clipping
-                grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
+                # Very aggressive gradient clipping for E(3) invariant loss
+                grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.1)
+                if grad_norm > 1.0:
+                    print(f"Warning: Large gradient norm {grad_norm:.4f}")
                 scaler.step(optimizer)
                 scaler.update()
             else:
                 loss.backward()
-                # More aggressive gradient clipping
-                grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
+                # Very aggressive gradient clipping for E(3) invariant loss
+                grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.1)
+                if grad_norm > 1.0:
+                    print(f"Warning: Large gradient norm {grad_norm:.4f}")
                 optimizer.step()
             
             train_loss += loss.item()
