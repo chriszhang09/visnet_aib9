@@ -15,7 +15,6 @@ from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from pytorch_lightning.loggers import CSVLogger, TensorBoardLogger
 from pytorch_lightning.strategies import DDPStrategy
 from torch_geometric.data import Data
-from torch_geometric.typing import weight
 
 from aib9_lib import aib9_tools as aib9
 from vae_decoder import EGNNDecoder
