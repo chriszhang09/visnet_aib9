@@ -20,70 +20,6 @@ from aib9_lib import aib9_tools as aib9
 from vae_decoder import EGNNDecoder
 from vae_model import MolecularVAE, vae_loss_function
 
-def kabsch_alignment(P, Q):
-    """
-    Align two sets of points using Kabsch algorithm.
-    Returns the aligned version of P that best matches Q.
-    """
-    # Center both point sets
-    P_centered = P - P.mean(dim=1, keepdim=True)
-    Q_centered = Q - Q.mean(dim=1, keepdim=True)
-    
-    # Compute cross-covariance matrix
-    H = torch.bmm(P_centered.transpose(-1, -2), Q_centered)
-    
-    # Add small regularization to prevent singular matrices
-    reg = 1e-6 * torch.eye(3, device=H.device, dtype=H.dtype).unsqueeze(0).expand(H.shape[0], -1, -1)
-    H_reg = H + reg
-    
-    # SVD with numerical stability
-    try:
-        U, _, Vt = torch.svd(H_reg)
-    except:
-        # Fallback to identity if SVD fails
-        batch_size = P.shape[0]
-        U = torch.eye(3, device=P.device, dtype=P.dtype).unsqueeze(0).expand(batch_size, -1, -1)
-        Vt = torch.eye(3, device=P.device, dtype=P.dtype).unsqueeze(0).expand(batch_size, -1, -1)
-    
-    # Rotation matrix with determinant check
-    R = torch.bmm(Vt.transpose(-1, -2), U.transpose(-1, -2))
-    
-    # Ensure proper rotation (det(R) = 1)
-    det_R = torch.det(R)
-    # If determinant is negative, flip one column
-    flip_mask = (det_R < 0).unsqueeze(-1).unsqueeze(-1)
-    R = R * (1 - 2 * flip_mask.float())
-    
-    # Apply rotation and translation
-    P_aligned = torch.bmm(P_centered, R) + Q.mean(dim=1, keepdim=True)
-    
-    return P_aligned
-
-def e3_invariant_loss(pred_coords, target_coords, loss_scale=0.1):
-    """
-    E(3) invariant loss using Kabsch alignment.
-    This loss is invariant to translation and rotation.
-    """
-    # Convert to float32 immediately to avoid half precision issues
-    pred_coords = pred_coords.float()
-    target_coords = target_coords.float()
-    
-    batch_size = pred_coords.shape[0]
-    
-    # Reshape to [batch_size, num_atoms, 3]
-    pred_reshaped = pred_coords.view(batch_size, -1, 3)
-    target_reshaped = target_coords.view(batch_size, -1, 3)
-    
-    # Align predicted coordinates to target coordinates
-    pred_aligned = kabsch_alignment(pred_reshaped, target_reshaped)
-    
-    # Compute MSE after alignment with scaling
-    mse_loss = F.mse_loss(pred_aligned, target_reshaped)
-    
-    # Scale down the loss to reduce gradient magnitude
-    scaled_loss = mse_loss * loss_scale
-    
-    return scaled_loss
 
 def e3_invariant_loss_simple(pred_coords, target_coords):
     """
@@ -106,6 +42,41 @@ def e3_invariant_loss_simple(pred_coords, target_coords):
     
     # MSE on distance matrices
     loss = F.mse_loss(pred_dist, target_dist)
+    
+    return loss
+
+def e3_invariant_loss_bonds(pred_coords, target_coords, edge_index):
+    """
+    E(3) invariant loss using only covalent bond distances.
+    Much more stable and meaningful than full distance matrices.
+    """
+    # Convert to float32
+    pred_coords = pred_coords.float()
+    target_coords = target_coords.float()
+    
+    batch_size = pred_coords.shape[0]
+    
+    # Reshape to [batch_size, num_atoms, 3]
+    pred_reshaped = pred_coords.view(batch_size, -1, 3)
+    target_reshaped = target_coords.view(batch_size, -1, 3)
+    
+    # Get bond indices
+    row, col = edge_index[0], edge_index[1]
+    
+    # Compute bond distances for predicted coordinates
+    pred_bond_distances = torch.norm(
+        pred_reshaped[:, row] - pred_reshaped[:, col], 
+        dim=-1
+    )  # [batch_size, num_bonds]
+    
+    # Compute bond distances for target coordinates
+    target_bond_distances = torch.norm(
+        target_reshaped[:, row] - target_reshaped[:, col], 
+        dim=-1
+    )  # [batch_size, num_bonds]
+    
+    # MSE on bond distances only
+    loss = F.mse_loss(pred_bond_distances, target_bond_distances)
     
     return loss
 from visnet_vae_encoder import ViSNetEncoder
@@ -261,27 +232,13 @@ def main():
 
     print(f'Using device: {device}')
 
-    # Initialize Weights & Biases
-    wandb.init(
-        project="aib9-vae",
-        config={
-            "atom_count": 58,
-            "latent_dim": 30,
-            "epochs": 50,
-            "batch_size": 128,
-            "learning_rate": 1e-3,
-            "encoder_hidden": 256,
-            "encoder_layers": 9,
-            "decoder_hidden": 256,
-            "decoder_layers": 8,
-        }
-    )
+
 
     ATOM_COUNT = 58
     COORD_DIM = 3
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 30 
-    EPOCHS = 15
+    EPOCHS = 50
     BATCH_SIZE = 512  # Increased from 128 (V100 can handle much more!)
     LEARNING_RATE = 1e-3  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
@@ -289,7 +246,22 @@ def main():
     train_data_np = np.load(aib9.FULL_DATA)
     train_data_np = train_data_np.reshape(-1, 58, 3)
 
-    
+        # Initialize Weights & Biases
+    wandb.init(
+        project="aib9-vae",
+        config={
+            "atom_count": ATOM_COUNT,
+            "latent_dim": LATENT_DIM,
+            "epochs": EPOCHS,
+            "batch_size": BATCH_SIZE,
+            "learning_rate": LEARNING_RATE,
+            "encoder_hidden": 256,
+            "encoder_layers": 9,
+            "decoder_hidden": 256,
+            "decoder_layers": 8,
+        }
+    )
+
     project_path = pathlib.Path(__file__).resolve().parent
     TOPO_FILE = (
         project_path / "aib9_lib/aib9_atom_info.npy"
@@ -327,6 +299,7 @@ def main():
     edges = aib9.identify_all_covalent_edges(topo)
     # edges is already in shape [2, num_edges], no need to transpose
     edge_index = torch.tensor(edges, dtype=torch.long).contiguous()
+    edge_index = edge_index.to(device)  # Move to GPU for loss computation
     train_data_list = []
     for i in range(train_data_np.shape[0]):
         pos = torch.from_numpy(train_data_np[i]).float()
@@ -350,7 +323,7 @@ def main():
     # Note: cutoff is no longer used since we provide explicit edge_index (covalent bonds)
     # The model will use the edges defined by identify_all_covalent_edges()
     visnet_params = {
-        'hidden_channels': 128,
+        'hidden_channels': 64,
         'num_layers': 6,
         'num_rbf': 32,
         'cutoff': 5.0,  # Kept for compatibility but not used with edge_index
@@ -405,14 +378,9 @@ def main():
                 recon_batch, mu, logvar = model(molecules)
                 kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
             
-            # Compute E(3) invariant loss outside autocast context (requires float32)
-            # Use distance-based loss (much more gradient-friendly)
-            recon_loss = e3_invariant_loss_simple(recon_batch, molecules.pos)
-            
-            # Alternative: Use scaled Kabsch alignment loss (more complex)
-            # recon_loss = e3_invariant_loss(recon_batch, molecules.pos, loss_scale=0.1)
-            
-            kl_weight = 0.01  # Further reduced KL weight to prevent instability
+            # Use bond-based loss (much more stable and meaningful)
+            recon_loss = e3_invariant_loss_bonds(recon_batch, molecules.pos, edge_index)
+        
             loss = recon_loss + kl_weight * kl_div
             
             # Check for numerical issues
@@ -421,10 +389,7 @@ def main():
                 continue
                 
             print(f"Loss: {loss.item():.6f}, Recon: {recon_loss.item():.6f}, KL: {kl_div.item():.6f}")
-            # Mixed precision backward pass
-            if torch.isnan(loss):
-                print(f"NaN detected at epoch {epoch}, skipping...")
-                continue
+
 
             if use_amp:
                 scaler.scale(loss).backward()
