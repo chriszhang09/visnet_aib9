@@ -6,6 +6,7 @@ import sys
 import numpy as np
 import pytorch_lightning as pl
 import torch
+import torch.nn.functional as F
 import pathlib
 
 
@@ -18,6 +19,48 @@ from torch_geometric.data import Data
 from aib9_lib import aib9_tools as aib9
 from vae_decoder import EGNNDecoder
 from vae_model import MolecularVAE, vae_loss_function
+
+def kabsch_alignment(P, Q):
+    """
+    Align two sets of points using Kabsch algorithm.
+    Returns the aligned version of P that best matches Q.
+    """
+    # Center both point sets
+    P_centered = P - P.mean(dim=1, keepdim=True)
+    Q_centered = Q - Q.mean(dim=1, keepdim=True)
+    
+    # Compute cross-covariance matrix
+    H = torch.bmm(P_centered.transpose(-1, -2), Q_centered)
+    
+    # SVD
+    U, _, Vt = torch.svd(H)
+    
+    # Rotation matrix
+    R = torch.bmm(Vt.transpose(-1, -2), U.transpose(-1, -2))
+    
+    # Apply rotation and translation
+    P_aligned = torch.bmm(P_centered, R) + Q.mean(dim=1, keepdim=True)
+    
+    return P_aligned
+
+def e3_invariant_loss(pred_coords, target_coords):
+    """
+    E(3) invariant loss using Kabsch alignment.
+    This loss is invariant to translation and rotation.
+    """
+    batch_size = pred_coords.shape[0]
+    
+    # Reshape to [batch_size, num_atoms, 3]
+    pred_reshaped = pred_coords.view(batch_size, -1, 3)
+    target_reshaped = target_coords.view(batch_size, -1, 3)
+    
+    # Align predicted coordinates to target coordinates
+    pred_aligned = kabsch_alignment(pred_reshaped, target_reshaped)
+    
+    # Compute MSE after alignment
+    loss = F.mse_loss(pred_aligned, target_reshaped)
+    
+    return loss
 from visnet_vae_encoder import ViSNetEncoder
 
 from torch_geometric.loader import DataLoader
@@ -315,7 +358,8 @@ def main():
                 recon_batch, mu, logvar = model(molecules)
                 
                 # Separate reconstruction and KL losses
-                recon_loss = F.mse_loss(recon_batch.view(-1, 3), molecules.pos)
+                # Use E(3) invariant loss instead of MSE
+                recon_loss = e3_invariant_loss(recon_batch, molecules.pos)
                 kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
                 kl_weight = 0.1  # Weight KL loss to prevent it from dominating
                 loss = recon_loss + kl_weight * kl_div
