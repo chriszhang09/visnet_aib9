@@ -240,7 +240,7 @@ def main():
     LATENT_DIM = 30 
     EPOCHS = 50
     BATCH_SIZE = 512  # Increased from 128 (V100 can handle much more!)
-    LEARNING_RATE = 1e-3  # Reduced to prevent gradient explosion
+    LEARNING_RATE = 5e-4  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
