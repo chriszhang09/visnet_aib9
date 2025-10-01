@@ -21,30 +21,6 @@ from vae_decoder import EGNNDecoder
 from vae_model import MolecularVAE, vae_loss_function
 
 
-def e3_invariant_loss_simple(pred_coords, target_coords):
-    """
-    Simpler E(3) invariant loss using distance matrices.
-    More gradient-friendly than Kabsch alignment.
-    """
-    # Convert to float32
-    pred_coords = pred_coords.float()
-    target_coords = target_coords.float()
-    
-    batch_size = pred_coords.shape[0]
-    
-    # Reshape to [batch_size, num_atoms, 3]
-    pred_reshaped = pred_coords.view(batch_size, -1, 3)
-    target_reshaped = target_coords.view(batch_size, -1, 3)
-    
-    # Compute pairwise distance matrices (E(3) invariant)
-    pred_dist = torch.cdist(pred_reshaped, pred_reshaped, p=2)
-    target_dist = torch.cdist(target_reshaped, target_reshaped, p=2)
-    
-    # MSE on distance matrices
-    loss = F.mse_loss(pred_dist, target_dist)
-    
-    return loss
-
 def e3_invariant_loss_bonds(pred_coords, target_coords, edge_index):
     """
     E(3) invariant loss using only covalent bond distances.
@@ -222,25 +198,6 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
     model.train()
     return metrics, figures
 
-# The Fix (Example structure)
-from torch.utils.data import Dataset
-
-class AIB9Dataset(Dataset):
-    def __init__(self, data_np, z, edge_index, device):
-        self.data_np = data_np
-        self.z = z
-        self.edge_index = edge_index
-        self.device = device
-
-    def __len__(self):
-        return self.data_np.shape[0]
-
-    def __getitem__(self, idx):
-        pos = torch.from_numpy(self.data_np[idx]).float()
-        # Create Data object on the fly, don't move to device here
-        data = Data(z=self.z, pos=pos, edge_index=self.edge_index)
-        return data
-
 
 def main():
     seed = 42
@@ -262,7 +219,7 @@ def main():
     LATENT_DIM = 30 
     EPOCHS = 50
     BATCH_SIZE = 512  # Increased from 128 (V100 can handle much more!)
-    LEARNING_RATE = 5e-4  # Reduced to prevent gradient explosion
+    LEARNING_RATE = 1e-4  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
@@ -328,7 +285,8 @@ def main():
     train_loader = DataLoader(
         train_data_list,
         batch_size=BATCH_SIZE,
-        shuffle=True
+        shuffle=True,
+        num_workers=0
     )
     
     # Determine the maximum atomic number to set the correct atom_feature_dim for one-hot encoding
@@ -357,16 +315,20 @@ def main():
         edge_index_template=edge_index,  # Use covalent bonds in decoder
         visnet_kwargs=visnet_params
     ).to(device)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)  # Increased weight decay
-    
-    # Mixed precision training - 2-3x speedup on V100!
+    optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)  
+
     scaler = GradScaler()
     use_amp = torch.cuda.is_available()  # Use AMP if CUDA available
     
-    # Learning rate scheduler for better convergence
+    # Scheduler (used after warmup)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode='min', factor=0.5, patience=5, verbose=True
     )
+
+    # Linear warmup config
+    WARMUP_EPOCHS = 10
+    WARMUP_START_FACTOR = 0.1  
+    BASE_LR = LEARNING_RATE
     
     # Watch model with wandb
     wandb.watch(model, log='all', log_freq=200)  # Reduced log frequency
@@ -380,6 +342,16 @@ def main():
     print(f"{'='*60}\n")
     
     for epoch in range(1, EPOCHS + 1):
+        # Apply linear warmup for the first WARMUP_EPOCHS
+        if epoch <= WARMUP_EPOCHS:
+            warmup_ratio = epoch / float(WARMUP_EPOCHS)
+            current_lr = BASE_LR * (WARMUP_START_FACTOR + (1.0 - WARMUP_START_FACTOR) * warmup_ratio)
+            for pg in optimizer.param_groups:
+                pg['lr'] = current_lr
+        else:
+            for pg in optimizer.param_groups:
+                if 'initial_lr' in pg:
+                    pg['lr'] = pg.get('lr', BASE_LR)
         model.train()
         train_loss = 0
         train_recon_loss = 0
@@ -401,7 +373,7 @@ def main():
             
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max=10.0)
-            kl_loss = torch.clamp(kl_div, max=5.0)
+            kl_div = torch.clamp(kl_div, max=5.0)
             if recon_loss + kl_div < 10:
                 kl_weight = 0.25
             else:
@@ -433,8 +405,9 @@ def main():
         avg_recon_loss = train_recon_loss / len(train_loader.dataset)
         avg_kl_loss = train_kl_loss / len(train_loader.dataset)
         
-        # Step learning rate scheduler
-        scheduler.step(avg_loss)
+        # Step LR scheduler only after warmup
+        if epoch > WARMUP_EPOCHS:
+            scheduler.step(avg_loss)
         
         # Log to wandb
         wandb.log({
