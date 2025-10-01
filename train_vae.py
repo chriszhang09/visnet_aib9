@@ -382,12 +382,24 @@ def main():
             # Move edge_index to GPU for loss computation
             edge_index_gpu = edge_index.to(device)
             recon_loss = e3_invariant_loss_bonds(recon_batch, molecules.pos, edge_index_gpu)
-            kl_weight = 0.01
-            if kl_div > 10:
-                loss = recon_loss + kl_weight * kl_div
+            
+            # Clamp reconstruction loss to prevent explosion
+            recon_loss = torch.clamp(recon_loss, max=10.0)
+            
+            # Adaptive KL weighting based on reconstruction loss
+            if recon_loss > 5.0:
+                kl_weight = 0.001  # Very small KL when recon is high
+            elif recon_loss > 1.0:
+                kl_weight = 0.01   # Small KL when recon is moderate
             else:
-                loss = recon_loss + kl_div
-            print(f"Loss: {loss.item():.6f}, Recon: {recon_loss.item():.6f}, KL: {kl_div.item():.6f}")
+                kl_weight = 0.1    # Normal KL when recon is good
+            
+            loss = recon_loss + kl_weight * kl_div
+            
+            # Skip batch if loss is too high (likely numerical issues)
+            if loss > 50.0:
+                print(f"Skipping batch - loss too high: {loss.item():.6f}")
+                continue
             
             # Check for numerical issues
             if torch.isnan(loss) or torch.isinf(loss):
