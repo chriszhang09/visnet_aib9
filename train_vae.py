@@ -25,6 +25,10 @@ def kabsch_alignment(P, Q):
     Align two sets of points using Kabsch algorithm.
     Returns the aligned version of P that best matches Q.
     """
+    # Ensure float32 for SVD operation (SVD doesn't support half precision)
+    P = P.float()
+    Q = Q.float()
+    
     # Center both point sets
     P_centered = P - P.mean(dim=1, keepdim=True)
     Q_centered = Q - Q.mean(dim=1, keepdim=True)
