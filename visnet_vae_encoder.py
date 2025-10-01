@@ -31,29 +31,20 @@ class ViSNetEncoder(nn.Module):
         actual_hidden_channels = visnet_kwargs.get('hidden_channels', visnet_hidden_channels)
         
         # EquivariantEncoder must use the same hidden_channels as ViSNetBlock
-        self.output_model = EquivariantEncoder(actual_hidden_channels, output_channels=latent_dim)
-        
-        # Split the latent_dim * 2 features into mu and log_var
-        self.mu_head = nn.Linear(latent_dim * 2, latent_dim)
-        self.log_var_head = nn.Linear(latent_dim * 2, latent_dim)
+        self.output_model = EquivariantEncoder(actual_hidden_channels, output_channels=latent_dim + 1)
 
-
+    
     def forward(self, data):
         # Get atom-level features from ViSNetBlock
         x, v = self.representation_model(data)
-        # x shape: (num_atoms_in_batch, hidden_channels)
-        # v shape: (num_atoms_in_batch, num_spherical_harmonics, hidden_channels)
         
-        # Process through EquivariantEncoder to get E(3) invariant features
         x = self.output_model.pre_reduce(x, v, data.z, data.pos, data.batch)
-        # x shape: (num_atoms_in_batch, latent_dim * 2) - now E(3) invariant scalars
         
-        # Pool atom features to get molecule-level representation (maintains invariance)
         global_features = global_add_pool(x, data.batch)
         
-        # Split into mu and log_var for VAE
-        mu = self.mu_head(global_features)
-        log_var = self.log_var_head(global_features)
+        # Split output directly: first latent_dim for mu, last 1 for log_var
+        mu = global_features[:, :self.latent_dim]
+        log_var = global_features[:, self.latent_dim:]
         return mu, log_var
 
 

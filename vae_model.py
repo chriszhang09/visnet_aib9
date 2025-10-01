@@ -39,9 +39,14 @@ class MolecularVAE(nn.Module):
         )
 
     def reparameterize(self, mu, log_var):
-        std = torch.exp(0.5 * log_var)
-        eps = torch.randn_like(std)
+        """Reparameterization trick for non-centered isotropic Gaussian N(μ, σ²I)"""
+        std = torch.exp(0.5 * log_var)  # log_var is scalar, std is broadcast
+        eps = torch.randn_like(mu)
         return mu + eps * std
+    
+    def sample_prior(self, batch_size, device):
+        """Sample from isotropic Gaussian prior N(0, I)"""
+        return torch.randn(batch_size, self.decoder.latent_dim, device=device)
 
     def forward(self, data):
         # Encode
@@ -58,11 +63,9 @@ class MolecularVAE(nn.Module):
         return reconstructed_pos, mu, log_var
 
 def vae_loss_function(reconstructed_pos, original_pos, mu, log_var):
-
+    """Loss function for non-centered isotropic Gaussian VAE"""
     recon_loss = F.mse_loss(reconstructed_pos.view(-1, 3), original_pos)
-    
-    # 2. KL Divergence
-    # Measures how much the learned distribution N(mu, sigma) deviates from N(0, 1)
-    kl_div = -0.5 * torch.sum(1 + log_var - mu.pow(2) - log_var.exp())
+  
+    kl_div = 0.5 * torch.sum(mu.pow(2) + torch.exp(log_var) - log_var - 1)
     
     return recon_loss + kl_div
