@@ -392,14 +392,9 @@ def main():
             elif recon_loss > 1.0:
                 kl_weight = 0.01   # Small KL when recon is moderate
             else:
-                kl_weight = 0.1    # Normal KL when recon is good
-            
+                kl_weight = 1    # Normal KL when recon is good
+    
             loss = recon_loss + kl_weight * kl_div
-            
-            # Skip batch if loss is too high (likely numerical issues)
-            if loss > 50.0:
-                print(f"Skipping batch - loss too high: {loss.item():.6f}")
-                continue
             
             # Check for numerical issues
             if torch.isnan(loss) or torch.isinf(loss):
