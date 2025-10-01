@@ -299,11 +299,11 @@ def main():
     edges = aib9.identify_all_covalent_edges(topo)
     # edges is already in shape [2, num_edges], no need to transpose
     edge_index = torch.tensor(edges, dtype=torch.long).contiguous()
-    edge_index = edge_index.to(device)  # Move to GPU for loss computation
+    # Keep edge_index on CPU for Data objects (will be moved to GPU during training)
     train_data_list = []
     for i in range(train_data_np.shape[0]):
         pos = torch.from_numpy(train_data_np[i]).float()
-        # Add edge_index to each data object
+        # Add edge_index to each data object (keep on CPU for pin_memory)
         data = Data(z=z, pos=pos, edge_index=edge_index) 
         train_data_list.append(data)
     train_loader = DataLoader(
@@ -379,7 +379,9 @@ def main():
                 kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
             
             # Use bond-based loss (much more stable and meaningful)
-            recon_loss = e3_invariant_loss_bonds(recon_batch, molecules.pos, edge_index)
+            # Move edge_index to GPU for loss computation
+            edge_index_gpu = edge_index.to(device)
+            recon_loss = e3_invariant_loss_bonds(recon_batch, molecules.pos, edge_index_gpu)
         
             loss = recon_loss + kl_weight * kl_div
             
