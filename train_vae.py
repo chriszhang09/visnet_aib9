@@ -383,11 +383,11 @@ def main():
             edge_index_gpu = edge_index.to(device)
             recon_loss = e3_invariant_loss_bonds(recon_batch, molecules.pos, edge_index_gpu)
             kl_weight = 0.01
-            if kl_div > 1000:
+            if kl_div > 10:
                 loss = recon_loss + kl_weight * kl_div
             else:
                 loss = recon_loss + kl_div
-            
+            print(f"Loss: {loss.item():.6f}, Recon: {recon_loss.item():.6f}, KL: {kl_div.item():.6f}")
             
             # Check for numerical issues
             if torch.isnan(loss) or torch.isinf(loss):
@@ -408,7 +408,7 @@ def main():
             train_loss += loss.item()
             train_recon_loss += recon_loss.item()
             train_kl_loss += kl_div.item()
-
+        
         # Compute average losses
         avg_loss = train_loss / len(train_loader.dataset)
         avg_recon_loss = train_recon_loss / len(train_loader.dataset)
