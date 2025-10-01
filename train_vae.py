@@ -222,6 +222,36 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
     model.train()
     return metrics, figures
 
+# The Fix (Example structure)
+from torch.utils.data import Dataset
+
+class AIB9Dataset(Dataset):
+    def __init__(self, data_np, z, edge_index, device):
+        self.data_np = data_np
+        self.z = z
+        self.edge_index = edge_index
+        self.device = device
+
+    def __len__(self):
+        return self.data_np.shape[0]
+
+    def __getitem__(self, idx):
+        pos = torch.from_numpy(self.data_np[idx]).float()
+        # Create Data object on the fly, don't move to device here
+        data = Data(z=self.z, pos=pos, edge_index=self.edge_index)
+        return data
+
+# In main():
+# Don't create the list
+# train_dataset = AIB9Dataset(train_data_np, z, edge_index, device)
+# The DataLoader will handle moving data to the device if you use pin_memory=True
+
+
+# Inside the training loop, the data batch needs to be moved to the device
+for batch_idx, data in enumerate(train_loader):
+    molecules = data.to(device) # Move the batch to GPU here
+    # ... rest of the loop
+
 
 def main():
     seed = 42
@@ -300,7 +330,7 @@ def main():
     edges = aib9.identify_all_covalent_edges(topo)
     # edges is already in shape [2, num_edges], no need to transpose
     edge_index = torch.tensor(edges, dtype=torch.long, device=device).contiguous()
-    
+    '''
     train_data_list = []
     for i in range(train_data_np.shape[0]):
         pos = torch.from_numpy(train_data_np[i]).float().to(device)
@@ -311,7 +341,7 @@ def main():
         batch_size=BATCH_SIZE,
         shuffle=True
     )
-    
+    '''
     # Determine the maximum atomic number to set the correct atom_feature_dim for one-hot encoding
     max_atomic_number = max(ATOMIC_NUMBERS)  # Should be 53 for Iodine
     atom_feature_dim = max_atomic_number + 1  # Need +1 for zero-indexing (0 to max_z)
@@ -326,7 +356,16 @@ def main():
         'cutoff': 5.0,  # Kept for compatibility but not used with edge_index
         'max_z': max_atomic_number + 1,
     }
-    
+
+    train_dataset = AIB9Dataset(train_data_np, z, edge_index, device)
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=BATCH_SIZE,
+        shuffle=True,
+        num_workers=NUM_WORKERS,
+        pin_memory=True # Helps speed up CPU to GPU data transfer
+    )
+        
     # Enhanced decoder configuration
     model = MolecularVAE(
         latent_dim=LATENT_DIM, 
@@ -382,7 +421,7 @@ def main():
             
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max=10.0)
-            
+            kl_loss = torch.clamp(kl_div, max=10.0)
             if recon_loss + kl_div < 10:
                 kl_weight = 0.25
             else:
