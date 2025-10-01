@@ -290,26 +290,23 @@ def main():
         else:
             raise ValueError(f"Unknown atom name: {atom_name}")
 
-    # Create all tensors explicitly on CPU to avoid device mismatch
-    z = torch.tensor(ATOMIC_NUMBERS, dtype=torch.long, device='cpu')
+    # Create all tensors directly on the selected device to avoid device mismatch
+    z = torch.tensor(ATOMIC_NUMBERS, dtype=torch.long, device=device)
 
     # Create a list of Data objects, one for each molecule
     edges = aib9.identify_all_covalent_edges(topo)
     # edges is already in shape [2, num_edges], no need to transpose
-    edge_index = torch.tensor(edges, dtype=torch.long, device='cpu').contiguous()
+    edge_index = torch.tensor(edges, dtype=torch.long, device=device).contiguous()
     
     train_data_list = []
     for i in range(train_data_np.shape[0]):
-        pos = torch.from_numpy(train_data_np[i]).float().to('cpu')
-        data = Data(z=z, pos=pos, edge_index=edge_index) 
+        pos = torch.from_numpy(train_data_np[i]).float().to(device)
+        data = Data(z=z, pos=pos, edge_index=edge_index).to(device)
         train_data_list.append(data)
     train_loader = DataLoader(
-        train_data_list, 
-        batch_size=BATCH_SIZE, 
-        shuffle=True,
-        num_workers=0,  # Disable multiprocessing to avoid CUDA fork issues
-        pin_memory=True,  # Faster CPU-GPU transfer
-        persistent_workers=False  # Disable persistent workers
+        train_data_list,
+        batch_size=BATCH_SIZE,
+        shuffle=True
     )
     
     # Determine the maximum atomic number to set the correct atom_feature_dim for one-hot encoding
@@ -367,7 +364,7 @@ def main():
         train_kl_loss = 0
         
         for batch_idx, data in enumerate(train_loader):
-            molecules = data.to(device, non_blocking=True)  # Async GPU transfer
+            molecules = data.to(device)
             optimizer.zero_grad(set_to_none=True)  # Faster than zero_grad()
             
             # Mixed precision forward pass
