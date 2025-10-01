@@ -360,13 +360,12 @@ def main():
             # Mixed precision forward pass
             with autocast(enabled=use_amp):
                 recon_batch, mu, logvar = model(molecules)
-                
-                # Separate reconstruction and KL losses
-                # Use E(3) invariant loss instead of MSE
-                recon_loss = e3_invariant_loss(recon_batch, molecules.pos)
                 kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-                kl_weight = 0.1  # Weight KL loss to prevent it from dominating
-                loss = recon_loss + kl_weight * kl_div
+            
+            # Compute E(3) invariant loss outside autocast context (requires float32)
+            recon_loss = e3_invariant_loss(recon_batch, molecules.pos)
+            kl_weight = 0.1  # Weight KL loss to prevent it from dominating
+            loss = recon_loss + kl_weight * kl_div
             
             # Mixed precision backward pass
             if torch.isnan(loss):
