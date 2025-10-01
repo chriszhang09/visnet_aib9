@@ -15,6 +15,7 @@ from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from pytorch_lightning.loggers import CSVLogger, TensorBoardLogger
 from pytorch_lightning.strategies import DDPStrategy
 from torch_geometric.data import Data
+from torch_geometric.typing import weight
 
 from aib9_lib import aib9_tools as aib9
 from vae_decoder import EGNNDecoder
@@ -290,24 +291,18 @@ def main():
         else:
             raise ValueError(f"Unknown atom name: {atom_name}")
 
-    z = torch.tensor(ATOMIC_NUMBERS, dtype=torch.long)
+    # Create all tensors explicitly on CPU to avoid device mismatch
+    z = torch.tensor(ATOMIC_NUMBERS, dtype=torch.long, device='cpu')
 
     # Create a list of Data objects, one for each molecule
-
-
-    
     edges = aib9.identify_all_covalent_edges(topo)
     # edges is already in shape [2, num_edges], no need to transpose
-    edge_index = torch.tensor(edges, dtype=torch.long).contiguous()
-    # Keep edge_index on CPU for Data objects (will be moved to GPU during training)
+    edge_index = torch.tensor(edges, dtype=torch.long, device='cpu').contiguous()
+    
     train_data_list = []
     for i in range(train_data_np.shape[0]):
-        pos = torch.from_numpy(train_data_np[i]).float()
-        # Ensure all tensors are on the same device (CPU for Data objects)
-        z_cpu = z.cpu() if z.is_cuda else z
-        pos_cpu = pos.cpu() if pos.is_cuda else pos
-        edge_index_cpu = edge_index.cpu() if edge_index.is_cuda else edge_index
-        data = Data(z=z_cpu, pos=pos_cpu, edge_index=edge_index_cpu) 
+        pos = torch.from_numpy(train_data_np[i]).float().to('cpu')
+        data = Data(z=z, pos=pos, edge_index=edge_index) 
         train_data_list.append(data)
     train_loader = DataLoader(
         train_data_list, 
@@ -389,14 +384,10 @@ def main():
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max=10.0)
             
-            # Adaptive KL weighting based on reconstruction loss
-            if recon_loss > 5.0:
-                kl_weight = 0.001  # Very small KL when recon is high
-            elif recon_loss > 1.0:
-                kl_weight = 0.01   # Small KL when recon is moderate
+            if loss > 10:
+                kl_weight = 0.01
             else:
-                kl_weight = 1    # Normal KL when recon is good
-    
+                kl_weight = 1
             loss = recon_loss + kl_weight * kl_div
             
             # Check for numerical issues
