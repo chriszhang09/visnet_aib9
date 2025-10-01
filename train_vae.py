@@ -310,9 +310,9 @@ def main():
         train_data_list, 
         batch_size=BATCH_SIZE, 
         shuffle=True,
-        num_workers=NUM_WORKERS,  # Parallel data loading
+        num_workers=0,  # Disable multiprocessing to avoid CUDA fork issues
         pin_memory=True,  # Faster CPU-GPU transfer
-        persistent_workers=True if NUM_WORKERS > 0 else False  # Keep workers alive
+        persistent_workers=False  # Disable persistent workers
     )
     
     # Determine the maximum atomic number to set the correct atom_feature_dim for one-hot encoding
