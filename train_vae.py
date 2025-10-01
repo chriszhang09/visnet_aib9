@@ -319,7 +319,7 @@ def main():
     edges = aib9.identify_all_covalent_edges(topo)
     # edges is already in shape [2, num_edges], no need to transpose
     edge_index = torch.tensor(edges, dtype=torch.long, device=device).contiguous()
-    '''
+    
     train_data_list = []
     for i in range(train_data_np.shape[0]):
         pos = torch.from_numpy(train_data_np[i]).float().to(device)
@@ -330,7 +330,7 @@ def main():
         batch_size=BATCH_SIZE,
         shuffle=True
     )
-    '''
+    
     # Determine the maximum atomic number to set the correct atom_feature_dim for one-hot encoding
     max_atomic_number = max(ATOMIC_NUMBERS)  # Should be 53 for Iodine
     atom_feature_dim = max_atomic_number + 1  # Need +1 for zero-indexing (0 to max_z)
@@ -345,15 +345,6 @@ def main():
         'cutoff': 5.0,  # Kept for compatibility but not used with edge_index
         'max_z': max_atomic_number + 1,
     }
-
-    train_dataset = AIB9Dataset(train_data_np, z, edge_index, device)
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=BATCH_SIZE,
-        shuffle=True,
-        num_workers=NUM_WORKERS,
-        pin_memory=True # Helps speed up CPU to GPU data transfer
-    )
         
     # Enhanced decoder configuration
     model = MolecularVAE(
@@ -381,10 +372,10 @@ def main():
     wandb.watch(model, log='all', log_freq=200)  # Reduced log frequency
     
     # Keep a fixed validation sample for visualization
-    val_sample = train_dataset[0]  # Use first sample for consistent visualization
+    val_sample = train_data_list[0]  # Use first sample for consistent visualization
     
     print(f"\n{'='*60}")
-    print(f"Starting Training - {len(train_dataset)} samples")
+    print(f"Starting Training - {len(train_data_list)} samples")
     print(f"Model parameters: {sum(p.numel() for p in model.parameters()):,}")
     print(f"{'='*60}\n")
     
