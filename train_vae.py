@@ -303,8 +303,11 @@ def main():
     train_data_list = []
     for i in range(train_data_np.shape[0]):
         pos = torch.from_numpy(train_data_np[i]).float()
-        # Add edge_index to each data object (keep on CPU for pin_memory)
-        data = Data(z=z, pos=pos, edge_index=edge_index) 
+        # Ensure all tensors are on the same device (CPU for Data objects)
+        z_cpu = z.cpu() if z.is_cuda else z
+        pos_cpu = pos.cpu() if pos.is_cuda else pos
+        edge_index_cpu = edge_index.cpu() if edge_index.is_cuda else edge_index
+        data = Data(z=z_cpu, pos=pos_cpu, edge_index=edge_index_cpu) 
         train_data_list.append(data)
     train_loader = DataLoader(
         train_data_list, 
