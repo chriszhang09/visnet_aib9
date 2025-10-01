@@ -234,10 +234,10 @@ def main():
     COORD_DIM = 3
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 30 
-    EPOCHS = 35
+    EPOCHS = 15
     BATCH_SIZE = 384  # Increased from 128 (V100 can handle much more!)
     LEARNING_RATE = 5e-4  # Reduced to prevent gradient explosion
-    NUM_WORKERS = 4  # Parallel data loading
+    NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
     train_data_np = train_data_np.reshape(-1, 58, 3)
@@ -365,6 +365,10 @@ def main():
                 loss = recon_loss + kl_weight * kl_div
             
             # Mixed precision backward pass
+            if torch.isnan(loss):
+                print(f"NaN detected at epoch {epoch}, skipping...")
+                continue
+
             if use_amp:
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
