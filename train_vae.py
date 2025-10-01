@@ -191,8 +191,8 @@ def main():
     COORD_DIM = 3
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 30 
-    EPOCHS = 50
-    BATCH_SIZE = 256  # Increased from 128 (V100 can handle much more!)
+    EPOCHS = 35
+    BATCH_SIZE = 384  # Increased from 128 (V100 can handle much more!)
     LEARNING_RATE = 5e-4  # Reduced to prevent gradient explosion
     NUM_WORKERS = 4  # Parallel data loading
 
@@ -337,7 +337,6 @@ def main():
             train_loss += loss.item()
             train_recon_loss += recon_loss.item()
             train_kl_loss += kl_div.item()
-            print(f"Epoch {epoch:3d}: Loss={loss.item():.4f} (Recon={recon_loss.item():.4f}, KL={kl_div.item():.4f}, GradNorm={grad_norm:.4f})")
 
         # Compute average losses
         avg_loss = train_loss / len(train_loader.dataset)
