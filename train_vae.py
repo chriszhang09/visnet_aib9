@@ -200,6 +200,9 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--resume', type=str, default='', help='Path to checkpoint to resume from')
+    args = parser.parse_args()
     seed = 42
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -219,7 +222,7 @@ def main():
     LATENT_DIM = 30 
     EPOCHS = 50
     BATCH_SIZE = 512  # Increased from 128 (V100 can handle much more!)
-    LEARNING_RATE = 1e-4  # Reduced to prevent gradient explosion
+    LEARNING_RATE = 8e-5  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
@@ -293,9 +296,6 @@ def main():
     max_atomic_number = max(ATOMIC_NUMBERS)  # Should be 53 for Iodine
     atom_feature_dim = max_atomic_number + 1  # Need +1 for zero-indexing (0 to max_z)
     
-    # Create the encoder with proper ViSNet parameters
-    # Note: cutoff is no longer used since we provide explicit edge_index (covalent bonds)
-    # The model will use the edges defined by identify_all_covalent_edges()
     visnet_params = {
         'hidden_channels': 64,
         'num_layers': 6,
@@ -316,6 +316,20 @@ def main():
         visnet_kwargs=visnet_params
     ).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)  
+
+    # Optionally resume from checkpoint
+    start_epoch = 1
+    if args.resume and os.path.exists(args.resume):
+        ckpt = torch.load(args.resume, map_location=device)
+        model.load_state_dict(ckpt['model_state_dict'])
+        if 'optimizer_state_dict' in ckpt:
+            try:
+                optimizer.load_state_dict(ckpt['optimizer_state_dict'])
+            except Exception as e:
+                print(f"Warning: could not load optimizer state: {e}")
+        if 'epoch' in ckpt:
+            start_epoch = int(ckpt['epoch']) + 1
+        print(f"Resumed from {args.resume} at epoch {start_epoch}")
 
     scaler = GradScaler()
     use_amp = torch.cuda.is_available()  # Use AMP if CUDA available
@@ -341,7 +355,7 @@ def main():
     print(f"Model parameters: {sum(p.numel() for p in model.parameters()):,}")
     print(f"{'='*60}\n")
     
-    for epoch in range(1, EPOCHS + 1):
+    for epoch in range(start_epoch, EPOCHS + 1):
         # Apply linear warmup for the first WARMUP_EPOCHS
         if epoch <= WARMUP_EPOCHS:
             warmup_ratio = epoch / float(WARMUP_EPOCHS)
@@ -366,8 +380,6 @@ def main():
                 recon_batch, mu, logvar = model(molecules)
                 kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
             
-            # Use bond-based loss (much more stable and meaningful)
-            # Move edge_index to GPU for loss computation
             edge_index_gpu = edge_index.to(device)
             recon_loss = e3_invariant_loss_bonds(recon_batch, molecules.pos, edge_index_gpu)
             
@@ -379,7 +391,6 @@ def main():
             else:
                 kl_weight = 0.01
             loss = recon_loss + kl_weight * kl_div
-            
             # Check for numerical issues
             if torch.isnan(loss) or torch.isinf(loss):
                 print(f"NaN/Inf detected in loss at epoch {epoch}, skipping batch...")
