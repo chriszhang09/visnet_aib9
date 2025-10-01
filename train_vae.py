@@ -241,17 +241,6 @@ class AIB9Dataset(Dataset):
         data = Data(z=self.z, pos=pos, edge_index=self.edge_index)
         return data
 
-# In main():
-# Don't create the list
-# train_dataset = AIB9Dataset(train_data_np, z, edge_index, device)
-# The DataLoader will handle moving data to the device if you use pin_memory=True
-
-
-# Inside the training loop, the data batch needs to be moved to the device
-for batch_idx, data in enumerate(train_loader):
-    molecules = data.to(device) # Move the batch to GPU here
-    # ... rest of the loop
-
 
 def main():
     seed = 42
@@ -392,10 +381,10 @@ def main():
     wandb.watch(model, log='all', log_freq=200)  # Reduced log frequency
     
     # Keep a fixed validation sample for visualization
-    val_sample = train_data_list[0]  # Use first sample for consistent visualization
+    val_sample = train_dataset[0]  # Use first sample for consistent visualization
     
     print(f"\n{'='*60}")
-    print(f"Starting Training - {len(train_data_list)} samples")
+    print(f"Starting Training - {len(train_dataset)} samples")
     print(f"Model parameters: {sum(p.numel() for p in model.parameters()):,}")
     print(f"{'='*60}\n")
     
@@ -421,7 +410,7 @@ def main():
             
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max=10.0)
-            kl_loss = torch.clamp(kl_div, max=10.0)
+            kl_loss = torch.clamp(kl_div, max=5.0)
             if recon_loss + kl_div < 10:
                 kl_weight = 0.25
             else:
