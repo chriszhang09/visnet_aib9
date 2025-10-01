@@ -59,7 +59,7 @@ def kabsch_alignment(P, Q):
     
     return P_aligned
 
-def e3_invariant_loss(pred_coords, target_coords):
+def e3_invariant_loss(pred_coords, target_coords, loss_scale=0.1):
     """
     E(3) invariant loss using Kabsch alignment.
     This loss is invariant to translation and rotation.
@@ -77,8 +77,35 @@ def e3_invariant_loss(pred_coords, target_coords):
     # Align predicted coordinates to target coordinates
     pred_aligned = kabsch_alignment(pred_reshaped, target_reshaped)
     
-    # Compute MSE after alignment
-    loss = F.mse_loss(pred_aligned, target_reshaped)
+    # Compute MSE after alignment with scaling
+    mse_loss = F.mse_loss(pred_aligned, target_reshaped)
+    
+    # Scale down the loss to reduce gradient magnitude
+    scaled_loss = mse_loss * loss_scale
+    
+    return scaled_loss
+
+def e3_invariant_loss_simple(pred_coords, target_coords):
+    """
+    Simpler E(3) invariant loss using distance matrices.
+    More gradient-friendly than Kabsch alignment.
+    """
+    # Convert to float32
+    pred_coords = pred_coords.float()
+    target_coords = target_coords.float()
+    
+    batch_size = pred_coords.shape[0]
+    
+    # Reshape to [batch_size, num_atoms, 3]
+    pred_reshaped = pred_coords.view(batch_size, -1, 3)
+    target_reshaped = target_coords.view(batch_size, -1, 3)
+    
+    # Compute pairwise distance matrices (E(3) invariant)
+    pred_dist = torch.cdist(pred_reshaped, pred_reshaped, p=2)
+    target_dist = torch.cdist(target_reshaped, target_reshaped, p=2)
+    
+    # MSE on distance matrices
+    loss = F.mse_loss(pred_dist, target_dist)
     
     return loss
 from visnet_vae_encoder import ViSNetEncoder
@@ -379,7 +406,12 @@ def main():
                 kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
             
             # Compute E(3) invariant loss outside autocast context (requires float32)
-            recon_loss = e3_invariant_loss(recon_batch, molecules.pos)
+            # Use scaled Kabsch alignment loss (more stable)
+            recon_loss = e3_invariant_loss(recon_batch, molecules.pos, loss_scale=0.1)
+            
+            # Alternative: Use simpler distance-based loss (uncomment to try)
+            # recon_loss = e3_invariant_loss_simple(recon_batch, molecules.pos)
+            
             kl_weight = 0.01  # Further reduced KL weight to prevent instability
             loss = recon_loss + kl_weight * kl_div
             
