@@ -282,8 +282,8 @@ def main():
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 30 
     EPOCHS = 15
-    BATCH_SIZE = 384  # Increased from 128 (V100 can handle much more!)
-    LEARNING_RATE = 5e-4  # Reduced to prevent gradient explosion
+    BATCH_SIZE = 512  # Increased from 128 (V100 can handle much more!)
+    LEARNING_RATE = 1e-3  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
