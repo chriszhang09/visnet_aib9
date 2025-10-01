@@ -394,25 +394,16 @@ def main():
                 print(f"NaN/Inf detected in loss at epoch {epoch}, skipping batch...")
                 continue
                 
-            print(f"Loss: {loss.item():.6f}, Recon: {recon_loss.item():.6f}, KL: {kl_div.item():.6f}")
-
-
             if use_amp:
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
-                # Very aggressive gradient clipping for E(3) invariant loss
                 grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.1)
-                if grad_norm > 1.0:
-                    print(f"Warning: Large gradient norm {grad_norm:.4f}")
                 scaler.step(optimizer)
                 scaler.update()
             else:
                 loss.backward()
-                # Very aggressive gradient clipping for E(3) invariant loss
                 grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.1)
-                if grad_norm > 1.0:
-                    print(f"Warning: Large gradient norm {grad_norm:.4f}")
-                optimizer.step()
+                optimizer.step() 
             
             train_loss += loss.item()
             train_recon_loss += recon_loss.item()
