@@ -406,11 +406,11 @@ def main():
                 kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
             
             # Compute E(3) invariant loss outside autocast context (requires float32)
-            # Use scaled Kabsch alignment loss (more stable)
-            recon_loss = e3_invariant_loss(recon_batch, molecules.pos, loss_scale=0.1)
+            # Use distance-based loss (much more gradient-friendly)
+            recon_loss = e3_invariant_loss_simple(recon_batch, molecules.pos)
             
-            # Alternative: Use simpler distance-based loss (uncomment to try)
-            # recon_loss = e3_invariant_loss_simple(recon_batch, molecules.pos)
+            # Alternative: Use scaled Kabsch alignment loss (more complex)
+            # recon_loss = e3_invariant_loss(recon_batch, molecules.pos, loss_scale=0.1)
             
             kl_weight = 0.01  # Further reduced KL weight to prevent instability
             loss = recon_loss + kl_weight * kl_div
