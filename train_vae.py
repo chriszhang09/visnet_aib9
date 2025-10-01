@@ -383,7 +383,7 @@ def main():
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max=10.0)
             
-            if loss > 10:
+            if recon_loss + kl_div > 10:
                 kl_weight = 0.01
             else:
                 kl_weight = 1
