@@ -224,7 +224,10 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
 
 
 def main():
-
+    seed = 42
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    
     if torch.cuda.is_available():
         device = torch.device('cuda')
     else:
