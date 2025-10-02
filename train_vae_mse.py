@@ -68,7 +68,7 @@ def main():
     ENCODER_NUM_LAYERS = 3
     DECODER_HIDDEN_DIM = 256
     DECODER_NUM_LAYERS = 2
-    BATCH_SIZE = 512  # Increased from 128 (V100 can handle much more!)
+    BATCH_SIZE = 256  # Increased from 128 (V100 can handle much more!)
     LEARNING_RATE = 5e-5  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
 
@@ -216,7 +216,7 @@ def main():
                 kl_div = 0.5 * torch.sum(mu.pow(2) + torch.exp(log_var) - log_var - 1)
                 
                 # Debug KL components every 100 batches
-                if batch_idx % 100 == 0:
+                if batch_idx % 500 == 0:
                     mu_norm = torch.mean(mu.pow(2)).item()
                     log_var_mean = torch.mean(log_var).item()
                     exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
@@ -226,7 +226,7 @@ def main():
             recon_loss = mse_loss_function(recon_batch, molecules.pos)
             
             # Clamp reconstruction loss to prevent explosion
-            recon_loss = torch.clamp(recon_loss, max=10.0)
+            recon_loss = torch.clamp(recon_loss, max=5.0)
             # Don't clamp KL divergence - let it grow naturally
             # kl_div = torch.clamp(kl_div, max=5.0)  # Removed clamping
             
