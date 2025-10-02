@@ -93,12 +93,12 @@ def main():
     ATOM_COUNT = 58
     COORD_DIM = 3
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
-    LATENT_DIM = 64 
+    LATENT_DIM = 54 
     EPOCHS = 50
     VISNET_HIDDEN_CHANNELS = 64
-    ENCODER_NUM_LAYERS = 6
+    ENCODER_NUM_LAYERS = 8
     DECODER_HIDDEN_DIM = 64
-    DECODER_NUM_LAYERS = 6
+    DECODER_NUM_LAYERS = 4
     BATCH_SIZE = 512  # Increased from 128 (V100 can handle much more!)
     LEARNING_RATE = 5e-5  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
@@ -266,9 +266,9 @@ def main():
             
             # Use higher KL weight to encourage latent space usage
             if recon_loss + kl_div < 10:
-                kl_weight = 1.0  # Increased from 0.25
+                kl_weight = min(1.0 + 0.1 * epoch, 2.0)  # scaling with time
             else:
-                kl_weight = 0.1  # Increased from 0.01
+                kl_weight = 0.25  # Increased from 0.01
             loss = recon_loss + kl_weight * kl_div
             # Check for numerical issues
             if torch.isnan(loss) or torch.isinf(loss):
