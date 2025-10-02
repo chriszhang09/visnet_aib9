@@ -70,14 +70,16 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         
         # Move to CPU for visualization
         original_coords = val_data.pos.cpu().numpy()
-        reconstructed_coords = reconstructed[0].cpu().numpy()
+        # PyG decoder returns [num_atoms, 3] directly, not [batch_size, num_atoms, 3]
+        reconstructed_coords = reconstructed.cpu().numpy()
         atomic_nums = atomic_numbers.cpu().numpy()
         
         # 2. Generate from isotropic Gaussian prior
         random_z = model.sample_prior(1, device)
         generated = model.decoder(random_z, atom_types_one_hot[:model.decoder.num_atoms], 
                                   val_data.edge_index, batch)
-        generated_coords = generated[0].cpu().numpy()
+        # PyG decoder returns [num_atoms, 3] directly
+        generated_coords = generated.cpu().numpy()
         
         # 3. Compute metrics (E(3)-invariant bond-distance MSE)
         edge_index_cpu = edge_index.cpu()
