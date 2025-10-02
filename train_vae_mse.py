@@ -54,7 +54,7 @@ import torch.nn.functional as F
 from pathlib import Path
 import sys
 import wandb
-from torch.amp import autocast, GradScaler
+from torch.cuda.amp import autocast, GradScaler
 from vae_utils import validate_and_sample, visualize_molecule_3d, compute_bond_lengths
 
 def main():
