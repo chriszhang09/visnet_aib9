@@ -271,7 +271,7 @@ def main():
             # Conservative KL weighting for MSE training
             # Use much higher KL weight to force latent space usage
             if kl_div < 10:
-                kl_weight = min(2.0 + 0.5 * epoch, 5.0)  # Much more aggressive
+                kl_weight = min(1.0 + 0.2 * epoch, 3.0)  # Much more aggressive
             else:
                 kl_weight = 1.0  # Still high even when KL is large
             loss = recon_loss + kl_weight * kl_div

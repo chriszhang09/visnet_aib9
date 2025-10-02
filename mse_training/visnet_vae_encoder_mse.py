@@ -45,7 +45,7 @@ class ViSNetEncoderMSE(nn.Module):
                 final_block = self.output_model.output_network[-1]
                 if hasattr(final_block, 'scalar_linear'):
                     # Initialize bias for log_var (last output channel) to be closer to 0
-                    final_block.scalar_linear.bias.data[-1] = -1.0  # Start with reasonable variance
+                    final_block.scalar_linear.bias.data[-1] = -0.5  # Start with reasonable variance
                     # Scale down weights for log_var output
                     final_block.scalar_linear.weight.data[-1] *= 0.1
 
@@ -61,10 +61,7 @@ class ViSNetEncoderMSE(nn.Module):
         mu = global_features[:, :self.latent_dim]
         # Return log_var as shape [batch, 1] to ensure stable broadcasting
         log_var = global_features[:, self.latent_dim:self.latent_dim + 1]
-        
-        # Clamp log_var to prevent variance explosion
-        log_var = torch.clamp(log_var, min=-10, max=2)
-        
+
         return mu, log_var
 
 
