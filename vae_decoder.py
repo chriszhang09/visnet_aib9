@@ -62,6 +62,7 @@ class PyGEGNNLayer(MessagePassing):
         
         # 2. Update coordinates (Equivariant Step)
         # Use per-edge messages to get per-edge weights
+        print(edge_messages)
         coord_weights = self.coord_mlp(edge_messages)
         rel_pos = pos[row] - pos[col]
         
