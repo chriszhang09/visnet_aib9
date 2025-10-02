@@ -225,7 +225,7 @@ def main():
             # Use simple MSE loss with centering for E(3) invariance
             recon_loss = simple_mse_loss(recon_batch, molecules.pos)
                 # Debug KL components every 100 batches
-            if batch_idx % 500 == 0:
+            if batch_idx % 100 == 0:
                 mu_norm = torch.mean(mu.pow(2)).item()
                 log_var_mean = torch.mean(log_var).item()
                 exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
