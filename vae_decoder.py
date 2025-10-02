@@ -55,13 +55,18 @@ class PyGEGNNLayer(MessagePassing):
         x_new = self.node_norm(x + x_update)
         
         # Update positions (equivariant step)
-        coord_weights = self.coord_mlp(messages)
+        coord_weights = self.coord_mlp(messages)  # [num_edges, 1]
         row, col = edge_index
-        rel_pos = pos[row] - pos[col]
+        rel_pos = pos[row] - pos[col]  # [num_edges, 3]
         
         # Aggregate coordinate updates
-        coord_update = torch.zeros_like(pos)
-        coord_update.scatter_add_(0, row.unsqueeze(1).expand(-1, 3), coord_weights * rel_pos)
+        coord_update = torch.zeros_like(pos)  # [num_nodes, 3]
+        # Expand coord_weights to match rel_pos dimensions
+        coord_weights_expanded = coord_weights.expand(-1, 3)  # [num_edges, 3]
+        weighted_rel_pos = coord_weights_expanded * rel_pos  # [num_edges, 3]
+        
+        # Scatter add the weighted relative positions
+        coord_update.scatter_add_(0, row.unsqueeze(1).expand(-1, 3), weighted_rel_pos)
         pos_new = pos + coord_update
         
         return x_new, pos_new
