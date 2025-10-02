@@ -272,10 +272,10 @@ def main():
             # kl_div = torch.clamp(kl_div, max=5.0)  # Removed clamping
             
             # Use higher KL weight to encourage latent space usage
-            if recon_loss + kl_div < 10:
+            if kl_div < 50:
                 kl_weight = min(1.0 + 0.1 * epoch, 2.0)  # scaling with time
             else:
-                kl_weight = 0.25  # Increased from 0.01
+                kl_weight = 0.1  # Increased from 0.01
             loss = recon_loss + kl_weight * kl_div
             # Check for numerical issues
             if torch.isnan(loss) or torch.isinf(loss):
