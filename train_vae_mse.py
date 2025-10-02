@@ -22,14 +22,14 @@ from vae_model import MolecularVAE, vae_loss_function
 
 def mse_loss_function(pred_coords, target_coords):
     """
-    Simple MSE loss function for coordinate reconstruction.
+    Scaled MSE loss function for coordinate reconstruction.
     
     Args:
         pred_coords: Predicted coordinates [total_atoms, 3] (PyG format)
         target_coords: Target coordinates [total_atoms, 3] (PyG format)
     
     Returns:
-        MSE loss between predicted and target coordinates
+        Scaled MSE loss between predicted and target coordinates
     """
     # Convert to float32
     pred_coords = pred_coords.float()
@@ -41,10 +41,14 @@ def mse_loss_function(pred_coords, target_coords):
         batch_size, num_atoms, _ = pred_coords.shape
         pred_coords = pred_coords.view(-1, 3)  # [total_atoms, 3]
     
-    # Simple MSE loss
-    loss = F.mse_loss(pred_coords, target_coords)
+    # MSE loss with scaling to match bond loss magnitude
+    mse_loss = F.mse_loss(pred_coords, target_coords)
     
-    return loss
+    # Scale down MSE loss to reasonable range (bond distances are ~0.1-0.3 nm)
+    # Typical coordinate MSE is ~1-100, we want it ~0.1-1.0
+    scaled_loss = mse_loss * 0.01  # Scale factor to match bond loss range
+    
+    return scaled_loss
 
 
 from visnet_vae_encoder import ViSNetEncoder
@@ -226,15 +230,20 @@ def main():
             recon_loss = mse_loss_function(recon_batch, molecules.pos)
             
             # Clamp reconstruction loss to prevent explosion
-            recon_loss = torch.clamp(recon_loss, max=5.0)
-            # Don't clamp KL divergence - let it grow naturally
-            # kl_div = torch.clamp(kl_div, max=5.0)  # Removed clamping
+            recon_loss = torch.clamp(recon_loss, max=2.0)  # Lower clamp for MSE
+            # Clamp KL divergence for MSE training stability
+            kl_div = torch.clamp(kl_div, max=20.0)  # Prevent KL explosion
             
-            # Use higher KL weight to encourage latent space usage
-            if kl_div < 50:
-                kl_weight = min(1.0 + 0.1 * epoch, 2.0)  # scaling with time
+            # Conservative KL weighting for MSE training
+            if epoch <= 5:
+                kl_weight = 0.01  # Very low initially
+            elif epoch <= 15:
+                kl_weight = 0.05  # Gradually increase
+            elif kl_div < 10:
+                kl_weight = 0.1   # Normal weight
             else:
-                kl_weight = 0.1  # Increased from 0.01
+                kl_weight = 0.01  # Reduce if KL too high
+                
             loss = recon_loss + kl_weight * kl_div
             # Check for numerical issues
             if torch.isnan(loss) or torch.isinf(loss):
@@ -260,9 +269,14 @@ def main():
             total_recon_loss += recon_loss.item()
             total_kl_loss += kl_div.item()
             
-            # Early stopping for exploding loss
-            if loss.item() > 100:
+            # Early stopping for exploding loss (more conservative for MSE)
+            if loss.item() > 50:
                 print(f"Loss explosion detected: {loss.item():.4f}, stopping training...")
+                return
+            
+            # Additional check for KL explosion
+            if kl_div.item() > 100:
+                print(f"KL divergence explosion detected: {kl_div.item():.4f}, stopping training...")
                 return
         
         # Calculate averages
