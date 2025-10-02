@@ -242,7 +242,10 @@ def main():
                 kl_weight = min(1.0 + 0.2 * epoch, 3.0)  # Much more aggressive
             else:
                 kl_weight = 1.0  # Still high even when KL is large
+            kl_div = kl_div*kl_weight
+            kl_div = torch.clamp(kl_div, max=10.0)
             loss = recon_loss + kl_weight * kl_div
+            
             # Check for numerical issues
             if torch.isnan(loss) or torch.isinf(loss):
                 print(f"NaN/Inf detected in loss at epoch {epoch}, skipping batch...")
