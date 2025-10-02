@@ -27,19 +27,20 @@ class ViSNetEncoderMSE(nn.Module):
         super().__init__()
         self.latent_dim = latent_dim
         
-        # Store the representation model (ViSNetBlock) directly
-        # We need access to atom-level features before they get pooled
         self.representation_model = ViSNetBlock(**visnet_kwargs)
         
-        # Get the actual hidden_channels used by ViSNetBlock (may differ from default)
         actual_hidden_channels = visnet_kwargs.get('hidden_channels', visnet_hidden_channels)
         
-        # EquivariantEncoder must use the same hidden_channels as ViSNetBlock
-        # We need latent_dim for mu + 1 for log_var (scalar)
         self.output_model = EquivariantEncoder(actual_hidden_channels, output_channels=latent_dim + 1)
         
-        # Simple initialization: we'll add a bias to log_var in the forward pass
-        self.log_var_bias = -2.0  # Start with reasonable variance
+                # In your Encoder's __init__ method
+        with torch.no_grad():
+            # Find the final linear layer that outputs mu and log_var
+            final_layer = self.output_model.output_network[-1].scalar_linear
+  
+            final_layer.bias.data[-1] = -3  # Start with log_var near -3 (variance ~0.05)
+            
+            final_layer.weight.data[-1] *= 0.1
 
     
     def forward(self, data):
