@@ -171,7 +171,7 @@ def main():
     )
     
     # Only 10 unique atomic types in the dataset
-    atom_feature_dim = 53 # Should be 10
+    atom_feature_dim = 54 # Should be 10
     
     visnet_params = {
         'hidden_channels': VISNET_HIDDEN_CHANNELS,
@@ -311,7 +311,7 @@ def main():
         if epoch == 1 or epoch % 10 == 0:
             print(f"  → Generating samples and visualizations...")
             metrics, figures = validate_and_sample(
-                model, val_sample, device, z, edge_index, epoch
+                model, val_sample, device, z, val_sample.edge_index, epoch
             )
             
             # Log metrics
@@ -350,7 +350,7 @@ def main():
     print(f"{'='*60}\n")
     
     metrics, figures = validate_and_sample(
-        model, val_sample, device, z, edge_index, EPOCHS
+        model, val_sample, device, z, val_sample.edge_index, EPOCHS
     )
     wandb.log(metrics)
     for fig_name, fig in figures.items():
