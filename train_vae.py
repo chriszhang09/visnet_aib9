@@ -96,7 +96,7 @@ def main():
     DECODER_HIDDEN_DIM = 64
     DECODER_NUM_LAYERS = 6
     BATCH_SIZE = 512  # Increased from 128 (V100 can handle much more!)
-    LEARNING_RATE = 1e-5  # Reduced to prevent gradient explosion
+    LEARNING_RATE = 5e-5  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
@@ -184,7 +184,6 @@ def main():
         visnet_hidden_channels=VISNET_HIDDEN_CHANNELS,
         decoder_hidden_dim=DECODER_HIDDEN_DIM,      
         decoder_num_layers=DECODER_NUM_LAYERS,         
-        edge_index_template=edge_index,  
         visnet_kwargs=visnet_params
     ).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)  

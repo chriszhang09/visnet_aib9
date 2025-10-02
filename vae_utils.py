@@ -63,7 +63,10 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         
         atom_types_one_hot = F.one_hot(val_data.z.long(), 
                                        num_classes=model.decoder.atom_feature_dim).float().to(device)
-        reconstructed = model.decoder(z, atom_types_one_hot)
+        
+        # Create batch tensor for single molecule
+        batch = torch.zeros(val_data.z.size(0), dtype=torch.long, device=device)
+        reconstructed = model.decoder(z, atom_types_one_hot, val_data.edge_index, batch)
         
         # Move to CPU for visualization
         original_coords = val_data.pos.cpu().numpy()
@@ -72,7 +75,8 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         
         # 2. Generate from isotropic Gaussian prior
         random_z = model.sample_prior(1, device)
-        generated = model.decoder(random_z, atom_types_one_hot[:model.decoder.num_atoms])
+        generated = model.decoder(random_z, atom_types_one_hot[:model.decoder.num_atoms], 
+                                  val_data.edge_index, batch)
         generated_coords = generated[0].cpu().numpy()
         
         # 3. Compute metrics (E(3)-invariant bond-distance MSE)

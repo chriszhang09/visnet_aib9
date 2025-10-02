@@ -1,93 +1,98 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+from torch_geometric.nn import MessagePassing, global_mean_pool
+from torch_geometric.data import Batch
 
-# Enhanced EGNN layer with deeper MLPs and more capacity
-class EGNNDecoderLayer(nn.Module):
+
+class PyGEGNNLayer(MessagePassing):
+    """PyTorch Geometric EGNN layer with proper message passing."""
+    
     def __init__(self, hidden_dim, activation='silu'):
-        super().__init__()
+        super().__init__(aggr='add')
         act_fn = nn.SiLU() if activation == 'silu' else nn.ReLU()
         
-        # Deeper edge MLP with residual-like structure
+        # Edge MLP for computing messages
         self.edge_mlp = nn.Sequential(
-            nn.Linear(hidden_dim * 2 + 1, hidden_dim * 2),
+            nn.Linear(hidden_dim * 2 + 1, hidden_dim * 2),  # [h_i, h_j, ||x_i - x_j||^2]
             act_fn,
             nn.Linear(hidden_dim * 2, hidden_dim),
             act_fn,
             nn.Linear(hidden_dim, hidden_dim)
         )
         
-        # Deeper node update MLP
+        # Node MLP for updating node features
         self.node_mlp = nn.Sequential(
-            nn.Linear(hidden_dim * 2, hidden_dim * 2),
+            nn.Linear(hidden_dim * 2, hidden_dim * 2),  # [h_i, m_i]
             act_fn,
             nn.Linear(hidden_dim * 2, hidden_dim),
             act_fn,
             nn.Linear(hidden_dim, hidden_dim)
         )
         
-        # Coordinate update MLP
+        # Coordinate MLP for updating positions
         self.coord_mlp = nn.Sequential(
-            nn.Linear(hidden_dim, hidden_dim),
+            nn.Linear(hidden_dim, hidden_dim // 2),
             act_fn,
-            nn.Linear(hidden_dim, 1, bias=False)
+            nn.Linear(hidden_dim // 2, 1)
         )
         
         # Layer normalization for stability
         self.node_norm = nn.LayerNorm(hidden_dim)
         
-    def forward(self, h, coords, edge_index):
-        row, col = edge_index
-
-            
-    # Bounds checking
-        max_node_idx = h.size(0) - 1
-        if row.max() > max_node_idx or col.max() > max_node_idx:
-            print(f"Warning: edge_index out of bounds. Max node: {max_node_idx}, Max edge: {row.max()}, {col.max()}")
-            # Filter out invalid edges
-            valid_mask = (row <= max_node_idx) & (col <= max_node_idx)
-            row = row[valid_mask]
-            col = col[valid_mask]
-    
-        
+    def forward(self, x, pos, edge_index):
+        """
+        Args:
+            x: Node features [num_nodes, hidden_dim]
+            pos: Node positions [num_nodes, 3]
+            edge_index: Edge connectivity [2, num_edges]
+        """
         # Message passing
-        rel_coords = coords[row] - coords[col]
-        dist = torch.linalg.norm(rel_coords, dim=1, keepdim=True)
-        
-        # Edge features with squared distance
-        edge_features = torch.cat([h[row], h[col], dist**2], dim=1)
-        messages = self.edge_mlp(edge_features)
-        
-        # Aggregate messages
-        agg_messages = torch.zeros_like(h)
-        # Ensure dtype consistency for scatter operation
-        messages = messages.to(h.dtype)
-        agg_messages.scatter_add_(0, row.unsqueeze(1).expand(-1, h.size(1)), messages)
+        messages = self.propagate(edge_index, x=x, pos=pos)
         
         # Update node features with residual connection
-        h_update = self.node_mlp(torch.cat([h, agg_messages], dim=1))
-        h_new = self.node_norm(h + h_update)  # Residual connection
+        x_update = self.node_mlp(torch.cat([x, messages], dim=1))
+        x_new = self.node_norm(x + x_update)
         
-        # Update coordinates (equivariant step)
+        # Update positions (equivariant step)
         coord_weights = self.coord_mlp(messages)
-        coord_update = torch.zeros_like(coords)
-        coord_update.scatter_add_(0, row.unsqueeze(1).expand(-1, 3), coord_weights * rel_coords)
+        row, col = edge_index
+        rel_pos = pos[row] - pos[col]
         
-        return h_new, coords + coord_update
+        # Aggregate coordinate updates
+        coord_update = torch.zeros_like(pos)
+        coord_update.scatter_add_(0, row.unsqueeze(1).expand(-1, 3), coord_weights * rel_pos)
+        pos_new = pos + coord_update
+        
+        return x_new, pos_new
+    
+    def message(self, x_i, x_j, pos_i, pos_j):
+        """Compute messages between connected nodes."""
+        # Compute relative positions and distances
+        rel_pos = pos_i - pos_j
+        dist_sq = torch.sum(rel_pos ** 2, dim=1, keepdim=True)
+        
+        # Create edge features
+        edge_features = torch.cat([x_i, x_j, dist_sq], dim=1)
+        
+        # Compute messages
+        return self.edge_mlp(edge_features)
 
 
-class EGNNDecoder(nn.Module):
+class PyGEGNNDecoder(nn.Module):
+    """
+    PyTorch Geometric-based EGNN Decoder that properly handles batching.
+    """
+    
     def __init__(self, latent_dim, num_atoms, atom_feature_dim, hidden_dim=128, 
-                 num_layers=6, edge_index_template=None, activation='silu'):
+                 num_layers=6, activation='silu'):
         """
-        Enhanced EGNN Decoder with more capacity.
-        
         Args:
             latent_dim (int): Dimension of latent space
             num_atoms (int): Number of atoms in molecule
             atom_feature_dim (int): Dimension of atom type one-hot encoding
-            hidden_dim (int): Hidden dimension for EGNN layers (default: 128)
-            num_layers (int): Number of EGNN layers (default: 6)
-            edge_index_template (Tensor): Fixed edge connectivity (e.g., covalent bonds)
+            hidden_dim (int): Hidden dimension for EGNN layers
+            num_layers (int): Number of EGNN layers
             activation (str): Activation function ('silu' or 'relu')
         """
         super().__init__()
@@ -96,13 +101,7 @@ class EGNNDecoder(nn.Module):
         self.atom_feature_dim = atom_feature_dim
         self.hidden_dim = hidden_dim
         
-        # Store fixed edge template if provided
-        if edge_index_template is not None:
-            self.register_buffer('edge_index_template', edge_index_template)
-        else:
-            self.edge_index_template = None
-        
-        # Multi-layer latent injection network
+        # Latent injection network
         act_fn = nn.SiLU() if activation == 'silu' else nn.ReLU()
         self.latent_injector = nn.Sequential(
             nn.Linear(latent_dim + atom_feature_dim, hidden_dim * 2),
@@ -114,59 +113,39 @@ class EGNNDecoder(nn.Module):
         
         # Stack of EGNN layers
         self.layers = nn.ModuleList([
-            EGNNDecoderLayer(hidden_dim, activation=activation) 
+            PyGEGNNLayer(hidden_dim, activation=activation) 
             for _ in range(num_layers)
         ])
         
-        # Final coordinate refinement (optional)
-        self.coord_refine = nn.Sequential(
-            nn.Linear(hidden_dim, hidden_dim // 2),
-            act_fn,
-            nn.Linear(hidden_dim // 2, 3)
-        )
-        
-    def forward(self, z, atom_types):
+    def forward(self, z, atom_types, edge_index, batch):
         """
         Args:
-            z (Tensor): Latent vector, shape (batch_size, latent_dim).
-            atom_types (Tensor): One-hot encoded atom types, shape (batch_size * num_atoms, atom_feature_dim).
-        """
+            z (Tensor): Latent vectors, shape (batch_size, latent_dim)
+            atom_types (Tensor): One-hot encoded atom types, shape (batch_size * num_atoms, atom_feature_dim)
+            edge_index (Tensor): Edge connectivity, shape (2, num_edges)
+            batch (Tensor): Batch assignment for each node, shape (batch_size * num_atoms,)
         
+        Returns:
+            Tensor: Reconstructed positions, shape (batch_size * num_atoms, 3)
+        """
         batch_size = z.size(0)
         
-        # 1. Initialize node features from atom types and latent code
+        # 1. Expand latent codes to all atoms in the batch
         z_expanded = z.repeat_interleave(self.num_atoms, dim=0)
+        
+        # 2. Initialize node features by combining atom types and latent codes
         h = torch.cat([atom_types, z_expanded], dim=1)
         h = self.latent_injector(h)
         
-        # 2. Initialize coordinates with small random noise
-        # This helps break symmetry and allows the network to learn structure
-        coords = torch.randn(batch_size * self.num_atoms, 3, device=z.device) * 0.1
-        
-        # 3. Create edge index (use fixed template if available, otherwise fully connected)
-        if self.edge_index_template is not None:
-            # Use covalent bond structure
-            edge_indices = []
-            for i in range(batch_size):
-                offset = i * self.num_atoms
-                edge_indices.append(self.edge_index_template + offset)
-            edge_index = torch.cat(edge_indices, dim=1)
-        else:
-            # Fully connected graph (fallback)
-            edge_indices = []
-            for i in range(batch_size):
-                offset = i * self.num_atoms
-                adj = torch.ones(self.num_atoms, self.num_atoms) - torch.eye(self.num_atoms)
-                edge_index = adj.to_sparse().indices() + offset
-                edge_indices.append(edge_index)
-            edge_index = torch.cat(edge_indices, dim=1).to(z.device)
+        # 3. Initialize coordinates with small random noise
+        pos = torch.randn(batch_size * self.num_atoms, 3, device=z.device) * 0.1
         
         # 4. Iteratively refine structure through EGNN layers
         for layer in self.layers:
-            h, coords = layer(h, coords, edge_index)
+            h, pos = layer(h, pos, edge_index)
         
-        # 5. Optional: Final coordinate refinement based on learned features
-        # coord_adjustment = self.coord_refine(h)
-        # coords = coords + coord_adjustment
-        
-        return coords.view(batch_size, self.num_atoms, 3)
+        return pos
+
+
+# For backward compatibility, create an alias
+EGNNDecoder = PyGEGNNDecoder

@@ -7,8 +7,7 @@ from vae_decoder import EGNNDecoder
 class MolecularVAE(nn.Module):
     def __init__(self, latent_dim, num_atoms, atom_feature_dim, 
                  visnet_hidden_channels=128, decoder_hidden_dim=128, 
-                 decoder_num_layers=6, edge_index_template=None, 
-                 visnet_kwargs=None):
+                 decoder_num_layers=6, visnet_kwargs=None):
         """
         Args:
             latent_dim (int): Dimension of the latent space
@@ -17,7 +16,6 @@ class MolecularVAE(nn.Module):
             visnet_hidden_channels (int): Hidden dimension for ViSNet encoder
             decoder_hidden_dim (int): Hidden dimension for EGNN decoder
             decoder_num_layers (int): Number of EGNN layers in decoder
-            edge_index_template (Tensor): Fixed edge connectivity for decoder
             visnet_kwargs (dict): Additional parameters for ViSNetBlock
         """
         super().__init__()
@@ -34,12 +32,11 @@ class MolecularVAE(nn.Module):
             num_atoms=num_atoms, 
             atom_feature_dim=atom_feature_dim,
             hidden_dim=decoder_hidden_dim,
-            num_layers=decoder_num_layers,
-            edge_index_template=edge_index_template
+            num_layers=decoder_num_layers
         )
 
     def reparameterize(self, mu, log_var):
-        """Reparameterization trick for non-centered isotropic Gaussian N(μ, σ²I)"""
+
         std = torch.exp(0.5 * log_var)  # log_var is scalar, std is broadcast
         eps = torch.randn_like(mu)
         return mu + eps * std
@@ -58,7 +55,9 @@ class MolecularVAE(nn.Module):
         # We need the one-hot atom types for the decoder
         # This assumes data.z contains integer atom types
         atom_types_one_hot = F.one_hot(data.z.long(), num_classes=self.decoder.atom_feature_dim).float()
-        reconstructed_pos = self.decoder(z, atom_types_one_hot)
+        
+        # PyG decoder needs edge_index and batch information
+        reconstructed_pos = self.decoder(z, atom_types_one_hot, data.edge_index, data.batch)
         
         return reconstructed_pos, mu, log_var
 
