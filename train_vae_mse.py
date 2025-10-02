@@ -178,7 +178,7 @@ def main():
     train_data_list = []
     for i in range(train_data_np.shape[0]):
         pos = torch.from_numpy(train_data_np[i]).float().to(device)
-        data = Data(z=z, pos=pos, edge_index=edge_index)
+        data = Data(z=z, pos=pos, edge_index=edge_index).to(device)
         train_data_list.append(data)
     train_loader = DataLoader(
         train_data_list,
