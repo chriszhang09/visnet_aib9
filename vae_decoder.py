@@ -37,6 +37,17 @@ class EGNNDecoderLayer(nn.Module):
         
     def forward(self, h, coords, edge_index):
         row, col = edge_index
+
+            
+    # Bounds checking
+        max_node_idx = h.size(0) - 1
+        if row.max() > max_node_idx or col.max() > max_node_idx:
+            print(f"Warning: edge_index out of bounds. Max node: {max_node_idx}, Max edge: {row.max()}, {col.max()}")
+            # Filter out invalid edges
+            valid_mask = (row <= max_node_idx) & (col <= max_node_idx)
+            row = row[valid_mask]
+            col = col[valid_mask]
+    
         
         # Message passing
         rel_coords = coords[row] - coords[col]
@@ -120,6 +131,7 @@ class EGNNDecoder(nn.Module):
             z (Tensor): Latent vector, shape (batch_size, latent_dim).
             atom_types (Tensor): One-hot encoded atom types, shape (batch_size * num_atoms, atom_feature_dim).
         """
+        
         batch_size = z.size(0)
         
         # 1. Initialize node features from atom types and latent code
