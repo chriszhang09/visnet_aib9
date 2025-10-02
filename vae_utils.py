@@ -80,7 +80,8 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         generated_coords = generated[0].cpu().numpy()
         
         # 3. Compute metrics (E(3)-invariant bond-distance MSE)
-        row, col = edge_index[0], edge_index[1]
+        edge_index_cpu = edge_index.cpu()
+        row, col = edge_index_cpu[0], edge_index_cpu[1]
         pred_coords_t = torch.from_numpy(reconstructed_coords)
         target_coords_t = torch.from_numpy(original_coords)
         pred_bond_dist = torch.norm(pred_coords_t[row] - pred_coords_t[col], dim=-1)
@@ -88,9 +89,9 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         bond_loss = F.mse_loss(pred_bond_dist, target_bond_dist).item()
         
         # Compute bond lengths
-        original_bonds = compute_bond_lengths(torch.from_numpy(original_coords), edge_index)
-        recon_bonds = compute_bond_lengths(torch.from_numpy(reconstructed_coords), edge_index)
-        gen_bonds = compute_bond_lengths(torch.from_numpy(generated_coords), edge_index)
+        original_bonds = compute_bond_lengths(torch.from_numpy(original_coords), edge_index_cpu)
+        recon_bonds = compute_bond_lengths(torch.from_numpy(reconstructed_coords), edge_index_cpu)
+        gen_bonds = compute_bond_lengths(torch.from_numpy(generated_coords), edge_index_cpu)
         
         # 4. Create visualizations
         fig_orig = visualize_molecule_3d(original_coords, atomic_nums, 
