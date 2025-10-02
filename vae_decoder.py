@@ -62,7 +62,7 @@ class PyGEGNNLayer(MessagePassing):
         
         # 2. Update coordinates (Equivariant Step)
         # Use per-edge messages to get per-edge weights
-        print(edge_messages.type())
+
         coord_weights = self.coord_mlp(edge_messages)
         rel_pos = pos[row] - pos[col]
         
@@ -75,8 +75,6 @@ class PyGEGNNLayer(MessagePassing):
         num_neighbors = torch.bincount(row, minlength=pos.size(0)).float().unsqueeze(1)
         pos_new = pos + coord_update / (num_neighbors + 1e-6)
         
-        # 3. Update node features (Invariant Step)
-        # Manually aggregate edge messages to get per-node messages
         aggregated_messages = scatter_add(edge_messages, row, dim=0, dim_size=x.size(0))
         
         # Update node features using original features and aggregated messages
