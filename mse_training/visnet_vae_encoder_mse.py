@@ -36,7 +36,7 @@ class ViSNetEncoderMSE(nn.Module):
                 # In your Encoder's __init__ method
         with torch.no_grad():
             # Target the final linear layer in the EquivariantEncoder
-            final_linear_layer = self.output_model.output_network[-1].scalar_linear
+            final_linear_layer = self.output_model.output_network[-1].update_net[-1]
 
             # The log_var is the LAST output channel. Its index is `latent_dim`.
             log_var_index = self.latent_dim
