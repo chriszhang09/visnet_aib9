@@ -101,10 +101,11 @@ def main():
         device = torch.device('cpu')
         print('CUDA not available, using CPU')
 
-    # Load topology and create atomic numbers
+    project_path = pathlib.Path(__file__).resolve().parent
     TOPO_FILE = (
-       "/Users/chriszhang/Documents/aib9_vanillavae/visnet_aib9/aib9_lib/aib9_atom_info.npy"
+        project_path / "aib9_lib/aib9_atom_info.npy"
     )  
+
 
     ATOMICNUMBER_MAPPING = {
     "H": 1,
