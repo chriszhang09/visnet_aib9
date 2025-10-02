@@ -264,7 +264,7 @@ def main():
             recon_loss = pairwise_distance_loss(recon_batch, molecules.pos)
             
             # Clamp reconstruction loss to prevent explosion
-            recon_loss = torch.clamp(recon_loss, max=20.0)  # Lower clamp for MSE
+            recon_loss = torch.clamp(recon_loss, max=5.0)  # Lower clamp for MSE
             # Clamp KL divergence for MSE training stability
         
             if kl_div < 10:
