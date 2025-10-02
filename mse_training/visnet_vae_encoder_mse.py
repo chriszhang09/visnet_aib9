@@ -35,13 +35,20 @@ class ViSNetEncoderMSE(nn.Module):
         
                 # In your Encoder's __init__ method
         with torch.no_grad():
-            # Find the final linear layer that outputs mu and log_var
-            final_layer = self.output_model.output_network[-1].scalar_linear
-  
-            final_layer.bias.data[-1] = -3  # Start with log_var near -3 (variance ~0.05)
-            
-            final_layer.weight.data[-1] *= 0.1
+            # Target the final linear layer in the EquivariantEncoder
+            final_linear_layer = self.output_model.output_network[-1].scalar_linear
 
+            # The log_var is the LAST output channel. Its index is `latent_dim`.
+            log_var_index = self.latent_dim
+
+            # Set its bias to a negative value to start variance near zero.
+            final_linear_layer.bias.data[log_var_index] = -3.0
+
+            # Scale down its weights to make the initial output more stable.
+            final_linear_layer.weight.data[log_var_index] *= 0.1
+
+            print(f"Successfully initialized bias for log_var output to {final_linear_layer.bias.data[log_var_index]:.2f}")
+            # --- END OF FIX ---
     
     def forward(self, data):
         # Get atom-level features from ViSNetBlock
