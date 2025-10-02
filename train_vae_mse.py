@@ -109,10 +109,10 @@ def main():
     LATENT_DIM = 24 
     EPOCHS = 50
     VISNET_HIDDEN_CHANNELS = 256
-    ENCODER_NUM_LAYERS = 5
+    ENCODER_NUM_LAYERS = 3
     DECODER_HIDDEN_DIM = 256
-    DECODER_NUM_LAYERS = 3
-    BATCH_SIZE = 1024  # Increased from 128 (V100 can handle much more!)
+    DECODER_NUM_LAYERS = 2
+    BATCH_SIZE = 512  # Increased from 128 (V100 can handle much more!)
     LEARNING_RATE = 5e-5  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
 
@@ -349,7 +349,7 @@ def main():
         
         # Save checkpoint every 10 epochs with timestamp
         if epoch % 10 == 0:
-            checkpoint_path = f'vae_model_pairwise_epoch{epoch}_5_3.pth'
+            checkpoint_path = f'vae_model_pairwise_epoch{epoch}_3_2.pth'
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
@@ -373,7 +373,7 @@ def main():
         plt.close(fig)
     
     # Save final model with pairwise suffix
-    final_model_path = 'vae_model_pairwise_final_5_3.pth'
+    final_model_path = 'vae_model_pairwise_final_3_2.pth'
     torch.save({
         'epoch': EPOCHS,
         'model_state_dict': model.state_dict(),

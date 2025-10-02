@@ -45,7 +45,7 @@ class ViSNetEncoderMSE(nn.Module):
                 final_block = self.output_model.output_network[-1]
                 if hasattr(final_block, 'scalar_linear'):
                     # Initialize bias for log_var (last output channel) to be closer to 0
-                    final_block.scalar_linear.bias.data[-1] = -0.5  # Start with reasonable variance
+                    final_block.scalar_linear.bias.data[-1] = -2  # Start with reasonable variance
                     # Scale down weights for log_var output
                     final_block.scalar_linear.weight.data[-1] *= 0.1
 
