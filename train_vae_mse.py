@@ -235,7 +235,7 @@ def main():
       
             
             # Clamp reconstruction loss to prevent explosion
-            recon_loss = torch.clamp(recon_loss, max=3.0)  # Lower clamp for MSE
+            recon_loss = torch.clamp(recon_loss, max=1.0)  # Lower clamp for MSE
             # Don't clamp KL divergence - let it learn naturally
         
             if kl_div < 10:
@@ -243,8 +243,8 @@ def main():
             else:
                 kl_weight = 1.0  # Still high even when KL is large
             kl_div = kl_div*kl_weight
-            kl_div = torch.clamp(kl_div, max=10.0)
-            loss = recon_loss + kl_weight * kl_div
+            kl_div = torch.clamp(kl_div, max=30.0)
+            loss = recon_loss + kl_div
             
             # Check for numerical issues
             if torch.isnan(loss) or torch.isinf(loss):
@@ -269,16 +269,6 @@ def main():
             total_loss += loss.item()
             total_recon_loss += recon_loss.item()
             total_kl_loss += kl_div.item()
-            
-            # Early stopping for exploding loss (more conservative for MSE)
-            if loss.item() > 50:
-                print(f"Loss explosion detected: {loss.item():.4f}, stopping training...")
-                return
-            
-            # Additional check for KL explosion
-            if kl_div.item() > 100:
-                print(f"KL divergence explosion detected: {kl_div.item():.4f}, stopping training...")
-                return
         
         # Calculate averages
         avg_loss = total_loss / len(train_loader)
