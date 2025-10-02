@@ -17,7 +17,6 @@ from pytorch_lightning.strategies import DDPStrategy
 from torch_geometric.data import Data
 
 from aib9_lib import aib9_tools as aib9
-from vae_model import MolecularVAE, vae_loss_function
 
 
 def pairwise_distance_loss(pred_coords, target_coords):
@@ -258,16 +257,17 @@ def main():
                 recon_batch, mu, log_var = model(molecules)
                 # KL divergence for non-centered isotropic Gaussian: 0.5 * (||μ||² + σ² - log(σ²) - 1)
                 kl_div = 0.5 * torch.sum(mu.pow(2) + torch.exp(log_var) - log_var - 1)
-                
+                      # Use pairwise distance loss (E(3) invariant, more informative than bonds only)
+                recon_loss = pairwise_distance_loss(recon_batch, molecules.pos)
                 # Debug KL components every 100 batches
                 if batch_idx % 500 == 0:
                     mu_norm = torch.mean(mu.pow(2)).item()
                     log_var_mean = torch.mean(log_var).item()
                     exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
+                    print(f"  Debug - kl: {kl_div:.4f}, recon_loss: {recon_loss:.4f}")
                     print(f"  Debug - μ²: {mu_norm:.4f}, log_var: {log_var_mean:.4f}, exp(log_var): {exp_log_var_mean:.4f}")
 
-            # Use pairwise distance loss (E(3) invariant, more informative than bonds only)
-            recon_loss = pairwise_distance_loss(recon_batch, molecules.pos)
+      
             
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max=3.0)  # Lower clamp for MSE
