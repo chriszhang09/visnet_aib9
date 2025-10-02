@@ -20,16 +20,17 @@ from aib9_lib import aib9_tools as aib9
 from vae_model import MolecularVAE, vae_loss_function
 
 
-def mse_loss_function(pred_coords, target_coords):
+def pairwise_distance_loss(pred_coords, target_coords):
     """
-    Scaled MSE loss function for coordinate reconstruction.
+    E(3) invariant loss using ALL pairwise distances between atoms.
+    Much more informative than bond-only loss, still rotationally invariant.
     
     Args:
         pred_coords: Predicted coordinates [total_atoms, 3] (PyG format)
         target_coords: Target coordinates [total_atoms, 3] (PyG format)
     
     Returns:
-        Scaled MSE loss between predicted and target coordinates
+        MSE loss on all pairwise distances
     """
     # Convert to float32
     pred_coords = pred_coords.float()
@@ -37,18 +38,50 @@ def mse_loss_function(pred_coords, target_coords):
     
     # Handle both batch format [batch_size, num_atoms, 3] and PyG format [total_atoms, 3]
     if pred_coords.dim() == 3:
-        # Batch format - flatten to PyG format
+        # Batch format - flatten to PyG format for processing
         batch_size, num_atoms, _ = pred_coords.shape
-        pred_coords = pred_coords.view(-1, 3)  # [total_atoms, 3]
+        pred_flat = pred_coords.view(-1, 3)  # [total_atoms, 3]
+        target_flat = target_coords.view(-1, 3)
+        
+        # Process each molecule in the batch separately
+        total_loss = 0
+        for i in range(batch_size):
+            start_idx = i * num_atoms
+            end_idx = (i + 1) * num_atoms
+            
+            pred_mol = pred_flat[start_idx:end_idx]  # [num_atoms, 3]
+            target_mol = target_flat[start_idx:end_idx]  # [num_atoms, 3]
+            
+            # Compute pairwise distances for this molecule
+            pred_dists = torch.cdist(pred_mol, pred_mol)  # [num_atoms, num_atoms]
+            target_dists = torch.cdist(target_mol, target_mol)  # [num_atoms, num_atoms]
+            
+            # Only use upper triangular part (avoid diagonal and duplicates)
+            mask = torch.triu(torch.ones_like(pred_dists), diagonal=1).bool()
+            pred_dists_upper = pred_dists[mask]  # [num_pairs]
+            target_dists_upper = target_dists[mask]  # [num_pairs]
+            
+            # MSE on pairwise distances
+            mol_loss = F.mse_loss(pred_dists_upper, target_dists_upper)
+            total_loss += mol_loss
+        
+        return total_loss / batch_size
     
-    # MSE loss with scaling to match bond loss magnitude
-    mse_loss = F.mse_loss(pred_coords, target_coords)
-    
-    # Scale down MSE loss to reasonable range (bond distances are ~0.1-0.3 nm)
-    # Typical coordinate MSE is ~1-100, we want it ~0.1-1.0
-    scaled_loss = mse_loss * 0.01  # Scale factor to match bond loss range
-    
-    return scaled_loss
+    else:
+        # PyG format - single molecule or already flattened batch
+        # Assume this is a single molecule for now
+        pred_dists = torch.cdist(pred_coords, pred_coords)  # [num_atoms, num_atoms]
+        target_dists = torch.cdist(target_coords, target_coords)  # [num_atoms, num_atoms]
+        
+        # Only use upper triangular part (avoid diagonal and duplicates)
+        mask = torch.triu(torch.ones_like(pred_dists), diagonal=1).bool()
+        pred_dists_upper = pred_dists[mask]  # [num_pairs]
+        target_dists_upper = target_dists[mask]  # [num_pairs]
+        
+        # MSE on pairwise distances
+        loss = F.mse_loss(pred_dists_upper, target_dists_upper)
+        
+        return loss
 
 
 from visnet_vae_encoder import ViSNetEncoder
@@ -81,7 +114,7 @@ def main():
 
         # Initialize Weights & Biases
     wandb.init(
-        project="aib9-vae-mse",  # Different project name
+        project="aib9-vae-pairwise",  # Different project name
         config={
             "atom_count": ATOM_COUNT,
             "latent_dim": LATENT_DIM,
@@ -92,7 +125,7 @@ def main():
             "encoder_layers": ENCODER_NUM_LAYERS,
             "decoder_hidden": DECODER_HIDDEN_DIM,
             "decoder_layers": DECODER_NUM_LAYERS,
-            "loss_type": "MSE",  # Track loss type
+            "loss_type": "Pairwise_Distance",  # Track loss type
         }
     )
 
@@ -226,8 +259,8 @@ def main():
                     exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
                     print(f"  Debug - μ²: {mu_norm:.4f}, log_var: {log_var_mean:.4f}, exp(log_var): {exp_log_var_mean:.4f}")
 
-            # Use MSE loss instead of E(3) invariant loss
-            recon_loss = mse_loss_function(recon_batch, molecules.pos)
+            # Use pairwise distance loss (E(3) invariant, more informative than bonds only)
+            recon_loss = pairwise_distance_loss(recon_batch, molecules.pos)
             
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max=2.0)  # Lower clamp for MSE
@@ -316,7 +349,7 @@ def main():
         
         # Save checkpoint every 10 epochs with timestamp
         if epoch % 10 == 0:
-            checkpoint_path = f'vae_model_mse_epoch{epoch}.pth'
+            checkpoint_path = f'vae_model_pairwise_epoch{epoch}.pth'
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
@@ -339,8 +372,8 @@ def main():
         wandb.log({fig_name: wandb.Image(fig)})
         plt.close(fig)
     
-    # Save final model with MSE suffix
-    final_model_path = 'vae_model_mse_final.pth'
+    # Save final model with pairwise suffix
+    final_model_path = 'vae_model_pairwise_final.pth'
     torch.save({
         'epoch': EPOCHS,
         'model_state_dict': model.state_dict(),
