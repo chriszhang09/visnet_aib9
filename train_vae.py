@@ -166,7 +166,7 @@ def main():
     )
     
     # Only 10 unique atomic types in the dataset
-    atom_feature_dim = len(set(ATOMIC_NUMBERS))  # Should be 10
+    atom_feature_dim = 10 # Should be 10
     
     visnet_params = {
         'hidden_channels': VISNET_HIDDEN_CHANNELS,

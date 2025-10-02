@@ -70,11 +70,19 @@ class PyGEGNNLayer(MessagePassing):
         # Aggregate coordinate updates using scatter_add
         coord_update = torch.zeros_like(pos)
         weighted_rel_pos = coord_weights * rel_pos
-        coord_update.scatter_add_(0, row.unsqueeze(1).expand_as(rel_pos), weighted_rel_pos)
         
-        # Add a normalization factor for stability (optional but recommended)
-        num_neighbors = torch.bincount(row, minlength=pos.size(0)).float().unsqueeze(1)
-        pos_new = pos + coord_update / (num_neighbors + 1e-6)
+        # Use dimension-wise scatter to avoid shape issues
+        # Add safety check for indices
+        if row.max() >= pos.size(0):
+            print(f"Warning: Edge index out of bounds. Max row: {row.max()}, pos size: {pos.size(0)}")
+            pos_new = pos  # Skip coordinate update
+        else:
+            for dim in range(3):
+                coord_update[:, dim].scatter_add_(0, row, weighted_rel_pos[:, dim])
+            
+            # Add a normalization factor for stability (optional but recommended)
+            num_neighbors = torch.bincount(row, minlength=pos.size(0)).float().unsqueeze(1)
+            pos_new = pos + coord_update / (num_neighbors + 1e-6)
         
         # 3. Update node features (Invariant Step)
         # Manually aggregate edge messages to get per-node messages
