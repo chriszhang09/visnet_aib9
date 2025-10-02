@@ -255,17 +255,27 @@ def main():
                 recon_batch, mu, log_var = model(molecules)
                 # KL divergence for non-centered isotropic Gaussian: 0.5 * (||μ||² + σ² - log(σ²) - 1)
                 kl_div = 0.5 * torch.sum(mu.pow(2) + torch.exp(log_var) - log_var - 1)
+                
+                # Debug KL components every 10 batches
+                if batch_idx % 10 == 0:
+                    mu_norm = torch.mean(mu.pow(2)).item()
+                    log_var_mean = torch.mean(log_var).item()
+                    exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
+                    print(f"  Debug - μ²: {mu_norm:.4f}, log_var: {log_var_mean:.4f}, exp(log_var): {exp_log_var_mean:.4f}")
             
             # Use the batched edge_index from PyTorch Geometric (already properly offset for batching)
             recon_loss = e3_invariant_loss_bonds(recon_batch, molecules.pos, molecules.edge_index)
             
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max=10.0)
-            kl_div = torch.clamp(kl_div, max=5.0)
+            # Don't clamp KL divergence - let it grow naturally
+            # kl_div = torch.clamp(kl_div, max=5.0)  # Removed clamping
+            
+            # Use higher KL weight to encourage latent space usage
             if recon_loss + kl_div < 10:
-                kl_weight = 0.25
+                kl_weight = 1.0  # Increased from 0.25
             else:
-                kl_weight = 0.01
+                kl_weight = 0.1  # Increased from 0.01
             loss = recon_loss + kl_weight * kl_div
             # Check for numerical issues
             if torch.isnan(loss) or torch.isinf(loss):
