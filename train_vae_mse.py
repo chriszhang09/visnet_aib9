@@ -66,6 +66,10 @@ import wandb
 from torch.cuda.amp import autocast, GradScaler
 
 def main():
+    seed = 42
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    
     # Training parameters
     ATOM_COUNT = 58
     COORD_DIM = 3
