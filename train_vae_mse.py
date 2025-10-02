@@ -56,7 +56,7 @@ def simple_mse_loss(pred_coords, target_coords):
 
 from mse_training.visnet_vae_encoder_mse import ViSNetEncoderMSE
 from mse_training.vae_model_mse import MolecularVAEMSE, vae_loss_function_mse
-from mse_training.vae_utils_mse import validate_and_sample, visualize_molecule_3d, compute_bond_lengths
+from vae_utils import validate_and_sample, visualize_molecule_3d, compute_bond_lengths
 
 from torch_geometric.loader import DataLoader
 import torch.nn.functional as F
@@ -69,7 +69,7 @@ def main():
     seed = 42
     torch.manual_seed(seed)
     np.random.seed(seed)
-    
+
     # Training parameters
     ATOM_COUNT = 58
     COORD_DIM = 3
@@ -258,17 +258,17 @@ def main():
             if use_amp:
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
-                grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.1)
+                #grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.1)
                 scaler.step(optimizer)
                 scaler.update()
             else:
                 loss.backward()
-                grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.1)
+               # grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.1)
                 optimizer.step()
             
             # Check for gradient explosion
-            if grad_norm > 10.0:
-                print(f"Warning: Large gradient norm {grad_norm:.4f}")
+            #if grad_norm > 10.0:
+                #print(f"Warning: Large gradient norm {grad_norm:.4f}")
             
             total_loss += loss.item()
             total_recon_loss += recon_loss.item()
