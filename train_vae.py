@@ -17,7 +17,6 @@ from pytorch_lightning.strategies import DDPStrategy
 from torch_geometric.data import Data
 
 from aib9_lib import aib9_tools as aib9
-from vae_decoder import EGNNDecoder
 from vae_model import MolecularVAE, vae_loss_function
 
 
