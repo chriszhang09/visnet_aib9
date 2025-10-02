@@ -225,7 +225,7 @@ def main():
             with autocast(enabled=use_amp):
                 recon_batch, mu, log_var = model(molecules)
                 # KL divergence for non-centered isotropic Gaussian: 0.5 * (||μ||² + σ² - log(σ²) - 1)
-                kl_div = 0.5 * torch.sum(mu.pow(2) + torch.exp(log_var) - log_var - 1)
+                kl_div = -0.5 * torch.mean(1 + log_var - mu.pow(2) - log_var.exp())
             # Use simple MSE loss with centering for E(3) invariance
             recon_loss = simple_mse_loss(recon_batch, molecules.pos)
                 # Debug KL components every 100 batches
