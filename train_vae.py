@@ -24,31 +24,36 @@ def e3_invariant_loss_bonds(pred_coords, target_coords, edge_index):
     """
     E(3) invariant loss using only covalent bond distances.
     Much more stable and meaningful than full distance matrices.
+    
+    Args:
+        pred_coords: Predicted coordinates [batch_size, num_atoms, 3] or [total_atoms, 3] (PyG format)
+        target_coords: Target coordinates [total_atoms, 3] (PyG format)
+        edge_index: Edge connectivity [2, num_bonds] for bonded atoms (already batched by PyG)
     """
     # Convert to float32
     pred_coords = pred_coords.float()
     target_coords = target_coords.float()
     
-    batch_size = pred_coords.shape[0]
-    
-    # Reshape to [batch_size, num_atoms, 3]
-    pred_reshaped = pred_coords.view(batch_size, -1, 3)
-    target_reshaped = target_coords.view(batch_size, -1, 3)
+    # Handle both batch format [batch_size, num_atoms, 3] and PyG format [total_atoms, 3]
+    if pred_coords.dim() == 3:
+        # Batch format - flatten to PyG format
+        batch_size, num_atoms, _ = pred_coords.shape
+        pred_coords = pred_coords.view(-1, 3)  # [total_atoms, 3]
     
     # Get bond indices
     row, col = edge_index[0], edge_index[1]
     
     # Compute bond distances for predicted coordinates
     pred_bond_distances = torch.norm(
-        pred_reshaped[:, row] - pred_reshaped[:, col], 
+        pred_coords[row] - pred_coords[col], 
         dim=-1
-    )  # [batch_size, num_bonds]
+    )  # [num_bonds]
     
     # Compute bond distances for target coordinates
     target_bond_distances = torch.norm(
-        target_reshaped[:, row] - target_reshaped[:, col], 
+        target_coords[row] - target_coords[col], 
         dim=-1
-    )  # [batch_size, num_bonds]
+    )  # [num_bonds]
     
     # MSE on bond distances only
     loss = F.mse_loss(pred_bond_distances, target_bond_distances)
@@ -251,8 +256,8 @@ def main():
                 # KL divergence for non-centered isotropic Gaussian: 0.5 * (||μ||² + σ² - log(σ²) - 1)
                 kl_div = 0.5 * torch.sum(mu.pow(2) + torch.exp(log_var) - log_var - 1)
             
-            edge_index_gpu = edge_index.to(device)
-            recon_loss = e3_invariant_loss_bonds(recon_batch, molecules.pos, edge_index_gpu)
+            # Use the batched edge_index from PyTorch Geometric (already properly offset for batching)
+            recon_loss = e3_invariant_loss_bonds(recon_batch, molecules.pos, molecules.edge_index)
             
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max=10.0)
