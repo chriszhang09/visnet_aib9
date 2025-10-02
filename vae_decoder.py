@@ -55,7 +55,6 @@ class PyGEGNNLayer(MessagePassing):
             edge_index (LongTensor): Edge connectivity [2, num_edges]
         """
         row, col = edge_index
-        print(edge_index)
         
         # 1. Compute un-aggregated messages for each edge
         # We manually call the message function
