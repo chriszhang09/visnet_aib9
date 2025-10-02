@@ -245,7 +245,7 @@ def main():
             if kl_div < 10:
                 kl_weight = min(1.0 + 0.2 * epoch, 3.0)  # Much more aggressive
             else:
-                kl_weight = 1.0  # Still high even when KL is large
+                kl_weight =  min(1.0, epoch / 10)  # Still high even when KL is large
             kl_div = kl_div*kl_weight
             kl_div = torch.clamp(kl_div, max=30.0)
             loss = recon_loss + kl_div
@@ -258,12 +258,12 @@ def main():
             if use_amp:
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
-                #grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.1)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                 scaler.step(optimizer)
                 scaler.update()
             else:
                 loss.backward()
-               # grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.1)
+              
                 optimizer.step()
             
             # Check for gradient explosion
