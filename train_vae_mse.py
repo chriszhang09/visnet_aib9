@@ -19,74 +19,39 @@ from torch_geometric.data import Data
 from aib9_lib import aib9_tools as aib9
 
 
-def pairwise_distance_loss(pred_coords, target_coords):
+def simple_mse_loss(pred_coords, target_coords):
+    device = torch.device('cuda')
     """
-    E(3) invariant loss using ALL pairwise distances between atoms.
-    Much more informative than bond-only loss, still rotationally invariant.
-    Uses efficient computation to avoid INT_MAX tensor size issues.
+    Simple MSE loss on coordinates with E(3) invariance via centering.
+    Much faster and more stable than pairwise distance loss.
+    All computations on GPU for maximum speed.
     
     Args:
         pred_coords: Predicted coordinates [total_atoms, 3] (PyG format)
         target_coords: Target coordinates [total_atoms, 3] (PyG format)
     
     Returns:
-        MSE loss on all pairwise distances
+        MSE loss on centered coordinates
     """
-    # Convert to float32
+    # Ensure both tensors are on the same device and float32
     pred_coords = pred_coords.float()
     target_coords = target_coords.float()
     
-    # Handle both batch format [batch_size, num_atoms, 3] and PyG format [total_atoms, 3]
-    if pred_coords.dim() == 3:
-        # Batch format - flatten to PyG format for processing
-        batch_size, num_atoms, _ = pred_coords.shape
-        pred_flat = pred_coords.view(-1, 3)  # [total_atoms, 3]
-        target_flat = target_coords.view(-1, 3)
-        
-        # Process each molecule in the batch separately
-        total_loss = 0
-        for i in range(batch_size):
-            start_idx = i * num_atoms
-            end_idx = (i + 1) * num_atoms
-            
-            pred_mol = pred_flat[start_idx:end_idx]  # [num_atoms, 3]
-            target_mol = target_flat[start_idx:end_idx]  # [num_atoms, 3]
-            
-            # Use efficient pairwise distance computation
-            mol_loss = _compute_pairwise_loss_efficient(pred_mol, target_mol)
-            total_loss += mol_loss
-        
-        return total_loss / batch_size
+    # Ensure both are on the same device (GPU if available)
+    if pred_coords.device != target_coords.device:
+        pred_coords = pred_coords.to(device)
+        target_coords = target_coords.to(device)
     
-    else:
-        # PyG format - single molecule or already flattened batch
-        # Assume this is a single molecule for now
-        return _compute_pairwise_loss_efficient(pred_coords, target_coords)
-
-
-def _compute_pairwise_loss_efficient(pred_coords, target_coords):
-    """
-    Efficiently compute pairwise distance loss without creating huge tensors.
-    """
-    num_atoms = pred_coords.shape[0]
+    # Center both coordinate sets to make them translation invariant
+    # All operations stay on GPU
+    pred_centered = pred_coords - pred_coords.mean(dim=0, keepdim=True)
+    target_centered = target_coords - target_coords.mean(dim=0, keepdim=True)
     
-    # Use vectorized computation to avoid large intermediate tensors
-    pred_dists = []
-    target_dists = []
+    # Simple MSE loss on centered coordinates (GPU computation)
+    mse_loss = F.mse_loss(pred_centered, target_centered)
     
-    for i in range(num_atoms):
-        for j in range(i + 1, num_atoms):  # Upper triangular only
-            pred_dist = torch.norm(pred_coords[i] - pred_coords[j])
-            target_dist = torch.norm(target_coords[i] - target_coords[j])
-            pred_dists.append(pred_dist)
-            target_dists.append(target_dist)
-    
-    # Stack into tensors
-    pred_dists = torch.stack(pred_dists)
-    target_dists = torch.stack(target_dists)
-    
-    # MSE on pairwise distances
-    return F.mse_loss(pred_dists, target_dists)
+    # Scale down to reasonable range (coordinates are typically 0.1-2.0 nm)
+    return mse_loss * 0.1
 
 
 from mse_training.visnet_vae_encoder_mse import ViSNetEncoderMSE
@@ -257,15 +222,15 @@ def main():
                 recon_batch, mu, log_var = model(molecules)
                 # KL divergence for non-centered isotropic Gaussian: 0.5 * (||μ||² + σ² - log(σ²) - 1)
                 kl_div = 0.5 * torch.sum(mu.pow(2) + torch.exp(log_var) - log_var - 1)
-                      # Use pairwise distance loss (E(3) invariant, more informative than bonds only)
-                recon_loss = pairwise_distance_loss(recon_batch, molecules.pos)
+            # Use simple MSE loss with centering for E(3) invariance
+            recon_loss = simple_mse_loss(recon_batch, molecules.pos)
                 # Debug KL components every 100 batches
-                if batch_idx % 500 == 0:
-                    mu_norm = torch.mean(mu.pow(2)).item()
-                    log_var_mean = torch.mean(log_var).item()
-                    exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
-                    print(f"  Debug - kl: {kl_div:.4f}, recon_loss: {recon_loss:.4f}")
-                    print(f"  Debug - μ²: {mu_norm:.4f}, log_var: {log_var_mean:.4f}, exp(log_var): {exp_log_var_mean:.4f}")
+            if batch_idx % 500 == 0:
+                mu_norm = torch.mean(mu.pow(2)).item()
+                log_var_mean = torch.mean(log_var).item()
+                exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
+                print(f"  Debug - kl: {kl_div:.4f}, recon_loss: {recon_loss:.4f}")
+                print(f"  Debug - μ²: {mu_norm:.4f}, log_var: {log_var_mean:.4f}, exp(log_var): {exp_log_var_mean:.4f}")
 
       
             

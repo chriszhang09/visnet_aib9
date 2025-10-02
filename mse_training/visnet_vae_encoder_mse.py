@@ -38,16 +38,8 @@ class ViSNetEncoderMSE(nn.Module):
         # We need latent_dim for mu + 1 for log_var (scalar)
         self.output_model = EquivariantEncoder(actual_hidden_channels, output_channels=latent_dim + 1)
         
-        # Initialize the log_var output to be small (prevent variance explosion)
-        with torch.no_grad():
-            # The EquivariantEncoder uses GatedEquivariantBlocks, initialize the final layer
-            if hasattr(self.output_model, 'output_network') and len(self.output_model.output_network) > 0:
-                final_block = self.output_model.output_network[-1]
-                if hasattr(final_block, 'scalar_linear'):
-                    # Initialize bias for log_var (last output channel) to be closer to 0
-                    final_block.scalar_linear.bias.data[-1] = -2  # Start with reasonable variance
-                    # Scale down weights for log_var output
-                    final_block.scalar_linear.weight.data[-1] *= 0.1
+        # Simple initialization: we'll add a bias to log_var in the forward pass
+        self.log_var_bias = -2.0  # Start with reasonable variance
 
     
     def forward(self, data):
@@ -61,6 +53,9 @@ class ViSNetEncoderMSE(nn.Module):
         mu = global_features[:, :self.latent_dim]
         # Return log_var as shape [batch, 1] to ensure stable broadcasting
         log_var = global_features[:, self.latent_dim:self.latent_dim + 1]
+        
+        # Add initialization bias to log_var
+        log_var = log_var + self.log_var_bias
 
         return mu, log_var
 
