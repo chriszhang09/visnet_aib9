@@ -59,7 +59,8 @@ class ViSNetEncoderMSE(nn.Module):
         global_features = global_add_pool(x, data.batch)
         
         mu = global_features[:, :self.latent_dim]
-        log_var = global_features[:, self.latent_dim]  # Take only the last element (scalar)
+        # Return log_var as shape [batch, 1] to ensure stable broadcasting
+        log_var = global_features[:, self.latent_dim:self.latent_dim + 1]
         
         # Clamp log_var to prevent variance explosion
         log_var = torch.clamp(log_var, min=-10, max=2)

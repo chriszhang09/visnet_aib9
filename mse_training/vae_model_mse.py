@@ -41,9 +41,14 @@ class MolecularVAEMSE(nn.Module):
     def reparameterize(self, mu, log_var):
         """
         Reparameterization trick for non-centered isotropic Gaussian.
-        z ~ N(μ, σ²I) where σ² is a scalar.
+        z ~ N(μ, σ²I) where σ² is a scalar per-sample.
+        Handles log_var shapes [batch], [batch, 1], or scalar.
         """
-        std = torch.exp(0.5 * log_var)  # log_var is scalar, std is broadcast
+        # Ensure log_var can broadcast to mu: make it [batch, 1]
+        if log_var.dim() == 1:
+            log_var = log_var.unsqueeze(1)
+        # Now compute std and broadcast
+        std = torch.exp(0.5 * log_var)
         eps = torch.randn_like(mu)
         return mu + eps * std
     
