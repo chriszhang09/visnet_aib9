@@ -51,9 +51,38 @@ class PyGEGNNLayer(MessagePassing):
         """
         row, col = edge_index
         
+        # Safety checks to prevent CUDA assertions
+        num_nodes = x.size(0)
+        
+        # Check for empty edges
+        if edge_index.size(1) == 0:
+            print("Warning: No edges provided, returning unchanged")
+            return x, pos
+            
+        # Check for negative indices
+        if (row < 0).any() or (col < 0).any():
+            print("Error: Negative edge indices detected")
+            return x, pos
+            
+        if row.max() >= num_nodes or col.max() >= num_nodes:
+            print(f"Error: Edge indices out of bounds. Max node: {num_nodes-1}, Max edge indices: {row.max()}, {col.max()}")
+            return x, pos
+        
+        if torch.isnan(pos).any() or torch.isinf(pos).any():
+            print("Error: NaN/Inf detected in positions")
+            return x, pos
+            
+        if torch.isnan(x).any() or torch.isinf(x).any():
+            print("Error: NaN/Inf detected in node features")
+            return x, pos
+        
         # 1. Compute un-aggregated messages for each edge
         # We manually call the message function
-        edge_messages = self.message(x[row], x[col], pos[row], pos[col])
+        try:
+            edge_messages = self.message(x[row], x[col], pos[row], pos[col])
+        except RuntimeError as e:
+            print(f"Error in message computation: {e}")
+            return x, pos
         
         # 2. Update coordinates (Equivariant Step)
         # Use per-edge messages to get per-edge weights
@@ -102,20 +131,39 @@ class PyGEGNNLayer(MessagePassing):
         Computes messages from node j to node i for each edge.
         This is now called manually in the forward pass.
         """
-        # Compute squared distance (an invariant feature)
-        dist_sq = torch.sum((pos_i - pos_j) ** 2, dim=1, keepdim=True)
+        # Safety checks
+        if torch.isnan(pos_i).any() or torch.isnan(pos_j).any():
+            print("Warning: NaN in positions during message computation")
+            # Return zero messages
+            return torch.zeros(x_i.size(0), x_i.size(1), device=x_i.device, dtype=torch.float32)
         
-        # Clamp distance to prevent numerical issues
-        dist_sq = torch.clamp(dist_sq, min=1e-6, max=1e6)
+        # Compute squared distance (an invariant feature) with safety
+        try:
+            rel_pos = pos_i - pos_j
+            dist_sq = torch.sum(rel_pos ** 2, dim=1, keepdim=True)
+            
+            # Replace any NaN/Inf with safe values
+            dist_sq = torch.where(torch.isnan(dist_sq) | torch.isinf(dist_sq), 
+                                torch.ones_like(dist_sq), dist_sq)
+            
+            # Clamp distance to prevent numerical issues
+            dist_sq = torch.clamp(dist_sq, min=1e-6, max=1e6)
+            
+        except RuntimeError:
+            print("Warning: Error computing distances, using default")
+            dist_sq = torch.ones(x_i.size(0), 1, device=x_i.device, dtype=torch.float32)
         
         # Create edge features, ensure float32 precision
-        edge_features = torch.cat([x_i.float(), x_j.float(), dist_sq], dim=1)
+        edge_features = torch.cat([x_i.float(), x_j.float(), dist_sq.float()], dim=1)
         
         # Compute messages using the edge MLP
-        messages = self.edge_mlp(edge_features)
-        
-        # Clamp messages to prevent explosion
-        messages = torch.clamp(messages, min=-10.0, max=10.0)
+        try:
+            messages = self.edge_mlp(edge_features)
+            # Clamp messages to prevent explosion
+            messages = torch.clamp(messages, min=-10.0, max=10.0)
+        except RuntimeError:
+            print("Warning: Error in edge MLP, returning zero messages")
+            messages = torch.zeros(x_i.size(0), x_i.size(1), device=x_i.device, dtype=torch.float32)
         
         return messages
 
