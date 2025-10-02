@@ -53,18 +53,13 @@ class ViSNetEncoderMSE(nn.Module):
     def forward(self, data):
         # Get atom-level features from ViSNetBlock
         x, v = self.representation_model(data)
-        
-        x = self.output_model.pre_reduce(x, v, data.z, data.pos, data.batch)
-        
-        global_features = global_add_pool(x, data.batch)
-        
-        mu = global_features[:, :self.latent_dim]
-        # Return log_var as shape [batch, 1] to ensure stable broadcasting
-        log_var = global_features[:, self.latent_dim:self.latent_dim + 1]
-        
-        # Add initialization bias to log_var
-        log_var = log_var + self.log_var_bias
 
+        x = self.output_model.pre_reduce(x, v, data.z, data.pos, data.batch)
+
+        global_features = global_add_pool(x, data.batch)
+
+        mu = global_features[:, :self.latent_dim]
+        log_var = global_features[:, self.latent_dim:] 
         return mu, log_var
 
 
