@@ -57,28 +57,43 @@ class PyGEGNNLayer(MessagePassing):
         
         # 2. Update coordinates (Equivariant Step)
         # Use per-edge messages to get per-edge weights
-        coord_weights = self.coord_mlp(edge_messages)
+        # Ensure edge_messages are in float32 to avoid precision issues
+        edge_messages_f32 = edge_messages.float()
+        coord_weights = self.coord_mlp(edge_messages_f32)
         rel_pos = pos[row] - pos[col]
         
-        # Aggregate coordinate updates using scatter_add
-        coord_update = torch.zeros_like(pos)
-        weighted_rel_pos = coord_weights * rel_pos
-        coord_update.scatter_add_(0, row.unsqueeze(1).expand_as(rel_pos), weighted_rel_pos)
-        
-        # Add a normalization factor for stability (optional but recommended)
-        num_neighbors = torch.bincount(row, minlength=pos.size(0)).float().unsqueeze(1)
-        pos_new = pos + coord_update / (num_neighbors + 1e-6)
+        # Check for NaN/Inf values that could cause cuBLAS errors
+        if torch.isnan(edge_messages_f32).any() or torch.isinf(edge_messages_f32).any():
+            print("Warning: NaN/Inf detected in edge_messages, skipping coordinate update")
+            pos_new = pos
+        else:
+            # Aggregate coordinate updates using scatter_add
+            coord_update = torch.zeros_like(pos)
+            weighted_rel_pos = coord_weights * rel_pos
+            
+            # Use safer scatter operation
+            for dim in range(3):
+                coord_update[:, dim].scatter_add_(0, row, weighted_rel_pos[:, dim])
+            
+            # Add a normalization factor for stability
+            num_neighbors = torch.bincount(row, minlength=pos.size(0)).float().unsqueeze(1)
+            pos_new = pos + coord_update / (num_neighbors + 1e-6)
         
         # 3. Update node features (Invariant Step)
         # Manually aggregate edge messages to get per-node messages
-        aggregated_messages = scatter_add(edge_messages, row, dim=0, dim_size=x.size(0))
+        aggregated_messages = scatter_add(edge_messages_f32, row, dim=0, dim_size=x.size(0))
         
-        # Update node features using original features and aggregated messages
-        node_mlp_input = torch.cat([x, aggregated_messages], dim=1)
-        node_update = self.node_mlp(node_mlp_input)
-        
-        # Add residual connection and layer normalization
-        x_new = self.node_norm(x + node_update)
+        # Check for numerical issues in aggregated messages
+        if torch.isnan(aggregated_messages).any() or torch.isinf(aggregated_messages).any():
+            print("Warning: NaN/Inf detected in aggregated_messages, using identity update")
+            x_new = x
+        else:
+            # Update node features using original features and aggregated messages
+            node_mlp_input = torch.cat([x.float(), aggregated_messages], dim=1)
+            node_update = self.node_mlp(node_mlp_input)
+            
+            # Add residual connection and layer normalization
+            x_new = self.node_norm(x.float() + node_update)
         
         return x_new, pos_new
     
@@ -90,11 +105,19 @@ class PyGEGNNLayer(MessagePassing):
         # Compute squared distance (an invariant feature)
         dist_sq = torch.sum((pos_i - pos_j) ** 2, dim=1, keepdim=True)
         
-        # Create edge features
-        edge_features = torch.cat([x_i, x_j, dist_sq], dim=1)
+        # Clamp distance to prevent numerical issues
+        dist_sq = torch.clamp(dist_sq, min=1e-6, max=1e6)
+        
+        # Create edge features, ensure float32 precision
+        edge_features = torch.cat([x_i.float(), x_j.float(), dist_sq], dim=1)
         
         # Compute messages using the edge MLP
-        return self.edge_mlp(edge_features)
+        messages = self.edge_mlp(edge_features)
+        
+        # Clamp messages to prevent explosion
+        messages = torch.clamp(messages, min=-10.0, max=10.0)
+        
+        return messages
 
 
 class PyGEGNNDecoder(nn.Module):
