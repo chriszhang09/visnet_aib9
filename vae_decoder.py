@@ -55,6 +55,7 @@ class PyGEGNNLayer(MessagePassing):
             edge_index (LongTensor): Edge connectivity [2, num_edges]
         """
         row, col = edge_index
+        print(edge_index)
         
         # 1. Compute un-aggregated messages for each edge
         # We manually call the message function
@@ -62,7 +63,7 @@ class PyGEGNNLayer(MessagePassing):
         
         # 2. Update coordinates (Equivariant Step)
         # Use per-edge messages to get per-edge weights
-        print(edge_messages)
+        print(edge_messages.type())
         coord_weights = self.coord_mlp(edge_messages)
         rel_pos = pos[row] - pos[col]
         
