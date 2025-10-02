@@ -2,8 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .visnet_vae_encoder_mse import ViSNetEncoderMSE
-from .vae_decoder_mse import EGNNDecoderMSE
-
+from .vae_decoder_mse import PyGEGNNDecoderMSE
 class MolecularVAEMSE(nn.Module):
     """
     MSE-specific Molecular VAE with proper initialization for stable training.
@@ -30,7 +29,7 @@ class MolecularVAEMSE(nn.Module):
             visnet_hidden_channels=visnet_hidden_channels,
             **visnet_kwargs
         )
-        self.decoder = EGNNDecoderMSE(
+        self.decoder = PyGEGNNDecoderMSE(
             latent_dim=latent_dim, 
             num_atoms=num_atoms, 
             atom_feature_dim=atom_feature_dim,
@@ -43,12 +42,15 @@ class MolecularVAEMSE(nn.Module):
         Reparameterization trick for non-centered isotropic Gaussian.
         z ~ N(μ, σ²I) where σ² is a scalar per-sample.
         Handles log_var shapes [batch], [batch, 1], or scalar.
+        Uses soft bounds to prevent numerical issues while allowing learning.
         """
         # Ensure log_var can broadcast to mu: make it [batch, 1]
         if log_var.dim() == 1:
             log_var = log_var.unsqueeze(1)
-        # Now compute std and broadcast
-        std = torch.exp(0.5 * log_var)
+        
+        # Apply soft bounds only during sampling (not for KL computation)
+        log_var_clamped = torch.clamp(log_var, min=-5, max=2)
+        std = torch.exp(0.5 * log_var_clamped)
         eps = torch.randn_like(mu)
         return mu + eps * std
     

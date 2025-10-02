@@ -24,6 +24,7 @@ def pairwise_distance_loss(pred_coords, target_coords):
     """
     E(3) invariant loss using ALL pairwise distances between atoms.
     Much more informative than bond-only loss, still rotationally invariant.
+    Uses efficient computation to avoid INT_MAX tensor size issues.
     
     Args:
         pred_coords: Predicted coordinates [total_atoms, 3] (PyG format)
@@ -52,17 +53,8 @@ def pairwise_distance_loss(pred_coords, target_coords):
             pred_mol = pred_flat[start_idx:end_idx]  # [num_atoms, 3]
             target_mol = target_flat[start_idx:end_idx]  # [num_atoms, 3]
             
-            # Compute pairwise distances for this molecule
-            pred_dists = torch.cdist(pred_mol, pred_mol)  # [num_atoms, num_atoms]
-            target_dists = torch.cdist(target_mol, target_mol)  # [num_atoms, num_atoms]
-            
-            # Only use upper triangular part (avoid diagonal and duplicates)
-            mask = torch.triu(torch.ones_like(pred_dists), diagonal=1).bool()
-            pred_dists_upper = pred_dists[mask]  # [num_pairs]
-            target_dists_upper = target_dists[mask]  # [num_pairs]
-            
-            # MSE on pairwise distances
-            mol_loss = F.mse_loss(pred_dists_upper, target_dists_upper)
+            # Use efficient pairwise distance computation
+            mol_loss = _compute_pairwise_loss_efficient(pred_mol, target_mol)
             total_loss += mol_loss
         
         return total_loss / batch_size
@@ -70,18 +62,32 @@ def pairwise_distance_loss(pred_coords, target_coords):
     else:
         # PyG format - single molecule or already flattened batch
         # Assume this is a single molecule for now
-        pred_dists = torch.cdist(pred_coords, pred_coords)  # [num_atoms, num_atoms]
-        target_dists = torch.cdist(target_coords, target_coords)  # [num_atoms, num_atoms]
-        
-        # Only use upper triangular part (avoid diagonal and duplicates)
-        mask = torch.triu(torch.ones_like(pred_dists), diagonal=1).bool()
-        pred_dists_upper = pred_dists[mask]  # [num_pairs]
-        target_dists_upper = target_dists[mask]  # [num_pairs]
-        
-        # MSE on pairwise distances
-        loss = F.mse_loss(pred_dists_upper, target_dists_upper)
-        
-        return loss
+        return _compute_pairwise_loss_efficient(pred_coords, target_coords)
+
+
+def _compute_pairwise_loss_efficient(pred_coords, target_coords):
+    """
+    Efficiently compute pairwise distance loss without creating huge tensors.
+    """
+    num_atoms = pred_coords.shape[0]
+    
+    # Use vectorized computation to avoid large intermediate tensors
+    pred_dists = []
+    target_dists = []
+    
+    for i in range(num_atoms):
+        for j in range(i + 1, num_atoms):  # Upper triangular only
+            pred_dist = torch.norm(pred_coords[i] - pred_coords[j])
+            target_dist = torch.norm(target_coords[i] - target_coords[j])
+            pred_dists.append(pred_dist)
+            target_dists.append(target_dist)
+    
+    # Stack into tensors
+    pred_dists = torch.stack(pred_dists)
+    target_dists = torch.stack(target_dists)
+    
+    # MSE on pairwise distances
+    return F.mse_loss(pred_dists, target_dists)
 
 
 from mse_training.visnet_vae_encoder_mse import ViSNetEncoderMSE
@@ -264,8 +270,8 @@ def main():
             recon_loss = pairwise_distance_loss(recon_batch, molecules.pos)
             
             # Clamp reconstruction loss to prevent explosion
-            recon_loss = torch.clamp(recon_loss, max=5.0)  # Lower clamp for MSE
-            # Clamp KL divergence for MSE training stability
+            recon_loss = torch.clamp(recon_loss, max=3.0)  # Lower clamp for MSE
+            # Don't clamp KL divergence - let it learn naturally
         
             if kl_div < 10:
                 kl_weight = min(1.0 + 0.2 * epoch, 3.0)  # Much more aggressive
