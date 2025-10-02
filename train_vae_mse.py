@@ -84,7 +84,9 @@ def pairwise_distance_loss(pred_coords, target_coords):
         return loss
 
 
-from visnet_vae_encoder import ViSNetEncoder
+from mse_training.visnet_vae_encoder_mse import ViSNetEncoderMSE
+from mse_training.vae_model_mse import MolecularVAEMSE, vae_loss_function_mse
+from mse_training.vae_utils_mse import validate_and_sample, visualize_molecule_3d, compute_bond_lengths
 
 from torch_geometric.loader import DataLoader
 import torch.nn.functional as F
@@ -92,7 +94,6 @@ from pathlib import Path
 import sys
 import wandb
 from torch.cuda.amp import autocast, GradScaler
-from vae_utils import validate_and_sample, visualize_molecule_3d, compute_bond_lengths
 
 def main():
     # Training parameters
@@ -198,7 +199,7 @@ def main():
         'max_z': max(ATOMIC_NUMBERS) + 1,
     }
 
-    model = MolecularVAE(
+    model = MolecularVAEMSE(
         latent_dim=LATENT_DIM, 
         num_atoms=ATOM_COUNT, 
         atom_feature_dim=atom_feature_dim,
@@ -268,15 +269,11 @@ def main():
             kl_div = torch.clamp(kl_div, max=20.0)  # Prevent KL explosion
             
             # Conservative KL weighting for MSE training
-            if epoch <= 5:
-                kl_weight = 0.01  # Very low initially
-            elif epoch <= 15:
-                kl_weight = 0.05  # Gradually increase
-            elif kl_div < 10:
-                kl_weight = 0.1   # Normal weight
+            # Use much higher KL weight to force latent space usage
+            if kl_div < 10:
+                kl_weight = min(2.0 + 0.5 * epoch, 5.0)  # Much more aggressive
             else:
-                kl_weight = 0.01  # Reduce if KL too high
-                
+                kl_weight = 1.0  # Still high even when KL is large
             loss = recon_loss + kl_weight * kl_div
             # Check for numerical issues
             if torch.isnan(loss) or torch.isinf(loss):
