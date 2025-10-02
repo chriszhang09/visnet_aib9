@@ -146,7 +146,7 @@ class EquivariantEncoder(OutputModel):
             ),
             GatedEquivariantBlock(
                     hidden_channels // 2, 
-                    self.output_channels * 2, 
+                    self.output_channels, 
                     activation=activation,
                     scalar_activation=False,
                 ),

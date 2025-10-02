@@ -42,8 +42,8 @@ class ViSNetEncoder(nn.Module):
         
         global_features = global_add_pool(x, data.batch)
         
-        mu = global_features[:self.latent_dim]
-        log_var = global_features[self.latent_dim:]
+        mu = global_features[:, :self.latent_dim]
+        log_var = global_features[:, self.latent_dim:]
         return mu, log_var
 
 
