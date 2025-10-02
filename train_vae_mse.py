@@ -106,7 +106,7 @@ def main():
     ENCODER_NUM_LAYERS = 3
     DECODER_HIDDEN_DIM = 256
     DECODER_NUM_LAYERS = 2
-    BATCH_SIZE = 256  # Increased from 128 (V100 can handle much more!)
+    BATCH_SIZE = 1024  # Increased from 128 (V100 can handle much more!)
     LEARNING_RATE = 5e-5  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
 
