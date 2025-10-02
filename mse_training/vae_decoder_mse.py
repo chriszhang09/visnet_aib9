@@ -254,6 +254,12 @@ class EGNNDecoderMSE(nn.Module):
     def __init__(self, latent_dim, hidden_dim=256, num_layers=2, num_atoms=58, atom_feature_dim=10):
         super().__init__()
         self.pyg_decoder = PyGEGNNDecoderMSE(latent_dim, hidden_dim, num_layers, num_atoms, atom_feature_dim)
+        # Expose commonly used attributes for external code compatibility
+        self.latent_dim = latent_dim
+        self.hidden_dim = hidden_dim
+        self.num_layers = num_layers
+        self.num_atoms = num_atoms
+        self.atom_feature_dim = atom_feature_dim
     
     def forward(self, z, atom_types, edge_index, batch=None):
         return self.pyg_decoder(z, atom_types, edge_index, batch)
