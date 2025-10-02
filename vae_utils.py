@@ -62,7 +62,7 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         z = model.reparameterize(mu, log_var)
         
         atom_types_one_hot = F.one_hot(val_data.z.long(), 
-                                       num_classes=model.decoder.atom_feature_dim).float().to(device)
+                                num_classes=model.decoder.atom_feature_dim).float().to(device)
         
         # Create batch tensor for single molecule
         batch = torch.zeros(val_data.z.size(0), dtype=torch.long, device=device)

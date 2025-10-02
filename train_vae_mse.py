@@ -168,16 +168,16 @@ def main():
             raise ValueError(f"Unknown atom name: {atom_name}")
 
     # Create all tensors directly on the selected device to avoid device mismatch
-    z = torch.tensor(ATOMIC_NUMBERS, dtype=torch.long, device='cpu')
+    z = torch.tensor(ATOMIC_NUMBERS, dtype=torch.long, device=device)
 
     # Create a list of Data objects, one for each molecule
     edges = aib9.identify_all_covalent_edges(topo)
     # edges is already in shape [2, num_edges], no need to transpose
-    edge_index = torch.tensor(edges, dtype=torch.long, device='cpu').contiguous()
-
+    edge_index = torch.tensor(edges, dtype=torch.long, device=device).contiguous()
+    
     train_data_list = []
     for i in range(train_data_np.shape[0]):
-        pos = torch.from_numpy(train_data_np[i]).float().to('cpu')
+        pos = torch.from_numpy(train_data_np[i]).float().to(device)
         data = Data(z=z, pos=pos, edge_index=edge_index)
         train_data_list.append(data)
     train_loader = DataLoader(
