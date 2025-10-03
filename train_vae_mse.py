@@ -81,7 +81,7 @@ def main():
     DECODER_HIDDEN_DIM = 256
     DECODER_NUM_LAYERS = 2
     BATCH_SIZE = 2048  # Increased from 128 (V100 can handle much more!)
-    LEARNING_RATE = 5e-5  # Reduced to prevent gradient explosion
+    LEARNING_RATE = 2e-5  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
@@ -255,9 +255,6 @@ def main():
                 exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
                 print(f"  Debug - kl: {kl_div:.4f}, recon_loss: {recon_loss:.4f}")
                 print(f"  Debug - μ²: {mu_norm:.4f}, log_var: {log_var_mean:.4f}, exp(log_var): {exp_log_var_mean:.4f}")
-
-      
-            
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max= 10)  # Lower clamp for MSE
             # Don't clamp KL divergence - let it learn naturally
