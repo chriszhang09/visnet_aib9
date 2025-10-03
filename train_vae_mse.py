@@ -76,7 +76,7 @@ def main():
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 24 
     EPOCHS = 110
-    VISNET_HIDDEN_CHANNELS = 100
+    VISNET_HIDDEN_CHANNELS = 128
     ENCODER_NUM_LAYERS = 3
     DECODER_HIDDEN_DIM = 256
     DECODER_NUM_LAYERS = 4
@@ -259,10 +259,8 @@ def main():
             recon_loss = torch.clamp(recon_loss, max= 10)  # Lower clamp for MSE
             # Don't clamp KL divergence - let it learn naturally
         
-            if kl_div < 10:
-                kl_weight = 1  # Much more aggressive
-            else:
-                kl_weight =  min(1.0, epoch / 50)  
+
+            kl_weight =  min(1.0, epoch / 50)  
             kl_div = kl_div*kl_weight
             kl_div = torch.clamp(kl_div, max=30.0)
             loss = recon_loss + kl_div
