@@ -84,8 +84,8 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         # Compute validation metrics using pairwise distance loss
         from train_vae_mse import pairwise_distance_loss
         
-        # Compute pairwise distance loss for validation
-        val_loss = pairwise_distance_loss(reconstructed, val_data.pos)
+        # Compute simple MSE loss for validation (E3 invariant)
+        val_loss = simple_mse_loss(reconstructed, val_data.pos)
         
         # Compute bond-based E(3) invariant loss for comparison
         edge_index_cpu = edge_index.cpu()

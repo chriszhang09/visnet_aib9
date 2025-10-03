@@ -31,25 +31,27 @@ class ViSNetEncoderMSE(nn.Module):
         
         actual_hidden_channels = visnet_kwargs.get('hidden_channels', visnet_hidden_channels)
         
-        self.output_model = EquivariantEncoder(actual_hidden_channels, output_channels=latent_dim + 1)
+        self.output_model = EquivariantEncoder(actual_hidden_channels, output_channels=2 * latent_dim)
         
-                # In your Encoder's __init__ method
         with torch.no_grad():
-            # Target the final linear layer in the EquivariantEncoder
+    # Target the final linear layer in the EquivariantEncoder
             final_linear_layer = self.output_model.output_network[-1].update_net[-1]
 
-            # The log_var is the LAST output channel. Its index is `latent_dim`.
-            log_var_index = self.latent_dim
+            # --- START OF FIX ---
+            # Create a slice to target ALL log_var output channels.
+            # They are the second half of the output, from latent_dim onwards.
+            log_var_slice = slice(self.latent_dim, None)
 
-            # Set its bias to a negative value to start variance near zero.
-            final_linear_layer.bias.data[log_var_index] = -3.0
+            # Set all of their biases to a negative value to start variance near zero.
+            final_linear_layer.bias.data[log_var_slice] = -3.0
 
-            # Scale down its weights to make the initial output more stable.
-            final_linear_layer.weight.data[log_var_index] *= 0.1
-
-            print(f"Successfully initialized bias for log_var output to {final_linear_layer.bias.data[log_var_index]:.2f}")
+            # Scale down all of their weights to make the initial output more stable.
+            # The colon (:) ensures we scale weights from ALL inputs to these outputs.
+            final_linear_layer.weight.data[log_var_slice, :] *= 0.1
             # --- END OF FIX ---
-    
+
+            print(f"Successfully initialized bias for log_var outputs to: {final_linear_layer.bias.data[log_var_slice].mean():.2f}")
+        
     def forward(self, data):
         # Get atom-level features from ViSNetBlock
         x, v = self.representation_model(data)
