@@ -239,7 +239,7 @@ def main():
       
             
             # Clamp reconstruction loss to prevent explosion
-            recon_loss = torch.clamp(recon_loss, max=1.0)  # Lower clamp for MSE
+            recon_loss = torch.clamp(recon_loss, max=2.0)  # Lower clamp for MSE
             # Don't clamp KL divergence - let it learn naturally
         
             if kl_div < 10:
