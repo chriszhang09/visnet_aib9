@@ -75,7 +75,7 @@ def main():
     COORD_DIM = 3
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 24 
-    EPOCHS = 50
+    EPOCHS = 110
     VISNET_HIDDEN_CHANNELS = 256
     ENCODER_NUM_LAYERS = 3
     DECODER_HIDDEN_DIM = 256
@@ -103,6 +103,7 @@ def main():
             "loss_type": "Pairwise_Distance",  # Track loss type
         }
     )
+
 
     # Check for CUDA availability
     if torch.cuda.is_available():
@@ -184,6 +185,25 @@ def main():
         visnet_kwargs=visnet_params
     ).to(device)
 
+    parser = argparse.ArgumentParser(description='Train VAE with MSE loss')
+    parser.add_argument('--resume', type=str, help='Path to checkpoint to resume from')
+    args = parser.parse_args()
+    
+    if args.resume:
+        print(f"Resuming training from: {args.resume}")
+        start_epoch = 1
+        if args.resume and os.path.exists(args.resume):
+            ckpt = torch.load(args.resume, map_location=device)
+            model.load_state_dict(ckpt['model_state_dict'])
+            if 'optimizer_state_dict' in ckpt:
+                try:
+                    optimizer.load_state_dict(ckpt['optimizer_state_dict'])
+                except Exception as e:
+                    print(f"Warning: could not load optimizer state: {e}")
+            if 'epoch' in ckpt:
+                start_epoch = int(ckpt['epoch']) + 1
+            print(f"Resumed from {args.resume} at epoch {start_epoch}")
+
     # Optimizer and scheduler
     optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.8, patience=5, verbose=True)
@@ -205,7 +225,7 @@ def main():
     print(f"{'='*60}\n")
 
     # Training loop
-    for epoch in range(1, EPOCHS + 1):
+    for epoch in range(start_epoch, EPOCHS + 1):
         model.train()
         total_loss = 0
         total_recon_loss = 0
@@ -239,11 +259,11 @@ def main():
       
             
             # Clamp reconstruction loss to prevent explosion
-            recon_loss = torch.clamp(recon_loss, max=2.0)  # Lower clamp for MSE
+            recon_loss = torch.clamp(recon_loss, max= 10)  # Lower clamp for MSE
             # Don't clamp KL divergence - let it learn naturally
         
             if kl_div < 10:
-                kl_weight = min(1.0 + 0.2 * epoch, 3.0)  # Much more aggressive
+                kl_weight = 1  # Much more aggressive
             else:
                 kl_weight =  min(1.0, epoch / 10)  # Still high even when KL is large
             kl_div = kl_div*kl_weight
@@ -357,14 +377,4 @@ def main():
     wandb.finish()
 
 if __name__ == "__main__":
-    # Add argument parser for resume functionality
-    parser = argparse.ArgumentParser(description='Train VAE with MSE loss')
-    parser.add_argument('--resume', type=str, help='Path to checkpoint to resume from')
-    args = parser.parse_args()
-    
-    if args.resume:
-        print(f"Resuming training from: {args.resume}")
-        # Load checkpoint logic would go here
-        # For now, just run normal training
-    
     main()
