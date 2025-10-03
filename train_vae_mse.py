@@ -81,7 +81,7 @@ def main():
     DECODER_HIDDEN_DIM = 256
     DECODER_NUM_LAYERS = 2
     BATCH_SIZE = 1024 # Increased from 128 (V100 can handle much more!)
-    LEARNING_RATE = 2e-5  # Reduced to prevent gradient explosion
+    LEARNING_RATE = 1e-4  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
@@ -262,7 +262,7 @@ def main():
             if kl_div < 10:
                 kl_weight = 1  # Much more aggressive
             else:
-                kl_weight =  min(1.0, epoch / 10)  # Still high even when KL is large
+                kl_weight =  min(1.0, epoch / 50)  
             kl_div = kl_div*kl_weight
             kl_div = torch.clamp(kl_div, max=30.0)
             loss = recon_loss + kl_div
