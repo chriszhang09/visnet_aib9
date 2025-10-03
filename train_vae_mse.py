@@ -259,7 +259,7 @@ def main():
             # Don't clamp KL divergence - let it learn naturally
         
 
-            kl_weight =  min(1.0, epoch / 50)  
+            kl_weight =  min(1.0, epoch /10)  
             kl_div = kl_div*kl_weight
             kl_div = torch.clamp(kl_div, max=30.0)
             loss = recon_loss + kl_div
