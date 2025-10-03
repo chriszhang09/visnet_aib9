@@ -188,10 +188,9 @@ def main():
     parser = argparse.ArgumentParser(description='Train VAE with MSE loss')
     parser.add_argument('--resume', type=str, help='Path to checkpoint to resume from')
     args = parser.parse_args()
-    
+    start_epoch = 1
     if args.resume:
         print(f"Resuming training from: {args.resume}")
-        start_epoch = 1
         if args.resume and os.path.exists(args.resume):
             ckpt = torch.load(args.resume, map_location=device)
             model.load_state_dict(ckpt['model_state_dict'])
