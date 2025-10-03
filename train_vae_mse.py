@@ -76,10 +76,10 @@ def main():
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 24 
     EPOCHS = 110
-    VISNET_HIDDEN_CHANNELS = 256
+    VISNET_HIDDEN_CHANNELS = 100
     ENCODER_NUM_LAYERS = 3
     DECODER_HIDDEN_DIM = 256
-    DECODER_NUM_LAYERS = 2
+    DECODER_NUM_LAYERS = 4
     BATCH_SIZE = 1024 # Increased from 128 (V100 can handle much more!)
     LEARNING_RATE = 1e-4  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
