@@ -78,9 +78,9 @@ def main():
     EPOCHS = 110
     VISNET_HIDDEN_CHANNELS = 128
     ENCODER_NUM_LAYERS = 3
-    DECODER_HIDDEN_DIM = 512
-    DECODER_NUM_LAYERS = 5
-    BATCH_SIZE = 2048 # Increased from 128 (V100 can handle much more!)
+    DECODER_HIDDEN_DIM = 256
+    DECODER_NUM_LAYERS = 4
+    BATCH_SIZE = 1024 # Increased from 128 (V100 can handle much more!)
     LEARNING_RATE = 1e-4  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
 
@@ -110,6 +110,10 @@ def main():
         device = torch.device('cuda')
         print(f'Using CUDA device: {torch.cuda.get_device_name()}')
         print(f'CUDA memory: {torch.cuda.get_device_properties(device).total_memory / 1e9:.1f} GB')
+    elif torch.backends.mps.is_available():
+        device = torch.device('mps')
+        print(f'Using MPS device: {torch.backends.mps.get_device()}')
+        print(f'MPS memory: {torch.backends.mps.get_device().total_memory / 1e9:.1f} GB')
     else:
         device = torch.device('cpu')
         print('CUDA not available, using CPU')
