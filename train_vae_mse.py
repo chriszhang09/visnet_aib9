@@ -78,9 +78,9 @@ def main():
     EPOCHS = 110
     VISNET_HIDDEN_CHANNELS = 128
     ENCODER_NUM_LAYERS = 3
-    DECODER_HIDDEN_DIM = 256
-    DECODER_NUM_LAYERS = 4
-    BATCH_SIZE = 1024 # Increased from 128 (V100 can handle much more!)
+    DECODER_HIDDEN_DIM = 512
+    DECODER_NUM_LAYERS = 5
+    BATCH_SIZE = 2048 # Increased from 128 (V100 can handle much more!)
     LEARNING_RATE = 1e-4  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
 
