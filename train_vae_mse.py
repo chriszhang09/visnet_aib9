@@ -262,9 +262,9 @@ def main():
             recon_loss = torch.clamp(recon_loss, max= 10)  # Lower clamp for MSE
             # Don't clamp KL divergence - let it learn naturally
             kl_weight =  min(1.0, epoch /50)  
-            kl_div = kl_div*kl_weight
+            kl_div = kl_div * kl_weight
             if kl_div < 2 and epoch < 15:
-                kl_div = 0  
+                kl_div = torch.tensor(0.0, device=kl_div.device, dtype=kl_div.dtype)
             kl_div = torch.clamp(kl_div, max=30.0)
             loss = recon_loss + kl_div
             
