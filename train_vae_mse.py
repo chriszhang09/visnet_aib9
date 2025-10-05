@@ -51,7 +51,7 @@ def simple_mse_loss(pred_coords, target_coords):
     mse_loss = F.mse_loss(pred_centered, target_centered)
     
     # Scale down to reasonable range (coordinates are typically 0.1-2.0 nm)
-    return mse_loss * 0.1
+    return mse_loss
 
 
 from mse_training.visnet_vae_encoder_mse import ViSNetEncoderMSE
@@ -78,9 +78,9 @@ def main():
     EPOCHS = 110
     VISNET_HIDDEN_CHANNELS = 128
     ENCODER_NUM_LAYERS = 3
-    DECODER_HIDDEN_DIM = 256
-    DECODER_NUM_LAYERS = 4
-    BATCH_SIZE = 1024 # Increased from 128 (V100 can handle much more!)
+    DECODER_HIDDEN_DIM = 256+128
+    DECODER_NUM_LAYERS = 5
+    BATCH_SIZE =  1024# Increased from 128 (V100 can handle much more!)
     LEARNING_RATE = 1e-4  # Reduced to prevent gradient explosion
     NUM_WORKERS = 2  # Parallel data loading
 
@@ -259,13 +259,16 @@ def main():
                 print(f"  Debug - kl: {kl_div:.4f}, recon_loss: {recon_loss:.4f}")
                 print(f"  Debug - μ²: {mu_norm:.4f}, log_var: {log_var_mean:.4f}, exp(log_var): {exp_log_var_mean:.4f}")
             # Clamp reconstruction loss to prevent explosion
-            recon_loss = torch.clamp(recon_loss, max= 10)  # Lower clamp for MSE
+            recon_loss = torch.clamp(recon_loss, max = 15)  # Lower clamp for MSE
             # Don't clamp KL divergence - let it learn naturally
-            kl_weight =  min(1.0, epoch /50)  
-            kl_div = kl_div * kl_weight
-            if kl_div < 2 and epoch < 15:
+            #kl_weight =  min(1.0, epoch /50)  
+            #kl_div = kl_div * kl_weight
+            if kl_div.item() < 0.5 and epoch < 100:
                 kl_div = torch.tensor(0.0, device=kl_div.device, dtype=kl_div.dtype)
-            kl_div = torch.clamp(kl_div, max=30.0)
+
+            kl_weight =  min(1.0, epoch /50)  
+            kl_div = kl_div* kl_weight
+
             loss = recon_loss + kl_div
             
             # Check for numerical issues
@@ -329,7 +332,7 @@ def main():
         
         # Save checkpoint every 10 epochs with timestamp
         if epoch % 10 == 0:
-            checkpoint_path = f'vae_model_pairwise_epoch{epoch}_3_2.pth'
+            checkpoint_path = f'vae_model_pairwise_epoch{epoch}_3_5__small_cutoff.pth'
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
@@ -353,7 +356,7 @@ def main():
         plt.close(fig)
     
     # Save final model with pairwise suffix
-    final_model_path = 'vae_model_pairwise_final_3_2.pth'
+    final_model_path = 'vae_model_pairwise_final_small_cutoff.pth'
     torch.save({
         'epoch': EPOCHS,
         'model_state_dict': model.state_dict(),
