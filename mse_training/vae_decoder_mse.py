@@ -239,6 +239,10 @@ class PyGEGNNDecoderMSE(nn.Module):
         
         # Apply EGNN layers
         for layer in self.egnn_layers:
+            if edge_index is None:
+                # Use cutoff-based edge identification
+                from torch_cluster import radius_graph
+                edge_index = radius_graph(coords, r=5.0, batch=batch, loop=False)
             node_features, coords = layer(node_features, coords, edge_index)
         
         # Final coordinate prediction

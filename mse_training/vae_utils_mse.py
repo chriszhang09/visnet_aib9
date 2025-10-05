@@ -5,8 +5,13 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 
-def compute_bond_lengths(coords, edge_index):
+def compute_bond_lengths(coords, edge_index=None, cutoff=5.0):
     """Compute bond lengths for a molecule."""
+    if edge_index is None:
+        # Use cutoff-based edge identification
+        from torch_cluster import radius_graph
+        edge_index = radius_graph(coords, r=cutoff, loop=False)
+    
     bond_lengths = []
     for i in range(edge_index.shape[1]):
         src, dst = edge_index[0, i], edge_index[1, i]
@@ -16,7 +21,7 @@ def compute_bond_lengths(coords, edge_index):
     return bond_lengths
 
 
-def visualize_molecule_3d(coords, atomic_numbers, title="Molecule"):
+def visualize_molecule_3d(coords, atomic_numbers, edge_index=None, cutoff=5.0, title="Molecule"):
     """Create a 3D visualization of a molecule."""
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(111, projection='3d')
@@ -31,6 +36,12 @@ def visualize_molecule_3d(coords, atomic_numbers, title="Molecule"):
         color = atom_colors.get(z, 'purple')
         size = atom_sizes.get(z, 50)
         ax.scatter(pos[0], pos[1], pos[2], c=color, s=size, alpha=0.8)
+    
+    # Generate edge_index if not provided (cutoff-based)
+    if edge_index is None:
+        from torch_cluster import radius_graph
+        coords_tensor = torch.tensor(coords, dtype=torch.float)
+        edge_index = radius_graph(coords_tensor, r=cutoff, loop=False)
     
     # Plot bonds
     for i in range(edge_index.shape[1]):
@@ -68,11 +79,12 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         
         # Decode to get reconstructed coordinates
         atom_types_one_hot = F.one_hot(val_data.z.long(), num_classes=model.decoder.atom_feature_dim).float()
-        reconstructed = model.decoder(z, atom_types_one_hot, val_data.edge_index, val_data.batch)
+        # Use cutoff-based edge identification (no edge_index needed)
+        reconstructed = model.decoder(z, atom_types_one_hot, None, val_data.batch)
         
         # Generate from prior
         z_prior = model.sample_prior(1, device)
-        generated = model.decoder(z_prior, atom_types_one_hot, val_data.edge_index, val_data.batch)
+        generated = model.decoder(z_prior, atom_types_one_hot, None, val_data.batch)
         
         # Convert to numpy for visualization
         reconstructed_coords = reconstructed.cpu().numpy()
@@ -87,9 +99,10 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         # Compute simple MSE loss for validation (E3 invariant)
         val_loss = simple_mse_loss(reconstructed, val_data.pos)
         
-        # Compute bond-based E(3) invariant loss for comparison
-        edge_index_cpu = edge_index.cpu()
-        row, col = edge_index_cpu[0], edge_index_cpu[1]
+        # Compute bond-based E(3) invariant loss for comparison using cutoff-based edges
+        from torch_cluster import radius_graph
+        edge_index_cutoff = radius_graph(val_data.pos, r=5.0, loop=False)
+        row, col = edge_index_cutoff[0], edge_index_cutoff[1]
         
         pred_bond_dist = torch.norm(reconstructed[row] - reconstructed[col], dim=-1)
         target_bond_dist = torch.norm(val_data.pos[row] - val_data.pos[col], dim=-1)
@@ -109,20 +122,22 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         # Reconstructed molecule
         fig_recon = visualize_molecule_3d(
             reconstructed_coords, atomic_nums, 
-            f"Reconstructed (Epoch {epoch})"
+            edge_index=None, cutoff=5.0,
+            title=f"Reconstructed (Epoch {epoch})"
         )
         figures['reconstructed_molecule'] = fig_recon
         
         # Generated molecule
         fig_gen = visualize_molecule_3d(
             generated_coords, atomic_nums,
-            f"Generated from Prior (Epoch {epoch})"
+            edge_index=None, cutoff=5.0,
+            title=f"Generated from Prior (Epoch {epoch})"
         )
         figures['generated_molecule'] = fig_gen
         
-        # Bond length comparison
-        target_bonds = compute_bond_lengths(val_data.pos.cpu(), edge_index_cpu)
-        recon_bonds = compute_bond_lengths(reconstructed.cpu(), edge_index_cpu)
+        # Bond length comparison using cutoff-based edges
+        target_bonds = compute_bond_lengths(val_data.pos.cpu(), edge_index=None, cutoff=5.0)
+        recon_bonds = compute_bond_lengths(reconstructed.cpu(), edge_index=None, cutoff=5.0)
         
         fig_bonds = plt.figure(figsize=(10, 6))
         plt.hist(target_bonds, bins=20, alpha=0.7, label='Target', color='blue')

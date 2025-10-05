@@ -6,17 +6,14 @@ import torch.nn.functional as F
 from pathlib import Path
 import sys
 import wandb
+from vae_utils import visualize_molecule_3d, validate_and_sample
 
 proj_path = Path().resolve()
 
 from aib9_lib import aib9_tools as aib9
 import os
 
-if torch.cuda.is_available():
-    device = torch.device('cuda')
-else:
-    device = torch.device('cpu')
-print(f'Using device: {device}')
+
 
 # --- 1. Parameters ---
 # These parameters define the model architecture and training process.
@@ -98,7 +95,14 @@ def train():
     print(f"Generated training data with shape: {train_data_np.shape}")
 
     # Initialize model and optimizer
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    if torch.cuda.is_available():
+        device = torch.device('cuda')
+    elif torch.backends.mps.is_available():
+        device = torch.device('mps')
+    else:
+        device = torch.device('cpu')
+
+    print(f'Using device: {device}')
     model = VAE().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
@@ -140,12 +144,10 @@ def generate(model):
         generated_molecule_coords = generated_molecule_flat.view(1, ATOM_COUNT, COORD_DIM)
         
         # Convert to numpy for inspection if needed
-        generated_molecule_np = generated_molecule_coords.cpu().numpy()
-        
-        print(f"Generated a new molecule with coordinate shape: {generated_molecule_np.shape}")
-        # print("Coordinates of the first 3 atoms:")
-        # print(generated_molecule_np[0, :3, :])
+        validate_and_sample(model, generated_molecule_coords, device, [1, 6, 7, 8, 15, 16, 17], None, 0)
+        visualize_molecule_3d(generated_molecule_coords, [1, 6, 7, 8, 15, 16, 17], "Generated Molecule")
 
+        
 
 if __name__ == "__main__":
     trained_model = train()

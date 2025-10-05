@@ -151,14 +151,12 @@ def main():
     z = torch.tensor(ATOMIC_NUMBERS, dtype=torch.long, device=device)
 
     # Create a list of Data objects, one for each molecule
-    edges = aib9.identify_all_covalent_edges(topo)
-    # edges is already in shape [2, num_edges], no need to transpose
-    edge_index = torch.tensor(edges, dtype=torch.long, device=device).contiguous()
-    
+    # Use cutoff-based edge identification instead of predefined covalent edges
     train_data_list = []
     for i in range(train_data_np.shape[0]):
         pos = torch.from_numpy(train_data_np[i]).float().to(device)
-        data = Data(z=z, pos=pos, edge_index=edge_index).to(device)
+        # No edge_index - let ViSNet use cutoff-based edge identification
+        data = Data(z=z, pos=pos).to(device)
         train_data_list.append(data)
     train_loader = DataLoader(
         train_data_list,
@@ -174,7 +172,7 @@ def main():
         'hidden_channels': VISNET_HIDDEN_CHANNELS,
         'num_layers': ENCODER_NUM_LAYERS,
         'num_rbf': 32,
-        'cutoff': 5.0,  # Kept for compatibility but not used with edge_index
+        'cutoff': 5.0,  # Used for cutoff-based edge identification
         'max_z': max(ATOMIC_NUMBERS) + 1,
     }
 
@@ -319,7 +317,7 @@ def main():
         if epoch == 1 or epoch % 10 == 0:
             print(f"  → Generating samples and visualizations...")
             metrics, figures = validate_and_sample(
-                model, val_sample, device, z, val_sample.edge_index, epoch
+                model, val_sample, device, z, None, epoch
             )
             
             # Log metrics
@@ -348,7 +346,7 @@ def main():
     print(f"{'='*60}\n")
     
     metrics, figures = validate_and_sample(
-        model, val_sample, device, z, val_sample.edge_index, EPOCHS
+        model, val_sample, device, z, None, EPOCHS
     )
     wandb.log(metrics)
     for fig_name, fig in figures.items():

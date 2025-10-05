@@ -96,3 +96,4 @@ Both training approaches are completely independent:
 - **Use Pairwise Distance** for: Complete molecular structure, research applications
 
 Both approaches are E(3) invariant and suitable for molecular generation tasks!
+
