@@ -74,30 +74,61 @@ class MolecularVAEMSE(nn.Module):
         
         return reconstructed_pos, mu, log_var
 
-def simple_mse_loss_mse(pred_coords, target_coords):
+def pairwise_distance_loss_mse(pred_coords, target_coords):
     """
-    Simple MSE loss on coordinates with E(3) invariance via centering.
-    Much faster and more stable than pairwise distance loss.
-    All computations on GPU for maximum speed.
+    E(3) invariant loss using ALL pairwise distances between atoms.
+    Much more informative than bond-only loss, still rotationally invariant.
     """
-    # Ensure both tensors are on the same device and float32
+    # Convert to float32
     pred_coords = pred_coords.float()
     target_coords = target_coords.float()
     
-    # Ensure both are on the same device (GPU if available)
-    if pred_coords.device != target_coords.device:
-        target_coords = target_coords.to(pred_coords.device)
+    # Handle both batch format [batch_size, num_atoms, 3] and PyG format [total_atoms, 3]
+    if pred_coords.dim() == 3:
+        # Batch format - flatten to PyG format for processing
+        batch_size, num_atoms, _ = pred_coords.shape
+        pred_flat = pred_coords.view(-1, 3)  # [total_atoms, 3]
+        target_flat = target_coords.view(-1, 3)
+        
+        # Process each molecule in the batch separately
+        total_loss = 0
+        for i in range(batch_size):
+            start_idx = i * num_atoms
+            end_idx = (i + 1) * num_atoms
+            
+            pred_mol = pred_flat[start_idx:end_idx]  # [num_atoms, 3]
+            target_mol = target_flat[start_idx:end_idx]  # [num_atoms, 3]
+            
+            # Compute pairwise distances for this molecule
+            pred_dists = torch.cdist(pred_mol, pred_mol)  # [num_atoms, num_atoms]
+            target_dists = torch.cdist(target_mol, target_mol)  # [num_atoms, num_atoms]
+            
+            # Only use upper triangular part (avoid diagonal and duplicates)
+            mask = torch.triu(torch.ones_like(pred_dists), diagonal=1).bool()
+            pred_dists_upper = pred_dists[mask]  # [num_pairs]
+            target_dists_upper = target_dists[mask]  # [num_pairs]
+            
+            # MSE on pairwise distances
+            mol_loss = F.mse_loss(pred_dists_upper, target_dists_upper)
+            total_loss += mol_loss
+        
+        return total_loss / batch_size
     
-    # Center both coordinate sets to make them translation invariant
-    # All operations stay on GPU
-    pred_centered = pred_coords - pred_coords.mean(dim=0, keepdim=True)
-    target_centered = target_coords - target_coords.mean(dim=0, keepdim=True)
-    
-    # Simple MSE loss on centered coordinates (GPU computation)
-    mse_loss = F.mse_loss(pred_centered, target_centered)
-    
-    # Scale down to reasonable range (coordinates are typically 0.1-2.0 nm)
-    return mse_loss * 0.1
+    else:
+        # PyG format - single molecule or already flattened batch
+        # Assume this is a single molecule for now
+        pred_dists = torch.cdist(pred_coords, pred_coords)  # [num_atoms, num_atoms]
+        target_dists = torch.cdist(target_coords, target_coords)  # [num_atoms, num_atoms]
+        
+        # Only use upper triangular part (avoid diagonal and duplicates)
+        mask = torch.triu(torch.ones_like(pred_dists), diagonal=1).bool()
+        pred_dists_upper = pred_dists[mask]  # [num_pairs]
+        target_dists_upper = target_dists[mask]  # [num_pairs]
+        
+        # MSE on pairwise distances
+        loss = F.mse_loss(pred_dists_upper, target_dists_upper)
+        
+        return loss
 
 
 def vae_loss_function_mse(reconstructed_pos, original_pos, mu, log_var):
@@ -105,8 +136,8 @@ def vae_loss_function_mse(reconstructed_pos, original_pos, mu, log_var):
     Loss function for MSE training with non-centered isotropic Gaussian VAE.
     Uses pairwise distance loss for E(3) invariance.
     """
-    # Use simple MSE loss for E(3) invariance
-    recon_loss = simple_mse_loss_mse(reconstructed_pos, original_pos)
+    # Use pairwise distance loss for E(3) invariance
+    recon_loss = pairwise_distance_loss_mse(reconstructed_pos, original_pos)
     
     # KL divergence for non-centered isotropic Gaussian: KL(N(μ, σ²I) || N(0, I))
     kl_div = 0.5 * torch.sum(mu.pow(2) + torch.exp(log_var) - log_var - 1)

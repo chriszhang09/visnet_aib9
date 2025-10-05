@@ -237,12 +237,16 @@ class PyGEGNNDecoderMSE(nn.Module):
         coords = self.init_coords.unsqueeze(0).expand(batch_size, -1, -1)  # [batch_size, num_atoms, 3]
         coords = coords.reshape(total_atoms, 3)  # [total_atoms, 3]
         
-        # Apply EGNN layers
+        # Build cutoff-based edges ONCE per forward to avoid excessive memory use
+        if edge_index is None:
+            from torch_cluster import radius_graph
+            # Cap the number of neighbors to bound memory; tune as needed
+            edge_index = radius_graph(
+                coords, r=5.0, batch=batch, loop=False, max_num_neighbors=32
+            )
+        
+        # Apply EGNN layers with the same connectivity
         for layer in self.egnn_layers:
-            if edge_index is None:
-                # Use cutoff-based edge identification
-                from torch_cluster import radius_graph
-                edge_index = radius_graph(coords, r=5.0, batch=batch, loop=False)
             node_features, coords = layer(node_features, coords, edge_index)
         
         # Final coordinate prediction

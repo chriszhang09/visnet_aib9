@@ -172,7 +172,7 @@ def main():
         'hidden_channels': VISNET_HIDDEN_CHANNELS,
         'num_layers': ENCODER_NUM_LAYERS,
         'num_rbf': 32,
-        'cutoff': 5.0,  # Used for cutoff-based edge identification
+        'cutoff': 5.0,  # Kept for compatibility but not used with edge_index
         'max_z': max(ATOMIC_NUMBERS) + 1,
     }
 
