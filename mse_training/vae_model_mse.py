@@ -69,8 +69,8 @@ class MolecularVAEMSE(nn.Module):
         # This assumes data.z contains integer atom types
         atom_types_one_hot = F.one_hot(data.z.long(), num_classes=self.decoder.atom_feature_dim).float()
         
-        # PyG decoder needs edge_index and batch information
-        reconstructed_pos = self.decoder(z, atom_types_one_hot, data.edge_index, data.batch)
+        # Force cutoff-based edges inside the decoder (edge_index=None)
+        reconstructed_pos = self.decoder(z, atom_types_one_hot, None, data.batch)
         
         return reconstructed_pos, mu, log_var
 
