@@ -80,8 +80,8 @@ def main():
     ENCODER_NUM_LAYERS = 3
     DECODER_HIDDEN_DIM = 256+128
     DECODER_NUM_LAYERS = 5
-    BATCH_SIZE =  1024# Increased from 128 (V100 can handle much more!)
-    LEARNING_RATE = 1e-4  # Reduced to prevent gradient explosion
+    BATCH_SIZE = 512
+    LEARNING_RATE = 1e-4  
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
@@ -103,7 +103,6 @@ def main():
             "loss_type": "Pairwise_Distance",  # Track loss type
         }
     )
-
 
     # Check for CUDA availability
     if torch.cuda.is_available():
@@ -262,7 +261,7 @@ def main():
             # Don't clamp KL divergence - let it learn naturally
             #kl_weight =  min(1.0, epoch /50)  
             #kl_div = kl_div * kl_weight
-            if kl_div.item() < 0.5 and epoch < 100:
+            if kl_div.item() < 1 and epoch < 20:
                 kl_div = torch.tensor(0.0, device=kl_div.device, dtype=kl_div.dtype)
 
             kl_weight =  min(1.0, epoch /50)  
