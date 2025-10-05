@@ -66,7 +66,8 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         
         # Create batch tensor for single molecule
         batch = torch.zeros(val_data.z.size(0), dtype=torch.long, device=device)
-        reconstructed = model.decoder(z, atom_types_one_hot, val_data.edge_index, batch)
+        # Use cutoff-based edges inside decoder
+        reconstructed = model.decoder(z, atom_types_one_hot, None, batch)
         
         # Move to CPU for visualization
         original_coords = val_data.pos.cpu().numpy()
@@ -77,12 +78,20 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         # 2. Generate from isotropic Gaussian prior
         random_z = model.sample_prior(1, device)
         generated = model.decoder(random_z, atom_types_one_hot[:model.decoder.num_atoms], 
-                                  val_data.edge_index, batch)
+                                  None, batch)
         # PyG decoder returns [num_atoms, 3] directly
         generated_coords = generated.cpu().numpy()
         
         # 3. Compute metrics (E(3)-invariant bond-distance MSE)
-        edge_index_cpu = edge_index.cpu()
+        # If no edge_index provided, build cutoff-based edges on CPU
+        if edge_index is None:
+            from torch_cluster import radius_graph
+            coords_t = torch.from_numpy(original_coords).to(torch.float32)
+            # Use model decoder's cutoff if available, else default 3.0
+            cutoff = getattr(model.decoder, 'cutoff', 3.0)
+            edge_index_cpu = radius_graph(coords_t, r=cutoff, loop=False)
+        else:
+            edge_index_cpu = edge_index.cpu()
         row, col = edge_index_cpu[0], edge_index_cpu[1]
         pred_coords_t = torch.from_numpy(reconstructed_coords)
         target_coords_t = torch.from_numpy(original_coords)

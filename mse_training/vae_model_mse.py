@@ -9,7 +9,7 @@ class MolecularVAEMSE(nn.Module):
     """
     def __init__(self, latent_dim, num_atoms, atom_feature_dim, 
                  visnet_hidden_channels=128, decoder_hidden_dim=128, 
-                 decoder_num_layers=6, visnet_kwargs=None):
+                 decoder_num_layers=6, visnet_kwargs=None, cutoff: float = 3.0):
         """
         Args:
             latent_dim (int): Dimension of the latent space
@@ -34,7 +34,8 @@ class MolecularVAEMSE(nn.Module):
             num_atoms=num_atoms, 
             atom_feature_dim=atom_feature_dim,
             hidden_dim=decoder_hidden_dim,
-            num_layers=decoder_num_layers
+            num_layers=decoder_num_layers,
+            cutoff=cutoff
         )
 
     def reparameterize(self, mu, log_var):

@@ -177,13 +177,14 @@ class PyGEGNNLayerMSE(MessagePassing):
 class PyGEGNNDecoderMSE(nn.Module):
     """MSE-specific PyTorch Geometric EGNN decoder for molecular coordinates."""
     
-    def __init__(self, latent_dim, hidden_dim=256, num_layers=2, num_atoms=58, atom_feature_dim=10):
+    def __init__(self, latent_dim, hidden_dim=256, num_layers=2, num_atoms=58, atom_feature_dim=10, cutoff: float = 3.0):
         super().__init__()
         self.latent_dim = latent_dim
         self.hidden_dim = hidden_dim
         self.num_layers = num_layers
         self.num_atoms = num_atoms
         self.atom_feature_dim = atom_feature_dim
+        self.cutoff = float(cutoff)
         
         # Project latent vector to initial node features
         self.latent_proj = nn.Linear(latent_dim, hidden_dim)
@@ -242,7 +243,7 @@ class PyGEGNNDecoderMSE(nn.Module):
             from torch_cluster import radius_graph
             # Cap the number of neighbors to bound memory; tune as needed
             edge_index = radius_graph(
-                coords, r=5.0, batch=batch, loop=False, max_num_neighbors=16
+                coords, r=self.cutoff, batch=batch, loop=False, max_num_neighbors=16
             )
         
         # Apply EGNN layers with the same connectivity
@@ -259,15 +260,16 @@ class PyGEGNNDecoderMSE(nn.Module):
 class EGNNDecoderMSE(nn.Module):
     """MSE-specific EGNN decoder (legacy interface for compatibility)."""
     
-    def __init__(self, latent_dim, hidden_dim=256, num_layers=2, num_atoms=58, atom_feature_dim=10):
+    def __init__(self, latent_dim, hidden_dim=256, num_layers=2, num_atoms=58, atom_feature_dim=10, cutoff: float = 3.0):
         super().__init__()
-        self.pyg_decoder = PyGEGNNDecoderMSE(latent_dim, hidden_dim, num_layers, num_atoms, atom_feature_dim)
+        self.pyg_decoder = PyGEGNNDecoderMSE(latent_dim, hidden_dim=hidden_dim, num_layers=num_layers, num_atoms=num_atoms, atom_feature_dim=atom_feature_dim, cutoff=cutoff)
         # Expose commonly used attributes for external code compatibility
         self.latent_dim = latent_dim
         self.hidden_dim = hidden_dim
         self.num_layers = num_layers
         self.num_atoms = num_atoms
         self.atom_feature_dim = atom_feature_dim
+        self.cutoff = float(cutoff)
     
     def forward(self, z, atom_types, edge_index, batch=None):
         return self.pyg_decoder(z, atom_types, edge_index, batch)

@@ -172,7 +172,7 @@ def main():
         'hidden_channels': VISNET_HIDDEN_CHANNELS,
         'num_layers': ENCODER_NUM_LAYERS,
         'num_rbf': 32,
-        'cutoff': 5.0,  # Kept for compatibility but not used with edge_index
+        'cutoff': 3.0,  # Used for cutoff-based edge identification
         'max_z': max(ATOMIC_NUMBERS) + 1,
     }
 
@@ -184,7 +184,8 @@ def main():
         decoder_hidden_dim=DECODER_HIDDEN_DIM,      
         decoder_num_layers=DECODER_NUM_LAYERS,         
         # No edge_index_template needed - PyG handles batching automatically
-        visnet_kwargs=visnet_params
+        visnet_kwargs=visnet_params,
+        cutoff=3.0
     ).to(device)
 
     parser = argparse.ArgumentParser(description='Train VAE with MSE loss')
