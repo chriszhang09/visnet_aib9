@@ -18,6 +18,16 @@ from torch_geometric.data import Data
 
 from aib9_lib import aib9_tools as aib9
 
+def pairwise_distance_loss(true_coords, pred_coords, p=2):
+    device = torch.device('cuda')
+    if pred_coords.device != true_coords.device:
+        pred_coords = true_coords.to(device)
+        target_coords = target_coords.to(device)
+    true_distances = torch.pdist(true_coords, p=p).to(device)
+    pred_distances = torch.pdist(pred_coords, p=p).to(device)
+    loss = F.mse_loss(pred_distances, true_distances)
+    return loss
+
 
 def simple_mse_loss(pred_coords, target_coords):
     device = torch.device('cuda')
@@ -66,7 +76,7 @@ import wandb
 from torch.cuda.amp import autocast, GradScaler
 
 def main():
-    seed = 42
+    seed = 11
     torch.manual_seed(seed)
     np.random.seed(seed)
 
@@ -76,12 +86,12 @@ def main():
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 128 
     EPOCHS = 110
-    VISNET_HIDDEN_CHANNELS = 128
-    ENCODER_NUM_LAYERS = 3
-    DECODER_HIDDEN_DIM = 256+128
-    DECODER_NUM_LAYERS = 5
-    BATCH_SIZE = 512
-    LEARNING_RATE = 1e-4  
+    VISNET_HIDDEN_CHANNELS = 256
+    ENCODER_NUM_LAYERS = 9
+    DECODER_HIDDEN_DIM = 256
+    DECODER_NUM_LAYERS = 10
+    BATCH_SIZE = 64
+    LEARNING_RATE = 4e-4  
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
@@ -171,7 +181,7 @@ def main():
         'hidden_channels': VISNET_HIDDEN_CHANNELS,
         'num_layers': ENCODER_NUM_LAYERS,
         'num_rbf': 32,
-        'cutoff': 3.0,  # Used for cutoff-based edge identification
+        'cutoff': 5.0,  # Used for cutoff-based edge identification
         'max_z': max(ATOMIC_NUMBERS) + 1,
     }
 
@@ -184,7 +194,7 @@ def main():
         decoder_num_layers=DECODER_NUM_LAYERS,         
         # No edge_index_template needed - PyG handles batching automatically
         visnet_kwargs=visnet_params,
-        cutoff=3.0
+        cutoff=5.0
     ).to(device)
 
     parser = argparse.ArgumentParser(description='Train VAE with MSE loss')
@@ -207,7 +217,7 @@ def main():
 
     # Optimizer and scheduler
     optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.8, patience=5, verbose=True)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.8, patience=30, verbose=True)
 
     # Mixed precision training
     use_amp = device.type == 'cuda'
@@ -248,7 +258,8 @@ def main():
                 # KL divergence for non-centered isotropic Gaussian: 0.5 * (||μ||² + σ² - log(σ²) - 1)
                 kl_div = -0.5 * torch.mean(1 + log_var - mu.pow(2) - log_var.exp())
             # Use simple MSE loss with centering for E(3) invariance
-            recon_loss = simple_mse_loss(recon_batch, molecules.pos)
+            recon_loss = pairwise_distance_loss(recon_batch, molecules.pos, 2)
+            kl_div = torch.clamp(kl_div, max = 2000)
                 # Debug KL components every 100 batches
             if batch_idx % 100 == 0:
                 mu_norm = torch.mean(mu.pow(2)).item()
@@ -257,18 +268,13 @@ def main():
                 print(f"  Debug - kl: {kl_div:.4f}, recon_loss: {recon_loss:.4f}")
                 print(f"  Debug - μ²: {mu_norm:.4f}, log_var: {log_var_mean:.4f}, exp(log_var): {exp_log_var_mean:.4f}")
             # Clamp reconstruction loss to prevent explosion
-            recon_loss = torch.clamp(recon_loss, max = 15)  # Lower clamp for MSE
-            # Don't clamp KL divergence - let it learn naturally
-            #kl_weight =  min(1.0, epoch /50)  
-            #kl_div = kl_div * kl_weight
-            if kl_div.item() < 1 and epoch < 20:
+            recon_loss = torch.clamp(recon_loss, max = 1000)  # Lower clamp for MSE
+
+            if kl_div.item() < 3 and epoch < 30:
                 kl_div = torch.tensor(0.0, device=kl_div.device, dtype=kl_div.dtype)
 
-            kl_weight =  min(1.0, epoch /50)  
-            kl_div = kl_div* kl_weight
-
-            loss = recon_loss + kl_div
-            
+            kl_weight = min(1, epoch / 10)
+            loss = recon_loss + kl_weight*kl_div 
             # Check for numerical issues
             if torch.isnan(loss) or torch.isinf(loss):
                 print(f"NaN/Inf detected in loss at epoch {epoch}, skipping batch...")
@@ -314,7 +320,7 @@ def main():
         print(f'Epoch {epoch:3d}: Loss={avg_loss:.4f} (Recon={avg_recon_loss:.4f}, KL={avg_kl_loss:.4f}) LR={optimizer.param_groups[0]["lr"]:.2e}')
         
         # Validation and sampling every 10 epochs or at start (reduced frequency for speed)
-        if epoch == 1 or epoch % 10 == 0:
+        if epoch == 1 or epoch % 2 == 0:
             print(f"  → Generating samples and visualizations...")
             metrics, figures = validate_and_sample(
                 model, val_sample, device, z, None, epoch
@@ -329,8 +335,8 @@ def main():
                 plt.close(fig)
         
         # Save checkpoint every 10 epochs with timestamp
-        if epoch % 10 == 0:
-            checkpoint_path = f'vae_model_pairwise_epoch{epoch}_3_5__small_cutoff.pth'
+        if epoch % 2 == 0:
+            checkpoint_path = f'vae_model_pairwise_epoch{epoch}_large_model.pth'
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
@@ -354,7 +360,7 @@ def main():
         plt.close(fig)
     
     # Save final model with pairwise suffix
-    final_model_path = 'vae_model_pairwise_final_small_cutoff.pth'
+    final_model_path = 'vae_model_pairwise_final_small_model.pth'
     torch.save({
         'epoch': EPOCHS,
         'model_state_dict': model.state_dict(),
