@@ -87,10 +87,10 @@ def main():
     LATENT_DIM = 128 
     EPOCHS = 110
     VISNET_HIDDEN_CHANNELS = 256
-    ENCODER_NUM_LAYERS = 9
+    ENCODER_NUM_LAYERS = 3
     DECODER_HIDDEN_DIM = 256
-    DECODER_NUM_LAYERS = 10
-    BATCH_SIZE = 64
+    DECODER_NUM_LAYERS = 5
+    BATCH_SIZE = 128
     LEARNING_RATE = 4e-4  
     NUM_WORKERS = 2  # Parallel data loading
 
@@ -111,7 +111,8 @@ def main():
             "decoder_hidden": DECODER_HIDDEN_DIM,
             "decoder_layers": DECODER_NUM_LAYERS,
             "loss_type": "Pairwise_Distance",  # Track loss type
-        }
+        },
+        save_code=True
     )
 
     # Check for CUDA availability
@@ -201,6 +202,7 @@ def main():
     parser.add_argument('--resume', type=str, help='Path to checkpoint to resume from')
     args = parser.parse_args()
     start_epoch = 1
+
     if args.resume:
         print(f"Resuming training from: {args.resume}")
         if args.resume and os.path.exists(args.resume):
@@ -261,21 +263,24 @@ def main():
             recon_loss = pairwise_distance_loss(recon_batch, molecules.pos, 2)
             kl_div = torch.clamp(kl_div, max = 2000)
                 # Debug KL components every 100 batches
-            if batch_idx % 100 == 0:
+            if batch_idx % 500 == 0:
                 mu_norm = torch.mean(mu.pow(2)).item()
                 log_var_mean = torch.mean(log_var).item()
                 exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
                 print(f"  Debug - kl: {kl_div:.4f}, recon_loss: {recon_loss:.4f}")
                 print(f"  Debug - μ²: {mu_norm:.4f}, log_var: {log_var_mean:.4f}, exp(log_var): {exp_log_var_mean:.4f}")
+
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max = 1000)  # Lower clamp for MSE
-
-            if kl_div.item() < 3 and epoch < 30:
+            kl_weight = 1
+            if kl_div.item() < 3 and epoch < 10:
                 kl_div = torch.tensor(0.0, device=kl_div.device, dtype=kl_div.dtype)
-
-            kl_weight = min(1, epoch / 10)
+            elif epoch > 10:
+                kl_weight = min(1, (epoch -10 )/ 10)
+            else:
+                kl_weight = min(1, epoch / 10)
             loss = recon_loss + kl_weight*kl_div 
-            # Check for numerical issues
+            
             if torch.isnan(loss) or torch.isinf(loss):
                 print(f"NaN/Inf detected in loss at epoch {epoch}, skipping batch...")
                 continue
@@ -336,13 +341,22 @@ def main():
         
         # Save checkpoint every 10 epochs with timestamp
         if epoch % 2 == 0:
-            checkpoint_path = f'vae_model_pairwise_epoch{epoch}_large_model.pth'
+            checkpoint_path = f'vae_model_pairwise_epoch{epoch}_small_model.pth'
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'scheduler_state_dict': scheduler.state_dict(),
                 'loss': avg_loss,
+                'config': {
+                    'latent_dim': LATENT_DIM,
+                    'num_atoms': ATOM_COUNT,
+                    'atom_feature_dim': atom_feature_dim,
+                    'visnet_hidden_channels': VISNET_HIDDEN_CHANNELS,
+                    'decoder_hidden_dim': DECODER_HIDDEN_DIM,
+                    'decoder_num_layers': DECODER_NUM_LAYERS,
+                    'loss_type': 'MSE'
+                }
             }, checkpoint_path)
             print(f"  → Checkpoint saved: {checkpoint_path}")
 
