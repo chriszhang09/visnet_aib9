@@ -243,7 +243,7 @@ class PyGEGNNDecoderMSE(nn.Module):
             from torch_cluster import radius_graph
             # Cap the number of neighbors to bound memory; tune as needed
             edge_index = radius_graph(
-                coords, r=self.cutoff, batch=batch, loop=False, max_num_neighbors=16
+                coords, r=self.cutoff, batch=batch, loop=False, max_num_neighbors=64
             )
         
         # Apply EGNN layers with the same connectivity
