@@ -21,8 +21,8 @@ from aib9_lib import aib9_tools as aib9
 def pairwise_distance_loss(true_coords, pred_coords, p=2):
     device = torch.device('cuda')
     if pred_coords.device != true_coords.device:
-        pred_coords = true_coords.to(device)
-        target_coords = target_coords.to(device)
+        pred_coords = pred_coords.to(device)
+        true_coords = true_coords.to(device)
     true_distances = torch.pdist(true_coords, p=p).to(device)
     pred_distances = torch.pdist(pred_coords, p=p).to(device)
     loss = F.mse_loss(pred_distances, true_distances)
@@ -164,7 +164,7 @@ def main():
     # Use cutoff-based edge identification instead of predefined covalent edges
     train_data_list = []
     for i in range(train_data_np.shape[0]):
-        pos = torch.from_numpy(train_data_np[i]).float()
+        pos = torch.from_numpy(train_data_np[i]).float().to('cpu')
         # No edge_index - let ViSNet use cutoff-based edge identification
         data = Data(z=z, pos=pos)
         train_data_list.append(data)
@@ -286,18 +286,16 @@ def main():
 
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max = 1000)  # Lower clamp for MSE
-            if kl_div.item() < 3 and epoch < 10:
-                kl_div = torch.tensor(0.0, device=kl_div.device, dtype=kl_div.dtype)
-            if epoch > 10:
-                kl_weight = min(1, (epoch - 10 )/ 10)
-            else:
-                kl_weight = min(1, epoch / 10)
+            #if kl_div.item() < 3 and epoch < 10:
+               # kl_div = torch.tensor(0.0, device=kl_div.device, dtype=kl_div.dtype)
+            #if epoch > 10:
+               # kl_weight = min(1, (epoch - 10 )/ 10)
+            #else:
+            kl_weight = min(1, epoch / 10)
+            recon_loss = recon_loss.to(device)
 
             loss = recon_loss + kl_weight*kl_div 
             
-            if torch.isnan(loss) or torch.isinf(loss):
-                print(f"NaN/Inf detected in loss at epoch {epoch}, skipping batch...")
-                continue
                 
             if use_amp:
                 scaler.scale(loss).backward()
@@ -342,7 +340,7 @@ def main():
         if epoch == 1 or epoch % 2 == 0:
             print(f"  → Generating samples and visualizations...")
             metrics, figures = validate_and_sample(
-                model, val_sample, device, z, None, epoch
+                model, val_sample.clone(), device, z, None, epoch
             )
             
             # Log metrics
@@ -381,7 +379,7 @@ def main():
     print(f"{'='*60}\n")
     
     metrics, figures = validate_and_sample(
-        model, val_sample, device, z, None, EPOCHS
+        model, val_sample.clone(), device, z, None, EPOCHS
     )
     wandb.log(metrics)
     for fig_name, fig in figures.items():

@@ -17,12 +17,22 @@ from pytorch_lightning.strategies import DDPStrategy
 from torch_geometric.data import Data
 
 from aib9_lib import aib9_tools as aib9
-
+'''
 def pairwise_distance_loss(true_coords, pred_coords, p=2):
     device = torch.device('cuda')
     if pred_coords.device != true_coords.device:
-        pred_coords = true_coords.to(device)
-        target_coords = target_coords.to(device)
+        pred_coords = pred_coords.to(device)
+        true_coords = true_coords.to(device)
+    true_distances = torch.pdist(true_coords, p=p).to(device)
+    pred_distances = torch.pdist(pred_coords, p=p).to(device)
+    loss = F.mse_loss(pred_distances, true_distances)
+    return loss
+    '''
+def pairwise_distance_loss(true_coords, pred_coords, p=2):
+    device = torch.device('cuda')
+    if pred_coords.device != true_coords.device:
+        pred_coords = true_coords.to(device)  # <-- Bug 1: Overwrites pred_coords with true_coords
+        target_coords = target_coords.to(device) # <-- Bug 2: 'target_coords' is not defined
     true_distances = torch.pdist(true_coords, p=p).to(device)
     pred_distances = torch.pdist(pred_coords, p=p).to(device)
     loss = F.mse_loss(pred_distances, true_distances)
@@ -91,12 +101,13 @@ def main():
     DECODER_HIDDEN_DIM = 256
     DECODER_NUM_LAYERS = 5
     BATCH_SIZE = 128
-    LEARNING_RATE = 4e-4  
+    LEARNING_RATE = 1e-4  
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
     train_data_np = train_data_np.reshape(-1, 58, 3)
 
+    
         # Initialize Weights & Biases
     wandb.init(
         project="aib9-vae-pairwise",  # Different project name
@@ -164,7 +175,7 @@ def main():
     # Use cutoff-based edge identification instead of predefined covalent edges
     train_data_list = []
     for i in range(train_data_np.shape[0]):
-        pos = torch.from_numpy(train_data_np[i]).float()
+        pos = torch.from_numpy(train_data_np[i]).float().to('cpu')
         # No edge_index - let ViSNet use cutoff-based edge identification
         data = Data(z=z, pos=pos)
         train_data_list.append(data)
@@ -252,6 +263,11 @@ def main():
     print(f"{'='*60}\n")
 
     # Training loop
+    avg_loss = 0
+    avg_recon_loss = 0
+    avg_kl_loss = 0
+    grad_norm = 0
+
     for epoch in range(start_epoch, EPOCHS + 1):
         model.train()
         total_loss = 0
@@ -286,19 +302,17 @@ def main():
 
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max = 1000)  # Lower clamp for MSE
-            if kl_div.item() < 3 and epoch < 10:
+            kl_weight = 1/2
+            if kl_div.item() < 3 and epoch < 5:
                 kl_div = torch.tensor(0.0, device=kl_div.device, dtype=kl_div.dtype)
-            if epoch > 10:
-                kl_weight = min(1, (epoch - 10 )/ 10)
+            if epoch > 5:
+                kl_weight = kl_weight*min(1, (epoch - 5 )/ 5)
             else:
-                kl_weight = min(1, epoch / 10)
+                kl_weight = kl_weight*min(1, epoch / 5)
 
             loss = recon_loss + kl_weight*kl_div 
             
-            if torch.isnan(loss) or torch.isinf(loss):
-                print(f"NaN/Inf detected in loss at epoch {epoch}, skipping batch...")
-                continue
-                
+            
             if use_amp:
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
@@ -342,7 +356,7 @@ def main():
         if epoch == 1 or epoch % 2 == 0:
             print(f"  → Generating samples and visualizations...")
             metrics, figures = validate_and_sample(
-                model, val_sample, device, z, None, epoch
+                model, val_sample.clone(), device, z, None, epoch
             )
             
             # Log metrics
@@ -354,7 +368,7 @@ def main():
                 plt.close(fig)
         
         # Save checkpoint every 10 epochs with timestamp
-        if epoch % 2 == 0:
+        if epoch % 5 == 0:
             checkpoint_path = f'vae_model_pairwise_epoch{epoch}_small_model.pth'
             torch.save({
                 'epoch': epoch,
@@ -381,7 +395,7 @@ def main():
     print(f"{'='*60}\n")
     
     metrics, figures = validate_and_sample(
-        model, val_sample, device, z, None, EPOCHS
+        model, val_sample.clone(), device, z, None, EPOCHS
     )
     wandb.log(metrics)
     for fig_name, fig in figures.items():
