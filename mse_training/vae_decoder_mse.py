@@ -67,22 +67,16 @@ class PyGEGNNLayerMSE(MessagePassing):
         if torch.isnan(pos).any() or torch.isinf(pos).any():
             print("Warning: NaN/Inf detected in input positions")
             pos = torch.nan_to_num(pos, nan=0.0, posinf=1.0, neginf=-1.0)
-        
-        # Move edge_index to CPU for safety checks to prevent CUDA errors
-        edge_index_cpu = edge_index.cpu()
-        row, col = edge_index_cpu[0], edge_index_cpu[1]
-        
-        # Check for invalid edge indices
+            
+        row, col = edge_index[0], edge_index[1]
+
         if (row < 0).any() or (col < 0).any():
             print("Warning: Negative edge indices detected")
             return x, pos
-        
+
         if row.max() >= x.size(0) or col.max() >= x.size(0):
             print(f"Warning: Edge indices out of bounds. Max: {row.max()}, {col.max()}, Size: {x.size(0)}")
             return x, pos
-        
-        # Move back to device
-        row, col = row.to(x.device), col.to(x.device)
         
         # Compute messages
         messages = self.message(x, pos, row, col)

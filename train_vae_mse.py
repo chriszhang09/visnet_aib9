@@ -17,62 +17,17 @@ from pytorch_lightning.strategies import DDPStrategy
 from torch_geometric.data import Data
 
 from aib9_lib import aib9_tools as aib9
-'''
+
 def pairwise_distance_loss(true_coords, pred_coords, p=2):
     device = torch.device('cuda')
     if pred_coords.device != true_coords.device:
         pred_coords = pred_coords.to(device)
         true_coords = true_coords.to(device)
-    true_distances = torch.pdist(true_coords, p=p).to(device)
-    pred_distances = torch.pdist(pred_coords, p=p).to(device)
+    true_distances = torch.pdist(true_coords, p=p)
+    pred_distances = torch.pdist(pred_coords, p=p)
     loss = F.mse_loss(pred_distances, true_distances)
     return loss
-    '''
-def pairwise_distance_loss(true_coords, pred_coords, p=2):
-    device = torch.device('cuda')
-    if pred_coords.device != true_coords.device:
-        pred_coords = true_coords.to(device)  # <-- Bug 1: Overwrites pred_coords with true_coords
-        target_coords = target_coords.to(device) # <-- Bug 2: 'target_coords' is not defined
-    true_distances = torch.pdist(true_coords, p=p).to(device)
-    pred_distances = torch.pdist(pred_coords, p=p).to(device)
-    loss = F.mse_loss(pred_distances, true_distances)
-    return loss
-
-
-def simple_mse_loss(pred_coords, target_coords):
-    device = torch.device('cuda')
-    """
-    Simple MSE loss on coordinates with E(3) invariance via centering.
-    Much faster and more stable than pairwise distance loss.
-    All computations on GPU for maximum speed.
-    
-    Args:
-        pred_coords: Predicted coordinates [total_atoms, 3] (PyG format)
-        target_coords: Target coordinates [total_atoms, 3] (PyG format)
-    
-    Returns:
-        MSE loss on centered coordinates
-    """
-    # Ensure both tensors are on the same device and float32
-    pred_coords = pred_coords.float()
-    target_coords = target_coords.float()
-    
-    # Ensure both are on the same device (GPU if available)
-    if pred_coords.device != target_coords.device:
-        pred_coords = pred_coords.to(device)
-        target_coords = target_coords.to(device)
-    
-    # Center both coordinate sets to make them translation invariant
-    # All operations stay on GPU
-    pred_centered = pred_coords - pred_coords.mean(dim=0, keepdim=True)
-    target_centered = target_coords - target_coords.mean(dim=0, keepdim=True)
-    
-    # Simple MSE loss on centered coordinates (GPU computation)
-    mse_loss = F.mse_loss(pred_centered, target_centered)
-    
-    # Scale down to reasonable range (coordinates are typically 0.1-2.0 nm)
-    return mse_loss
-
+  
 
 from mse_training.visnet_vae_encoder_mse import ViSNetEncoderMSE
 from mse_training.vae_model_mse import MolecularVAEMSE, vae_loss_function_mse
@@ -184,6 +139,7 @@ def main():
         batch_size=BATCH_SIZE,
         shuffle=True,
         num_workers=8
+        pin_memory=True
     )
     
     # Only 10 unique atomic types in the dataset
@@ -245,11 +201,6 @@ def main():
                     print(f"Warning: could not load scaler state: {e}")
             print(f"Resumed from {args.resume} at epoch {start_epoch}")
 
- 
-
- 
-   
-
     # Log model to wandb
     wandb.watch(model, log='all', log_freq=200)  # Reduced log frequency
     
@@ -293,7 +244,7 @@ def main():
             recon_loss = pairwise_distance_loss(recon_batch, molecules.pos, 2)
             kl_div = torch.clamp(kl_div, max = 2000)
                 # Debug KL components every 100 batches
-            if batch_idx % 100 == 0:
+            if batch_idx % 500 == 0:
                 mu_norm = torch.mean(mu.pow(2)).item()
                 log_var_mean = torch.mean(log_var).item()
                 exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
@@ -323,11 +274,7 @@ def main():
                 loss.backward()
               
                 optimizer.step()
-            
-            # Check for gradient explosion
-            #if grad_norm > 10.0:
-                #print(f"Warning: Large gradient norm {grad_norm:.4f}")
-            
+
             total_loss += loss.item()
             total_recon_loss += recon_loss.item()
             total_kl_loss += kl_div.item()

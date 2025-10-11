@@ -23,8 +23,8 @@ def pairwise_distance_loss(true_coords, pred_coords, p=2):
     if pred_coords.device != true_coords.device:
         pred_coords = pred_coords.to(device)
         true_coords = true_coords.to(device)
-    true_distances = torch.pdist(true_coords, p=p).to(device)
-    pred_distances = torch.pdist(pred_coords, p=p).to(device)
+    true_distances = torch.pdist(true_coords, p=p)
+    pred_distances = torch.pdist(pred_coords, p=p)
     loss = F.mse_loss(pred_distances, true_distances)
     return loss
 
@@ -89,9 +89,9 @@ def main():
     VISNET_HIDDEN_CHANNELS = 256
     ENCODER_NUM_LAYERS = 9
     DECODER_HIDDEN_DIM = 256
-    DECODER_NUM_LAYERS = 10
+    DECODER_NUM_LAYERS = 11
     BATCH_SIZE = 64
-    LEARNING_RATE = 4e-4  
+    LEARNING_RATE = 1e-4  
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
@@ -114,6 +114,8 @@ def main():
         },
         save_code=True
     )
+        # Create checkpoint directory if it doesn't exist
+    os.makedirs('checkpoints', exist_ok=True)
 
     # Check for CUDA availability
     if torch.cuda.is_available():
@@ -173,6 +175,7 @@ def main():
         batch_size=BATCH_SIZE,
         shuffle=True,
         num_workers=8
+        pin_memory=True
     )
     
     # Only 10 unique atomic types in the dataset
@@ -277,7 +280,7 @@ def main():
             recon_loss = pairwise_distance_loss(recon_batch, molecules.pos, 2)
             kl_div = torch.clamp(kl_div, max = 2000)
                 # Debug KL components every 100 batches
-            if batch_idx % 100 == 0:
+            if batch_idx % 500 == 0:
                 mu_norm = torch.mean(mu.pow(2)).item()
                 log_var_mean = torch.mean(log_var).item()
                 exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
@@ -286,11 +289,7 @@ def main():
 
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max = 1000)  # Lower clamp for MSE
-            #if kl_div.item() < 3 and epoch < 10:
-               # kl_div = torch.tensor(0.0, device=kl_div.device, dtype=kl_div.dtype)
-            #if epoch > 10:
-               # kl_weight = min(1, (epoch - 10 )/ 10)
-            #else:
+
             kl_weight = min(1, epoch / 10)
             recon_loss = recon_loss.to(device)
 
@@ -307,10 +306,6 @@ def main():
                 loss.backward()
               
                 optimizer.step()
-            
-            # Check for gradient explosion
-            #if grad_norm > 10.0:
-                #print(f"Warning: Large gradient norm {grad_norm:.4f}")
             
             total_loss += loss.item()
             total_recon_loss += recon_loss.item()
@@ -353,7 +348,7 @@ def main():
         
         # Save checkpoint every 10 epochs with timestamp
         if epoch % 2 == 0:
-            checkpoint_path = f'vae_model_pairwise_epoch{epoch}_large_model.pth'
+            checkpoint_path = f'checkpoints/vae_model_pairwise_epoch{epoch}_large_model.pth'
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
@@ -387,7 +382,7 @@ def main():
         plt.close(fig)
     
     # Save final model with pairwise suffix
-    final_model_path = 'vae_model_pairwise_final_large_model.pth'
+    final_model_path = 'checkpoints/vae_model_pairwise_final_large_model.pth'
     torch.save({
         'epoch': EPOCHS,
         'model_state_dict': model.state_dict(),
