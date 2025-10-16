@@ -50,13 +50,13 @@ def main():
     COORD_DIM = 3
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 128 
-    EPOCHS = 110
+    EPOCHS = 150
     VISNET_HIDDEN_CHANNELS = 256
     ENCODER_NUM_LAYERS = 3
     DECODER_HIDDEN_DIM = 256
     DECODER_NUM_LAYERS = 5
     BATCH_SIZE = 128
-    LEARNING_RATE = 1e-4  
+    LEARNING_RATE = 5e-5  
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
@@ -138,7 +138,7 @@ def main():
         train_data_list,
         batch_size=BATCH_SIZE,
         shuffle=True,
-        num_workers=8
+        num_workers=8,
         pin_memory=True
     )
     
@@ -300,7 +300,7 @@ def main():
         print(f'Epoch {epoch:3d}: Loss={avg_loss:.4f} (Recon={avg_recon_loss:.4f}, KL={avg_kl_loss:.4f}) LR={optimizer.param_groups[0]["lr"]:.2e}')
         
         # Validation and sampling every 10 epochs or at start (reduced frequency for speed)
-        if epoch == 1 or epoch % 2 == 0:
+        if epoch == 1 or epoch % 5 == 0:
             print(f"  → Generating samples and visualizations...")
             metrics, figures = validate_and_sample(
                 model, val_sample.clone(), device, z, None, epoch

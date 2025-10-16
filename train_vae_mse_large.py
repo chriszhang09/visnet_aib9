@@ -15,6 +15,7 @@ from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from pytorch_lightning.loggers import CSVLogger, TensorBoardLogger
 from pytorch_lightning.strategies import DDPStrategy
 from torch_geometric.data import Data
+from sklearn.model_selection import train_test_split
 
 from aib9_lib import aib9_tools as aib9
 
@@ -91,11 +92,13 @@ def main():
     DECODER_HIDDEN_DIM = 256
     DECODER_NUM_LAYERS = 11
     BATCH_SIZE = 64
-    LEARNING_RATE = 1e-4  
+    LEARNING_RATE = 4e-5  
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
     train_data_np = train_data_np.reshape(-1, 58, 3)
+    train_data_np, val_data_np = train_test_split(train_data_np, test_size=0.1, random_state=seed)
+  
 
         # Initialize Weights & Biases
     wandb.init(
@@ -174,7 +177,7 @@ def main():
         train_data_list,
         batch_size=BATCH_SIZE,
         shuffle=True,
-        num_workers=8
+        num_workers=8,
         pin_memory=True
     )
     
