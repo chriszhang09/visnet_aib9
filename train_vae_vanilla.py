@@ -87,22 +87,25 @@ def main():
     COORD_DIM = 3
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 128 
-    EPOCHS = 110
+    EPOCHS = 5  # Reduced for testing
     ENCODER_HIDDEN_DIM = 128
     ENCODER_NUM_LAYERS = 6
     DECODER_HIDDEN_DIM = 128
     DECODER_NUM_LAYERS = 6
-    BATCH_SIZE = 128
+    BATCH_SIZE = 32  # Smaller batch size for testing
     LEARNING_RATE = 1e-4  
     NUM_WORKERS = 2  # Parallel data loading
     CUTOFF = 5.0  # Distance threshold for edge construction
 
     train_data_np = np.load(aib9.FULL_DATA)
     train_data_np = train_data_np.reshape(-1, 58, 3)
+    
+    # Use only a small subset for testing
+    train_data_np = train_data_np[:1000]  # Only 1000 samples for testing
 
     # Initialize Weights & Biases
     wandb.init(
-        project="aib9-vae-vanilla",  # Different project name for vanilla model
+        project="aib9-vae-vanilla-test",  # Test project name
         config={
             "atom_count": ATOM_COUNT,
             "latent_dim": LATENT_DIM,
@@ -115,6 +118,7 @@ def main():
             "decoder_layers": DECODER_NUM_LAYERS,
             "cutoff": CUTOFF,
             "loss_type": "Pairwise_Distance",  # Track loss type
+            "test_mode": True,  # Mark as test run
         },
         save_code=True
     )
@@ -233,7 +237,7 @@ def main():
             print(f"Resumed from {args.resume} at epoch {start_epoch}")
 
     # Create checkpoint directory if it doesn't exist
-    os.makedirs('checkpoint', exist_ok=True)
+    os.makedirs('checkpoint_vanilla', exist_ok=True)
 
     # Log model to wandb
     wandb.watch(model, log='all', log_freq=200)  # Reduced log frequency
@@ -280,8 +284,8 @@ def main():
             recon_loss = pairwise_distance_loss(recon_batch, molecules.pos, 2)
             kl_div = torch.clamp(kl_div, max=2000)
             
-            # Debug KL components every 100 batches
-            if batch_idx % 100 == 0:
+            # Debug KL components every 10 batches for testing
+            if batch_idx % 10 == 0:
                 mu_norm = torch.mean(mu.pow(2)).item()
                 log_var_mean = torch.mean(log_var).item()
                 exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
@@ -335,8 +339,8 @@ def main():
         
         print(f'Epoch {epoch:3d}: Loss={avg_loss:.4f} (Recon={avg_recon_loss:.4f}, KL={avg_kl_loss:.4f}) LR={optimizer.param_groups[0]["lr"]:.2e}')
         
-        # Validation and sampling every 10 epochs or at start (reduced frequency for speed)
-        if epoch == 1 or epoch % 10 == 0:
+        # Validation and sampling every epoch for testing
+        if epoch == 1 or epoch % 1 == 0:
             print(f"  → Generating samples and visualizations...")
             metrics, figures = validate_and_sample(
                 model, val_sample.clone(), device, z, None, epoch
@@ -350,9 +354,9 @@ def main():
                 wandb.log({fig_name: wandb.Image(fig)})
                 plt.close(fig)
         
-        # Save checkpoint every 10 epochs with timestamp
-        if epoch % 5 == 0:
-            checkpoint_path = f'checkpoint/vae_vanilla_epoch{epoch}.pth'
+        # Save checkpoint every epoch for testing
+        if epoch % 1 == 0:
+            checkpoint_path = f'checkpoint_vanilla/vae_vanilla_epoch{epoch}.pth'
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
@@ -388,7 +392,7 @@ def main():
         plt.close(fig)
     
     # Save final model
-    final_model_path = 'checkpoint/vae_vanilla_final.pth'
+    final_model_path = 'checkpoint_vanilla/vae_vanilla_final.pth'
     torch.save({
         'epoch': EPOCHS,
         'model_state_dict': model.state_dict(),
