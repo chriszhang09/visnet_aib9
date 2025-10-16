@@ -58,14 +58,24 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
     with torch.no_grad():
         # 1. Reconstruction: encode and decode a real molecule
         val_molecule = val_data.to(device)
-        mu, log_var = model.encoder(val_molecule)
+        
+        # Handle different encoder types
+        if hasattr(model.encoder, 'forward') and 'pos' in model.encoder.forward.__code__.co_varnames:
+            # Vanilla encoder expects (pos, atom_types, edge_index, batch)
+            atom_types_one_hot = F.one_hot(val_data.z.long(), 
+                                    num_classes=model.decoder.atom_feature_dim).float().to(device)
+            batch = torch.zeros(val_data.z.size(0), dtype=torch.long, device=device)
+            mu, log_var = model.encoder(val_molecule.pos, atom_types_one_hot, 
+                                      val_molecule.edge_index, batch)
+        else:
+            # ViSNet encoder expects data object
+            mu, log_var = model.encoder(val_molecule)
+            atom_types_one_hot = F.one_hot(val_data.z.long(), 
+                                    num_classes=model.decoder.atom_feature_dim).float().to(device)
+            batch = torch.zeros(val_data.z.size(0), dtype=torch.long, device=device)
+        
         z = model.reparameterize(mu, log_var)
         
-        atom_types_one_hot = F.one_hot(val_data.z.long(), 
-                                num_classes=model.decoder.atom_feature_dim).float().to(device)
-        
-        # Create batch tensor for single molecule
-        batch = torch.zeros(val_data.z.size(0), dtype=torch.long, device=device)
         # Use cutoff-based edges inside decoder
         reconstructed = model.decoder(z, atom_types_one_hot, None, batch)
         
