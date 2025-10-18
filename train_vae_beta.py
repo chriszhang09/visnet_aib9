@@ -15,7 +15,7 @@ from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from pytorch_lightning.loggers import CSVLogger, TensorBoardLogger
 from pytorch_lightning.strategies import DDPStrategy
 from torch_geometric.data import Data
-
+from sklearn.model_selection import train_test_split
 from aib9_lib import aib9_tools as aib9
 
 def pairwise_distance_loss(true_coords, pred_coords, p=2):
@@ -60,8 +60,9 @@ def main():
     NUM_WORKERS = 2  # Parallel data loading
 
     train_data_np = np.load(aib9.FULL_DATA)
+
     train_data_np = train_data_np.reshape(-1, 58, 3)
-    
+    train_data_np, val_data_np = train_test_split(train_data_np, test_size=0.1, random_state=seed)
         # Initialize Weights & Biases
     wandb.init(
         project="aib9-vae-pairwise",  # Different project name
@@ -217,19 +218,17 @@ def main():
     avg_recon_loss = 0
     avg_kl_loss = 0
     grad_norm = 0
-    os.makedirs('checkpoints_no_beta', exist_ok=True)
-    
+
     for epoch in range(start_epoch, EPOCHS + 1):
         model.train()
         total_loss = 0
         total_recon_loss = 0
         total_kl_loss = 0
-        
         if epoch <= 10:
             current_lr = LEARNING_RATE * (epoch / 10.0)
             for param_group in optimizer.param_groups:
                 param_group['lr'] = current_lr
-
+        
         for batch_idx, data in enumerate(train_loader):
             molecules = data.to(device)
             optimizer.zero_grad(set_to_none=True)  # Faster than zero_grad()
@@ -306,8 +305,9 @@ def main():
                 plt.close(fig)
         
         # Save checkpoint every 10 epochs with timestamp
+        os.makedirs('checkpoints_beta', exist_ok=True)
         if epoch % 5 == 0:
-            checkpoint_path = f'checkpoints_no_beta/vae_model_pairwise_epoch{epoch}_small_model.pth'
+            checkpoint_path = f'checkpoints_beta/vae_model_pairwise_epoch{epoch}_small_model.pth'
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
@@ -341,8 +341,7 @@ def main():
         plt.close(fig)
     
     # Save final model with pairwise suffix
-
-    final_model_path = 'checkpoints_no_beta/vae_model_pairwise_final_small_model_model.pth'
+    final_model_path = 'checkpoints_beta/vae_model_pairwise_final_small_model_model.pth'
     torch.save({
         'epoch': EPOCHS,
         'model_state_dict': model.state_dict(),
