@@ -1,3 +1,5 @@
+wandb/
+aib9_lib/
 *.pth
 *.npy
 *.png
