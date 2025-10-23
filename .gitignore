@@ -1,7 +1,5 @@
-aib9_lib/
-wandb/
 *.pth
-checkpoint*/
 *.npy
 *.png
 
+molecule_coords.npy
