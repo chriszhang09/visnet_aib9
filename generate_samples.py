@@ -3,22 +3,30 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
-import torch.nn.functional as F
 from pathlib import Path
 import sys
 from scipy.stats import binned_statistic_2d
 import matplotlib.pyplot as plt
 from aib9_lib import aib9_tools as aib9
 import os
-
+from tqdm import tqdm
+import pathlib
+from mse_training.vae_model_mse import MolecularVAEMSE
 # --- 1. Parameters (Must match the trained model) ---
 # It is crucial that these parameters are identical to the ones used
 # when you trained and saved the model.
 ATOM_COUNT = 58
 COORD_DIM = 3
-ORIGINAL_DIM = ATOM_COUNT * COORD_DIM
-LATENT_DIM = 4
-MODEL_PATH = 'model.pth' # The path to your saved model file
+ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
+LATENT_DIM = 128 
+EPOCHS = 250
+VISNET_HIDDEN_CHANNELS = 256
+ENCODER_NUM_LAYERS = 3
+DECODER_HIDDEN_DIM = 256
+DECODER_NUM_LAYERS = 5
+BATCH_SIZE = 128
+LEARNING_RATE = 5e-5  
+MODEL_PATH = 'checkpoints/vae_model_base_full_cv_250.pth' # The path to your saved model file
 
 if torch.cuda.is_available():
     device = torch.device('cuda')
@@ -26,87 +34,120 @@ else:
     device = torch.device('cpu')
 print(f'Using device: {device}')
 
-# --- 2. VAE Model Definition (Must match the trained model) ---
-# This class defines the neural network architecture. You must use the
-# exact same structure as the model you saved, otherwise the saved
-# weights (the "state dictionary") will not match the layers.
-class VAE(nn.Module):
-    def __init__(self):
-        super(VAE, self).__init__()
-
-        # Encoder Layers (Not used for generation, but needed to define the model)
-        self.fc1 = nn.Linear(ORIGINAL_DIM, 256)
-        self.fc2 = nn.Linear(256, 128)
-        self.fc_mean = nn.Linear(128, LATENT_DIM)
-        self.fc_log_var = nn.Linear(128, LATENT_DIM)
-
-        # Decoder Layers (This is the part we will use)
-        self.fc3 = nn.Linear(LATENT_DIM, 128)
-        self.fc4 = nn.Linear(128, 256)
-        self.fc5 = nn.Linear(256, ORIGINAL_DIM)
-
-    def encode(self, x):
-        h1 = F.relu(self.fc1(x))
-        h2 = F.relu(self.fc2(h1))
-        return self.fc_mean(h2), self.fc_log_var(h2)
-
-    def reparameterize(self, mu, logvar):
-        std = torch.exp(0.5 * logvar)
-        eps = torch.randn_like(std)
-        return mu + eps * std
-
-    def decode(self, z):
-        h3 = F.relu(self.fc3(z))
-        h4 = F.relu(self.fc4(h3))
-        # Use linear activation for output coordinates
-        return self.fc5(h4)
-
-    def forward(self, x):
-        x_flat = x.view(-1, ORIGINAL_DIM)
-        mu, logvar = self.encode(x_flat)
-        z = self.reparameterize(mu, logvar)
-        recon_flat = self.decode(z)
-        recon = recon_flat.view(-1, ATOM_COUNT, COORD_DIM)
-        return recon, mu, logvar
-
-# --- 3. Generation Function ---
-def generate_samples(model, num_samples=1):
+def h(x):
     """
-    Generates new samples using the decoder part of the trained VAE.
-
-    Args:
-        model (VAE): The loaded VAE model with trained weights.
-        num_samples (int): The number of new molecular samples to generate.
-
-    Returns:
-        numpy.ndarray: An array of generated molecular coordinates.
+    Implements the piecewise function h(x)
+    h(x) = x if x < 1
+    h(x) = 1 if x >= 1
     """
-    print(f"\n--- Generating {num_samples} new sample(s) ---")
+    if x < 1:
+        return x
+    else:
+        return 1
+
+def generate_latent_samples(num_samples=10000):
     
-    # Set the model to evaluation mode. This disables layers like dropout
-    # that behave differently during training vs. inference.
-    model.eval()
+    
+    samples = []
+    total_attempts = 0
+    
+    M = 1.0
 
-    # We don't need to calculate gradients for generation, which saves memory and computation
+    while len(samples) < num_samples:
+        total_attempts += 1
+        z = np.random.normal(loc=0.0, scale=1.0, size=(LATENT_DIM,))
+        
+        z_matrix = z[:9].reshape((3, 3))
+        det_z = np.linalg.det(z_matrix)
+        h_det_z = h(det_z)
+        prob_accept = np.exp(h_det_z - 1)
+    
+        u = np.random.uniform(0.0, 1.0)
+        
+        if u < prob_accept:
+            # Accept the sample
+            samples.append(z)
+    
+    print(total_attempts)
+    return torch.tensor(samples,dtype=torch.float, device=device)
+    
+
+def generate_samples(model, num_samples=1):
+    project_path = pathlib.Path(__file__).resolve().parent
+    TOPO_FILE = (
+        project_path / "aib9_lib/aib9_atom_info.npy"
+    )  
+
+
+    ATOMICNUMBER_MAPPING = {
+    "H": 1,
+    "C": 6,
+    "N": 7,
+    "O": 8,
+    "F": 9,
+    "P": 15,
+    "S": 16,
+    "Cl": 17,
+    "Br": 35,
+    "I": 53,
+    }
+
+    ATOMIC_NUMBERS = []
+    topo = np.load(TOPO_FILE)
+    #print(f"Loaded topology with shape: {topo.shape}", topo)
+    for i in range(topo.shape[0]):
+        atom_name = topo[i, 0][0]
+        if atom_name in ATOMICNUMBER_MAPPING:
+            ATOMIC_NUMBERS.append(ATOMICNUMBER_MAPPING[atom_name])
+        else:
+            raise ValueError(f"Unknown atom name: {atom_name}")
+
+    # Create all tensors directly on the selected device to avoid device mismatch
+    z = torch.tensor(ATOMIC_NUMBERS, dtype=torch.long, device='cpu')
+
+
+    # Create one-hot encoded atom types
+    atom_types_one_hot = F.one_hot(z, num_classes=54).float().to(device)
+    batch_size = 1000
+    all_samples = []
+    num_batches = (num_samples + batch_size - 1) // batch_size
+    atomic_numbers = ATOMIC_NUMBERS
+
     with torch.no_grad():
-        # Determine the device the model is on (CPU or MPS)
-        device = next(model.parameters()).device
-        
-        # Sample random points from the latent space. The VAE was trained to make
-        # this space resemble a standard normal distribution (mean=0, variance=1).
-        random_latent_vectors = torch.randn(num_samples, LATENT_DIM).to(device)
-        
-        # Use the decoder to transform the latent vectors back into molecular coordinates
-        generated_samples_flat = model.decode(random_latent_vectors)
-        
-        # Reshape the flat output back to the 58x3 coordinate structure
-        generated_samples_coords = generated_samples_flat.view(num_samples, ATOM_COUNT, COORD_DIM)
-        
-        # Move the tensor to the CPU and convert it to a NumPy array for easier use
-        generated_samples_np = generated_samples_coords.cpu().numpy()
-        
-        print(f"Successfully generated samples with final shape: {generated_samples_np.shape}")
-        return generated_samples_np
+        for batch_idx in tqdm(range(num_batches), desc="Generating samples"):
+            # Calculate actual batch size for this iteration
+            start_idx = batch_idx * batch_size
+            end_idx = min(start_idx + batch_size, num_samples)
+            current_batch_size = end_idx - start_idx
+            
+            # Sample from prior
+            z_samples = generate_latent_samples(current_batch_size)
+            
+            # Expand atom types and batch for this batch size
+            atom_types_batch = atom_types_one_hot.unsqueeze(0).expand(current_batch_size, -1, -1)
+            atom_types_batch = atom_types_batch.reshape(current_batch_size * len(atomic_numbers), -1)
+            
+            batch_batch = torch.arange(current_batch_size, device=device).repeat_interleave(len(atomic_numbers))
+            
+            # Generate coordinates
+            generated_coords = model.decoder(z_samples, atom_types_batch, None, batch_batch)
+            
+            # Reshape to [batch_size, num_atoms, 3]
+            generated_coords = generated_coords.reshape(current_batch_size, len(atomic_numbers), 3)
+            
+            # Move to CPU and convert to numpy
+            generated_coords = generated_coords.cpu().numpy()
+            all_samples.append(generated_coords)
+            
+            # Clear GPU memory
+            del z_samples, atom_types_batch, batch_batch, generated_coords
+            torch.cuda.empty_cache() if torch.cuda.is_available() else None
+    
+    # Concatenate all samples
+    all_samples = np.concatenate(all_samples, axis=0)
+    print(f"Generated {all_samples.shape[0]:,} samples with shape {all_samples.shape}")
+    
+    return all_samples
 
 # --- Main Execution Block ---
 if __name__ == "__main__":
@@ -117,12 +158,34 @@ if __name__ == "__main__":
         device = torch.device('cpu')
     print(f'Using device: {device}')
 
+    atom_feature_dim = 54
 
-    loaded_model = VAE().to(device)
+    visnet_params = {
+        'hidden_channels': VISNET_HIDDEN_CHANNELS,
+        'num_layers': ENCODER_NUM_LAYERS,
+        'num_rbf': 32,
+        'cutoff': 5.0,  # Used for cutoff-based edge identification
+        'max_z': 9,
+    }
+
+    loaded_model = MolecularVAEMSE(
+        latent_dim=LATENT_DIM, 
+        num_atoms=ATOM_COUNT, 
+        atom_feature_dim=atom_feature_dim,
+        visnet_hidden_channels=VISNET_HIDDEN_CHANNELS,
+        decoder_hidden_dim=DECODER_HIDDEN_DIM,      
+        decoder_num_layers=DECODER_NUM_LAYERS,         
+        # No edge_index_template needed - PyG handles batching automatically
+        visnet_kwargs=visnet_params,
+        cutoff=5.0
+    ).to(device)
+
     print(f"\nLoading trained weights from '{MODEL_PATH}'...")
 
     try:
-        loaded_model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+        ckpt = torch.load(MODEL_PATH, map_location=device)
+        loaded_model.load_state_dict(ckpt['model_state_dict'])
+        loaded_model.eval()
         print("Model weights loaded successfully.")
     except FileNotFoundError:
         print(f"ERROR: Model file not found at '{MODEL_PATH}'.")
@@ -132,7 +195,7 @@ if __name__ == "__main__":
         print(f"An error occurred while loading the model: {e}")
         exit()
 
-    new_molecules = generate_samples(loaded_model, num_samples=1000000)
+    new_molecules = generate_samples(loaded_model, num_samples=100000)
     kai = aib9.kai_calculator(new_molecules)
     nbins = 200
     kai_flat = kai.reshape(-1, 2)
@@ -150,13 +213,10 @@ if __name__ == "__main__":
     plt.xlabel('kai1')
     plt.ylabel('kai2')
 
-    plt.savefig('pmf.png')
-    # --- In your data generation script, after this line ---
-    coords = new_molecules[0:100]
+    plt.savefig('pmf_new.png')
 
-    # --- Add this code to save the array ---
     try:
-        np.save('molecule_coords.npy', coords)
+        np.save('molecule_coords_new.npy', new_molecules)
         print("\nSUCCESS: Coordinates saved to molecule_coords.npy")
     except Exception as e:
         print(f"\nAn error occurred while saving the coordinates: {e}")

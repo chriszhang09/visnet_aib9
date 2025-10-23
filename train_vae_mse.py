@@ -60,17 +60,12 @@ def main():
     LEARNING_RATE = 5e-5  
     NUM_WORKERS = 2  # Parallel data loading
 
-    train_data_np = np.load(aib9.FULL_DATA)
     data = np.load(aib9.FULL_DATA).reshape(-1, 58, 3)
     print(f"Original data shape: {data.shape}")
     cv = aib9.kai_calculator(data)
     print(f"CV shape: {cv.shape}")
 
-    mask = cv[:, 0] > 0
-    filtered_data = data[mask]
-    filtered_cv = cv[mask]
-
-    train_data_np, test_data_np = train_test_split(filtered_data, test_size=0.1, random_state=42)
+    train_data_np, test_data_np = train_test_split(data, test_size=0.2, random_state=42)
         # Initialize Weights & Biases
     wandb.init(
         project="aib9-vae-pairwise",  # Different project name

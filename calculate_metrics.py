@@ -41,26 +41,30 @@ def identify_all_covalent_edges(topo):
         if res_idx == 1 and all(k in res_atoms for k in ['CH3', 'C', 'O']):
             edge_list.append([res_atoms['CH3'], res_atoms['C']])
             edge_list.append([res_atoms['C'], res_atoms['O']])
+            edge_list.append([res_atoms['C'], res_atoms['CH3']])
+            edge_list.append([res_atoms['O'], res_atoms['C']])
             continue # Go to next residue
 
         # Rules for standard amino acid residues (AIB in this case)
         if all(k in res_atoms for k in ['N', 'CA', 'C']):
             edge_list.append([res_atoms['N'], res_atoms['CA']]) # N-CA bond
             edge_list.append([res_atoms['CA'], res_atoms['C']])  # CA-C bond
+            edge_list.append([res_atoms['CA'], res_atoms['N']]) # N-CA bond
+            edge_list.append([res_atoms['C'], res_atoms['CA']])  # CA-C bond
         
         if all(k in res_atoms for k in ['C', 'O']):
             edge_list.append([res_atoms['C'], res_atoms['O']])   # C=O bond
-            
+            edge_list.append([res_atoms['O'], res_atoms['C']])   # C=O bond
         if all(k in res_atoms for k in ['CA', 'CB1']):
             edge_list.append([res_atoms['CA'], res_atoms['CB1']])# Side chain
-            
+            edge_list.append([res_atoms['CB1'], res_atoms['CA']])# Side chain
         if all(k in res_atoms for k in ['CA', 'CB2']):
             edge_list.append([res_atoms['CA'], res_atoms['CB2']])# Side chain
-            
+            edge_list.append([res_atoms['CB2'], res_atoms['CA']])# Side chain
         # C-terminal capping: CA-CA2 bond (for residue 10)
         if all(k in res_atoms for k in ['CA', 'CA2']):
             edge_list.append([res_atoms['CA'], res_atoms['CA2']])# C-terminal cap
-
+            edge_list.append([res_atoms['CA2'], res_atoms['CA']])# C-terminal cap
     # 2. Inter-Residue Peptide Bonds (C_i -> N_{i+1})
     for i in range(len(sorted_residues) - 1):
         res_idx1 = sorted_residues[i]
@@ -68,7 +72,7 @@ def identify_all_covalent_edges(topo):
         
         if "C" in atom_map[res_idx1] and "N" in atom_map[res_idx2]:
             edge_list.append([atom_map[res_idx1]["C"], atom_map[res_idx2]["N"]])
-
+            edge_list.append([atom_map[res_idx2]["N"], atom_map[res_idx1]["C"]])
     # Convert to NumPy array and make undirected
     edge_index = np.array(edge_list, dtype=int).T
     undirected_edge_index = np.concatenate([edge_index, edge_index[::-1]], axis=1)
@@ -126,9 +130,8 @@ def get_all_bond_angles(coords_batch, topo_file_path):
 
     # Build an adjacency list to find angles (i-j-k)
     adj = {i: [] for i in range(coords_batch.shape[1])}
-    for i, j in covalent_bonds:
+    for i, j in covalent_bonds.T:
         adj[i].append(j)
-        adj[j].append(i)
         
     all_angles = []
     
@@ -255,7 +258,7 @@ if __name__ == '__main__':
         # In a real case, you'd load your test set and a batch of generated samples.
         from aib9_lib import aib9_tools as aib9
         real_data = np.load(aib9.FULL_DATA).reshape(-1, 58, 3)
-        gen_data = np.load('aib9_lib/molecule_coords_all_data.npy').reshape(-1, 58, 3)
+        gen_data = np.load('molecule-coords_orig_large.npy').reshape(-1, 58, 3)
         
         metrics = calculate_tv_metrics(real_data, gen_data, TOPO_FILE_PATH)
         

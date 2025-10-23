@@ -72,27 +72,18 @@ def main():
     COORD_DIM = 3
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 128 
-    EPOCHS = 250
+    EPOCHS = 200
     VISNET_HIDDEN_CHANNELS = 256
     ENCODER_NUM_LAYERS = 3
     DECODER_HIDDEN_DIM = 256
     DECODER_NUM_LAYERS = 5
-    BATCH_SIZE = 128
+    BATCH_SIZE = 256
     LEARNING_RATE = 5e-5  
     NUM_WORKERS = 2  # Parallel data loading
     M = 1.0
 
-    train_data_np = np.load(aib9.FULL_DATA)
     data = np.load(aib9.FULL_DATA).reshape(-1, 58, 3)
-    print(f"Original data shape: {data.shape}")
-    cv = aib9.kai_calculator(data)
-    print(f"CV shape: {cv.shape}")
-
-    mask = cv[:, 0] > 0
-    filtered_data = data[mask]
-    filtered_cv = cv[mask]
-
-    train_data_np, test_data_np = train_test_split(filtered_data, test_size=0.1, random_state=42)
+    train_data_np, test_data_np = train_test_split(data, test_size=0.2, random_state=42)
         # Initialize Weights & Biases
     wandb.init(
         project="aib9-vae-pairwise",  # Different project name
@@ -273,6 +264,7 @@ def main():
                 recon_batch, mu, log_var = model(molecules)
                 # KL divergence for non-centered isotropic Gaussian: 0.5 * (||μ||² + σ² - log(σ²) - 1)
                 kl_div = -0.5 * torch.mean(1 + log_var - mu.pow(2) - log_var.exp())
+                
             # Use simple MSE loss with centering for E(3) invariance
             recon_loss = pairwise_distance_loss(recon_batch, molecules.pos, 2)
 
@@ -287,14 +279,14 @@ def main():
 
             recon_loss = torch.clamp(recon_loss, max = 1000)  # Lower clamp for MSE
             kl_weight = 1
-
+            z_sample = sample_gaussians(mu, log_var)
             try:
                 z_reshaped = z_sample[:, :9].view(-1, 3, 3) 
             except RuntimeError as e:
                 raise RuntimeError(f"Could not reshape latent space 'z_sample' with shape {z_sample.shape} to (-1, 3, 3). "
                                     "Please ensure your latent space has at least 9 dimensions. Error: {e}")
 
-            dets = torch.det(z_reshaped)
+            dets = torch.det(z_reshaped.float())
 
             h_vals = torch.clamp(dets, max=M)
             log_f_z_term = torch.mean(h_vals)
@@ -353,7 +345,7 @@ def main():
         # Save checkpoint every 10 epochs with timestamp
 
         if epoch % 5 == 0:
-            checkpoint_path = f'checkpoints_new/vae_model_pairwise_epoch{epoch}_small_model.pth'
+            checkpoint_path = f'checkpoints_new/vae_model_pairwise_epoch{epoch}_full_model.pth'
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
@@ -387,7 +379,7 @@ def main():
         plt.close(fig)
     
     # Save final model with pairwise suffix
-    final_model_path = 'checkpoints_new/vae_model_pairwise_final_small_model_model.pth'
+    final_model_path = 'checkpoints_new/vae_model_pairwise_final_full_model.pth'
     torch.save({
         'epoch': EPOCHS,
         'model_state_dict': model.state_dict(),
