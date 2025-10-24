@@ -26,7 +26,7 @@ DECODER_HIDDEN_DIM = 256
 DECODER_NUM_LAYERS = 5
 BATCH_SIZE = 128
 LEARNING_RATE = 5e-5  
-MODEL_PATH = 'checkpoints/vae_model_base_half_cv_105.pth' # The path to your saved model file
+MODEL_PATH = 'checkpoints_new/vae_model_pairwise_epoch140_small_model.pth' # The path to your saved model file
 
 if torch.cuda.is_available():
     device = torch.device('cuda')
@@ -216,7 +216,7 @@ if __name__ == "__main__":
     plt.savefig('pmf_new.png')
 
     try:
-        np.save('aib9_lib/molecule_coords_half_cv_original_model.npy', new_molecules)
+        np.save('aib9_lib/molecule_coords_half_cv_new_model.npy', new_molecules)
         print("\nSUCCESS: Coordinates saved to molecule_coords.npy")
     except Exception as e:
         print(f"\nAn error occurred while saving the coordinates: {e}")

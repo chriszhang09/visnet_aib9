@@ -228,7 +228,7 @@ def main():
         total_recon_loss = 0
         total_kl_loss = 0
 
-        if epoch >= 105:
+        if epoch >= 65:
             current_lr = LEARNING_RATE * 1/2
             for param_group in optimizer.param_groups:
                 param_group['lr'] = current_lr

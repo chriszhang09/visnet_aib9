@@ -5,6 +5,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --time=36:00:00
 #SBATCH --mem=64G  # Increased memory
+#SBATCH --gres=gpu:1
 #SBATCH --job-name=calculate_metrics
 
 module purge

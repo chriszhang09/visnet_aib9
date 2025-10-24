@@ -1,6 +1,10 @@
 import numpy as np
 import torch
 
+# Set device for CUDA acceleration
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f"Using device: {device}")
+
 def _total_variation_distance(hist1, hist2):
     """
     Calculate the Total Variation (TV) distance between two normalized histograms.
@@ -85,30 +89,36 @@ def get_all_bond_lengths(coords_batch):
     This assumes a "completely connected" graph.
     
     Args:
-        coords_batch (np.ndarray): Shape (num_molecules, num_atoms, 3)
+        coords_batch (np.ndarray or torch.Tensor): Shape (num_molecules, num_atoms, 3)
         
     Returns:
         np.ndarray: A flat array of all pairwise distances.
     """
-    if isinstance(coords_batch, torch.Tensor):
-        coords_batch = coords_batch.cpu().numpy()
+    # Convert to torch tensor if needed
+    if isinstance(coords_batch, np.ndarray):
+        coords_tensor = torch.from_numpy(coords_batch).to(device)
+    else:
+        coords_tensor = coords_batch.to(device)
 
-    num_molecules, num_atoms, _ = coords_batch.shape
-    all_lengths = []
+    num_molecules, num_atoms, _ = coords_tensor.shape
     
-    # torch.pdist is much faster if torch is available
-    if torch.cuda.is_available():
-        coords_tensor = torch.from_numpy(coords_batch).cuda()
+    # Process all molecules at once on GPU for maximum speed
+    if device.type == 'cuda':
+        # Reshape to process all molecules simultaneously
+        coords_flat = coords_tensor.view(-1, 3)  # [num_molecules * num_atoms, 3]
+        
+        # Calculate all pairwise distances at once
+        all_dists = torch.pdist(coords_flat)
+        
+        # Convert back to numpy
+        return all_dists.cpu().numpy()
+    else:
+        # CPU fallback - process molecules one by one
+        all_lengths = []
         for i in range(num_molecules):
             dists = torch.pdist(coords_tensor[i])
             all_lengths.append(dists.cpu().numpy())
-    else:
-        # Fallback to numpy
-        from scipy.spatial.distance import pdist
-        for i in range(num_molecules):
-            all_lengths.append(pdist(coords_batch[i]))
-            
-    return np.concatenate(all_lengths)
+        return np.concatenate(all_lengths)
 
 
 def get_all_bond_angles(coords_batch, topo_file_path):
@@ -117,14 +127,17 @@ def get_all_bond_angles(coords_batch, topo_file_path):
     Uses the TOPO file to determine connectivity.
     
     Args:
-        coords_batch (np.ndarray): Shape (num_molecules, num_atoms, 3)
+        coords_batch (np.ndarray or torch.Tensor): Shape (num_molecules, num_atoms, 3)
         topo_file_path (str): Path to 'aib9_atom_info.npy'
         
     Returns:
         np.ndarray: A flat array of all bond angles in degrees.
     """
-    if isinstance(coords_batch, torch.Tensor):
-        coords_batch = coords_batch.cpu().numpy()
+    # Convert to torch tensor if needed
+    if isinstance(coords_batch, np.ndarray):
+        coords_tensor = torch.from_numpy(coords_batch).to(device)
+    else:
+        coords_tensor = coords_batch.to(device)
 
     covalent_bonds = identify_all_covalent_edges(np.load(topo_file_path))
 
@@ -135,9 +148,12 @@ def get_all_bond_angles(coords_batch, topo_file_path):
         
     all_angles = []
     
-    for mol_coords in coords_batch:
+    # Process each molecule
+    for mol_idx in range(coords_batch.shape[0]):
+        mol_coords = coords_tensor[mol_idx]  # Keep on GPU
+        
         # Find all angle triplets (i, j, k) where i-j and j-k are bonds
-        for j in range(len(mol_coords)): # j is the central atom
+        for j in range(mol_coords.shape[0]): # j is the central atom
             neighbors = adj[j]
             if len(neighbors) < 2:
                 continue
@@ -148,7 +164,7 @@ def get_all_bond_angles(coords_batch, topo_file_path):
                     i = neighbors[idx1]
                     k = neighbors[idx2]
                     
-                    # Get coordinates
+                    # Get coordinates (keep on GPU)
                     v_i = mol_coords[i]
                     v_j = mol_coords[j]
                     v_k = mol_coords[k]
@@ -158,8 +174,8 @@ def get_all_bond_angles(coords_batch, topo_file_path):
                     v_jk = v_k - v_j
                     
                     # Normalize vectors
-                    norm_ji = np.linalg.norm(v_ji)
-                    norm_jk = np.linalg.norm(v_jk)
+                    norm_ji = torch.norm(v_ji)
+                    norm_jk = torch.norm(v_jk)
                     
                     if norm_ji == 0 or norm_jk == 0:
                         continue
@@ -168,11 +184,11 @@ def get_all_bond_angles(coords_batch, topo_file_path):
                     v_jk_norm = v_jk / norm_jk
                     
                     # Calculate dot product (clip for numerical stability)
-                    dot_prod = np.clip(np.dot(v_ji_norm, v_jk_norm), -1.0, 1.0)
+                    dot_prod = torch.clamp(torch.dot(v_ji_norm, v_jk_norm), -1.0, 1.0)
                     
                     # Get angle in degrees
-                    angle = np.degrees(np.arccos(dot_prod))
-                    all_angles.append(angle)
+                    angle = torch.degrees(torch.acos(dot_prod))
+                    all_angles.append(angle.cpu().item())
                     
     return np.array(all_angles)
 
@@ -201,9 +217,22 @@ def calculate_tv_metrics(real_coords, gen_coords, topo_file,
     real_bonds = get_all_bond_lengths(real_coords)
     gen_bonds = get_all_bond_lengths(gen_coords)
     
-    # Create normalized histograms
-    real_bond_hist, _ = np.histogram(real_bonds, bins=bond_bins, range=bond_range, density=True)
-    gen_bond_hist, _ = np.histogram(gen_bonds, bins=bond_bins, range=bond_range, density=True)
+    # Create normalized histograms (use torch for GPU acceleration if available)
+    if device.type == 'cuda':
+        real_bonds_tensor = torch.from_numpy(real_bonds).to(device)
+        gen_bonds_tensor = torch.from_numpy(gen_bonds).to(device)
+        
+        # Use torch.histogram for GPU acceleration
+        real_bond_hist, _ = torch.histogram(real_bonds_tensor, bins=bond_bins, range=bond_range, density=True)
+        gen_bond_hist, _ = torch.histogram(gen_bonds_tensor, bins=bond_bins, range=bond_range, density=True)
+        
+        # Convert back to numpy for compatibility
+        real_bond_hist = real_bond_hist.cpu().numpy()
+        gen_bond_hist = gen_bond_hist.cpu().numpy()
+    else:
+        # CPU fallback
+        real_bond_hist, _ = np.histogram(real_bonds, bins=bond_bins, range=bond_range, density=True)
+        gen_bond_hist, _ = np.histogram(gen_bonds, bins=bond_bins, range=bond_range, density=True)
     
     # Normalize histograms to be probability distributions
     real_bond_hist = real_bond_hist / np.sum(real_bond_hist)
@@ -221,9 +250,22 @@ def calculate_tv_metrics(real_coords, gen_coords, topo_file,
         print("Warning: Could not calculate angles. Skipping Angle TV.")
         angle_tv = np.nan
     else:
-        # Create normalized histograms
-        real_angle_hist, _ = np.histogram(real_angles, bins=angle_bins, range=angle_range, density=True)
-        gen_angle_hist, _ = np.histogram(gen_angles, bins=angle_bins, range=angle_range, density=True)
+        # Create normalized histograms (use torch for GPU acceleration if available)
+        if device.type == 'cuda':
+            real_angles_tensor = torch.from_numpy(real_angles).to(device)
+            gen_angles_tensor = torch.from_numpy(gen_angles).to(device)
+            
+            # Use torch.histogram for GPU acceleration
+            real_angle_hist, _ = torch.histogram(real_angles_tensor, bins=angle_bins, range=angle_range, density=True)
+            gen_angle_hist, _ = torch.histogram(gen_angles_tensor, bins=angle_bins, range=angle_range, density=True)
+            
+            # Convert back to numpy for compatibility
+            real_angle_hist = real_angle_hist.cpu().numpy()
+            gen_angle_hist = gen_angle_hist.cpu().numpy()
+        else:
+            # CPU fallback
+            real_angle_hist, _ = np.histogram(real_angles, bins=angle_bins, range=angle_range, density=True)
+            gen_angle_hist, _ = np.histogram(gen_angles, bins=angle_bins, range=angle_range, density=True)
         
         # Normalize histograms
         real_angle_hist = real_angle_hist / np.sum(real_angle_hist)
@@ -257,10 +299,22 @@ if __name__ == '__main__':
         # Create two batches of "molecules"
         # In a real case, you'd load your test set and a batch of generated samples.
         from aib9_lib import aib9_tools as aib9
+        print("Loading data...")
         real_data = np.load(aib9.FULL_DATA).reshape(-1, 58, 3)
         gen_data = np.load('molecule-coords_orig_large.npy').reshape(-1, 58, 3)
         
+        print(f"Real data shape: {real_data.shape}")
+        print(f"Generated data shape: {gen_data.shape}")
+        print(f"Using device: {device}")
+        
+        # Add timing
+        import time
+        start_time = time.time()
+        
         metrics = calculate_tv_metrics(real_data, gen_data, TOPO_FILE_PATH)
+        
+        end_time = time.time()
+        print(f"\nCalculation completed in {end_time - start_time:.2f} seconds")
         
         print("\n--- Results ---")
         print(f"Bond TV (all-pairs):   {metrics['bond_tv']:.4f}")

@@ -11,4 +11,4 @@
 module purge
 
 # Corrected the source path to be absolute and removed the :ro flag from the overlay
-singularity exec --nv --overlay /scratch/cz2200/visnetoverlay/visnet_env.ext3:ro /scratch/work/public/singularity/cuda12.1.1-cudnn8.9.0-devel-ubuntu22.04.2.sif /bin/bash -c "source /ext3/env.sh; conda activate visnet; python train_vae_mse.py"
+singularity exec --nv --overlay /scratch/cz2200/visnetoverlay/visnet_env.ext3:ro /scratch/work/public/singularity/cuda12.1.1-cudnn8.9.0-devel-ubuntu22.04.2.sif /bin/bash -c "source /ext3/env.sh; conda activate visnet; python train_vae_mse.py --resume vae_model_pairwise_epoch65_small_model.pth "
