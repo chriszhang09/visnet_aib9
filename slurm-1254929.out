@@ -1,0 +1,1008 @@
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+wandb: Tracking run with wandb version 0.22.1
+wandb: W&B syncing is set to `offline` in this directory. Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+wandb: Run data is saved locally in /scratch/cz2200/aib9/wandb/offline-run-20251024_234314-0wr26xvt
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'NeighborEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'EdgeEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'ViS_MP_Vertex_Edge.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+wandb: 
+wandb: Run history:
+wandb:                          epoch ▁
+wandb:                  learning_rate ▁
+wandb:                  train_kl_loss ▁
+wandb:                     train_loss ▁
+wandb:               train_recon_loss ▁
+wandb:                  val/bond_loss ▁█
+wandb:                val/latent_mean ▁█
+wandb:                 val/latent_std ▁▁
+wandb: val/mean_bond_length_generated ▁█
+wandb:  val/mean_bond_length_original ▁▁
+wandb:                             +5 ...
+wandb: 
+wandb: Run summary:
+wandb:                          epoch 1
+wandb:                  gradient_norm nan
+wandb:                  learning_rate 1e-05
+wandb:                  train_kl_loss 1e-05
+wandb:                     train_loss 68.90372
+wandb:               train_recon_loss 68.9037
+wandb:                  val/bond_loss 1.07017
+wandb:                val/latent_mean -0.0
+wandb:                 val/latent_std 0.00135
+wandb: val/mean_bond_length_generated 2.14533
+wandb:                             +5 ...
+wandb: 
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync /scratch/cz2200/aib9/wandb/offline-run-20251024_234314-0wr26xvt
+wandb: Find logs at: ./wandb/offline-run-20251024_234314-0wr26xvt/logs
+Original data shape: (10000, 58, 3)
+CV shape: (10000, 2)
+Using CUDA device: Tesla V100-PCIE-32GB
+CUDA memory: 34.1 GB
+Successfully initialized bias for log_var outputs to: 0.00
+
+============================================================
+Starting Training - 3784 samples
+Model parameters: 7,188,741
+Loss type: MSE (coordinate-based)
+============================================================
+
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.9118
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.2725
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 72.9047
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.0369
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 64.9928
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.0779
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.5978
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.7121
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.3224
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.1115
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.0801
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 72.0073
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.4160
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.0261
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.5405
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.0252
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.0310
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.0054
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 72.3702
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.3727
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.8099
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.8386
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.4831
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.1951
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.3282
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.6629
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.9015
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.2401
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.3718
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.5198
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.4265
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.3576
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.6015
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.1569
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.7608
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.1306
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.8442
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.8235
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.8901
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.1294
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.5585
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.9810
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.2435
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.7338
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.0300
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.0096
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.4037
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.0882
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.4446
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.0191
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.5985
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 63.5048
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.1625
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.1393
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 63.8196
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.5508
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.7102
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.5900
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.6476
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.7970
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.5878
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.3076
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.1760
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.0748
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.7681
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.7320
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.9894
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.4270
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.5449
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.3342
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.6025
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.2334
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.3036
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.3671
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.5107
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 64.3178
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.5458
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.5859
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.0677
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.8011
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.4972
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.2620
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.7184
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.6756
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.1948
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.7580
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.0296
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.3450
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.6790
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 63.7419
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.5859
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.8628
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.8439
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.6555
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.6547
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.7803
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.7574
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.9974
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.2774
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.9964
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.2785
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.7325
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.0382
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.6007
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.3063
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.0544
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.0841
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.5735
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.3170
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.6496
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 72.8694
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.5420
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.7288
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.9212
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.9664
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.2893
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.9797
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.6514
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.6644
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.7707
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.7909
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.9132
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.6921
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.4810
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.1303
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.0125
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.0919
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.6389
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.7496
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.1307
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.6437
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 73.2654
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.5653
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.1786
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.8754
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.8689
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.3865
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.0892
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.5111
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.9862
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 64.6176
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.9978
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.8122
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.3720
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.7103
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.2623
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.7163
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.4730
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.0587
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.6224
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.1294
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.1235
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 72.6077
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.2927
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.9841
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.9025
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.0296
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.9891
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.7910
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.6666
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.3669
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.2022
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.9304
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.9891
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.1749
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.3917
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.8610
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.6396
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.5495
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.0219
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.0761
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 64.8052
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.4915
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.1353
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.0976
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.0313
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.7803
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.2649
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.8140
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.0897
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.0767
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.8110
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.7254
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.3740
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 74.8028
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.0647
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.7936
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.5288
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.8889
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.6123
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.1826
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.4451
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.6506
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.2976
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.3329
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.7153
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.7924
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.6118
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.7547
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.4672
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.0631
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.5324
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.8712
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.9653
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.3779
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.5771
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.4764
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.7972
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.1246
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 74.1334
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 72.2233
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.4643
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 73.5240
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.6763
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.1089
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.5286
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.3093
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.0933
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.9428
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.9937
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 65.1385
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.5480
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 64.2001
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 68.5290
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.0829
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.1555
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.8906
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.0909
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 69.6559
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.5362
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.7453
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.5007
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 70.4411
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 67.4498
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 66.4988
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 72.2179
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN detected in positions after layer
+Warning: NaN detected in positions after layer
+  Debug - kl: 0.0000, recon_loss: 71.9839
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Epoch   1: Loss=68.9037 (Recon=68.9037, KL=0.0000) LR=5.00e-06
+  → Generating samples and visualizations...
+
+============================================================
+Training complete! Generating final samples...
+============================================================
+
+Final model saved to: vae_model_pairwise_final_small_model_model.pth

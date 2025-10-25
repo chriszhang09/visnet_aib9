@@ -48,24 +48,37 @@ def main():
     ATOM_COUNT = 58
     COORD_DIM = 3
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
-    LATENT_DIM = 128 
+    LATENT_DIM = 32 
     EPOCHS = 1
     VISNET_HIDDEN_CHANNELS = 256
     ENCODER_NUM_LAYERS = 3
     DECODER_HIDDEN_DIM = 256
     DECODER_NUM_LAYERS = 5
     BATCH_SIZE = 16
-    LEARNING_RATE = 5e-5  
+    LEARNING_RATE = 1e-5  # Reduced learning rate for stability  
     NUM_WORKERS = 2  # Parallel data loading
 
     data = np.load(aib9.FULL_DATA).reshape(-1, 58, 3)
     data = data[0:10000]
     print(f"Original data shape: {data.shape}")
+    
+    # Check for NaN in input data
+    if np.isnan(data).any():
+        print("Warning: NaN detected in input data")
+        data = np.nan_to_num(data, nan=0.0)
+        print("Replaced NaN values with 0.0")
+    
     cv = aib9.kai_calculator(data)
     mask = cv[:, 0] > 0
     filtered_data = data[mask]
     filtered_cv = cv[mask]
     print(f"CV shape: {cv.shape}")
+    
+    # Check for NaN in filtered data
+    if np.isnan(filtered_data).any():
+        print("Warning: NaN detected in filtered data")
+        filtered_data = np.nan_to_num(filtered_data, nan=0.0)
+        print("Replaced NaN values in filtered data with 0.0")
 
     train_data_np, test_data_np = train_test_split(filtered_data, test_size=0.2, random_state=42)
     
@@ -140,8 +153,19 @@ def main():
     # Use cutoff-based edge identification instead of predefined covalent edges
     train_data_list = []
     for i in range(train_data_np.shape[0]):
+        # Check for NaN in this molecule's coordinates
+        if np.isnan(train_data_np[i]).any():
+            print(f"Warning: NaN detected in molecule {i}")
+            train_data_np[i] = np.nan_to_num(train_data_np[i], nan=0.0)
+            
         edge_index = radius_graph(torch.from_numpy(train_data_np[i]), r=5.0, batch=torch.zeros(train_data_np[i].shape[0], dtype=torch.long, device='cpu'))
         pos = torch.from_numpy(train_data_np[i]).float().to('cpu')
+        
+        # Final check for NaN in tensor
+        if torch.isnan(pos).any():
+            print(f"Warning: NaN detected in tensor for molecule {i}")
+            pos = torch.nan_to_num(pos, nan=0.0)
+            
         # No edge_index - let ViSNet use cutoff-based edge identification
         data = Data(z=z, pos=pos, edge_index=edge_index)
         train_data_list.append(data)
@@ -183,7 +207,7 @@ def main():
     start_epoch = 1
 
        # Optimizer and scheduler
-    optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-3)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.8, patience=30, verbose=True)
        # Mixed precision training
     use_amp = device.type == 'cuda'
@@ -213,6 +237,22 @@ def main():
                     print(f"Warning: could not load scaler state: {e}")
             print(f"Resumed from {args.resume} at epoch {start_epoch}")
 
+    # Test model with dummy data to check for NaN
+    print("Testing model with dummy data...")
+    dummy_data = Data(
+        z=torch.tensor(ATOMIC_NUMBERS, dtype=torch.long).to(device),
+        pos=torch.randn(58, 3).to(device),
+        edge_index=torch.empty(2, 0, dtype=torch.long).to(device)
+    )
+    try:
+        with torch.no_grad():
+            test_output = model(dummy_data)
+        print("Model test passed - no NaN in dummy forward pass")
+    except Exception as e:
+        print(f"Model test failed: {e}")
+        print("Model has fundamental issues - reinitializing...")
+        model.reset_parameters()
+    
     # Log model to wandb
     wandb.watch(model, log='all', log_freq=200)  # Reduced log frequency
     
@@ -273,6 +313,11 @@ def main():
             loss = recon_loss + kl_weight*kl_div 
             
             
+            # Check for NaN in loss before backpropagation
+            if torch.isnan(loss):
+                print("Warning: NaN detected in loss, skipping this batch")
+                continue
+                
             if use_amp:
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
@@ -281,6 +326,9 @@ def main():
                 scaler.update()
             else:
                 loss.backward()
+                
+                # Add gradient clipping to prevent exploding gradients
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
               
                 optimizer.step()
 

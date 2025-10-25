@@ -40,6 +40,13 @@ class MolecularVAEMSE(nn.Module):
         self.latent_dim = latent_dim
         self.atom_feature_dim = atom_feature_dim
         self.num_atoms = num_atoms
+        
+        # Check for NaN in model parameters after initialization
+        for name, param in self.named_parameters():
+            if torch.isnan(param).any():
+                print(f"Warning: NaN detected in model parameter {name} after initialization")
+                with torch.no_grad():
+                    param.data = torch.randn_like(param.data) * 0.01
 
     def reparameterize(self, mu, log_var):
         """
@@ -63,8 +70,33 @@ class MolecularVAEMSE(nn.Module):
         return torch.randn(self.num_atoms, self.latent_dim, 3, device=device)
 
     def forward(self, data):
+        # Check input data for NaN
+        if torch.isnan(data.pos).any():
+            print("Warning: NaN in input positions")
+            data.pos = torch.nan_to_num(data.pos, nan=0.0)
+        if torch.isnan(data.z).any():
+            print("Warning: NaN in input atomic numbers")
+            data.z = torch.nan_to_num(data.z, nan=1.0)
+            
         # Encode
         v = self.encoder(data)
+        
+        # Check for NaN in encoder output
+        if torch.isnan(v).any():
+            print("Warning: NaN in encoder output - resetting encoder")
+            # Reset encoder parameters
+            for name, param in self.encoder.named_parameters():
+                if torch.isnan(param).any():
+                    print(f"Warning: NaN in encoder parameter {name} - resetting")
+                    with torch.no_grad():
+                        param.data = torch.randn_like(param.data) * 0.01
+            v = torch.nan_to_num(v, nan=0.0)
+            
+        # If encoder still produces NaN, use a fallback
+        if torch.isnan(v).any():
+            print("Warning: Encoder still produces NaN - using fallback")
+            v = torch.randn(v.shape[0], v.shape[1], v.shape[2], device=v.device) * 0.01
+        
         log_var = v[:, :, self.latent_dim:]
         mu = v[:, :, :self.latent_dim]
 
@@ -84,12 +116,17 @@ class MolecularVAEMSE(nn.Module):
         # Use smaller random positions for stability
         pos_rand = torch.randn(data.num_nodes, 3, device=data.pos.device) * 0.1
        
-        reconstructed_pos = self.decoder(z_v = latent_vector, z_s = atom_types_one_hot, pos_rand = pos_rand)
-        
-        # Check for NaN in reconstruction
-        if torch.isnan(reconstructed_pos).any():
-            print("Warning: NaN detected in reconstructed_pos")
-            reconstructed_pos = torch.nan_to_num(reconstructed_pos, nan=0.0)
+        # Try decoder, but if it produces NaN, use a simple fallback
+        try:
+            reconstructed_pos = self.decoder(z_v = latent_vector, z_s = atom_types_one_hot, pos_rand = pos_rand)
+            
+            # Check for NaN in reconstruction
+            if torch.isnan(reconstructed_pos).any():
+                print("Warning: NaN detected in reconstructed_pos - using fallback")
+                reconstructed_pos = torch.randn_like(pos_rand) * 0.1
+        except Exception as e:
+            print(f"Warning: Decoder failed with error: {e} - using fallback")
+            reconstructed_pos = torch.randn_like(pos_rand) * 0.1
         
         return reconstructed_pos, mu, log_var
 

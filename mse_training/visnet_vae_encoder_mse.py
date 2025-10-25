@@ -66,8 +66,6 @@ class ViSNetEncoderMSE(nn.Module):
         x, v = self.representation_model(data)
 
         v = self.output_model.pre_reduce(x, v, data.z, data.pos, data.batch)
-        print(f"v: {v.shape}")
-
         return v
 
 

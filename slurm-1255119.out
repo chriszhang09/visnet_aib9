@@ -1,0 +1,1719 @@
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+wandb: Tracking run with wandb version 0.22.1
+wandb: W&B syncing is set to `offline` in this directory. Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+wandb: Run data is saved locally in /scratch/cz2200/aib9/wandb/offline-run-20251025_000432-8hljskxi
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'NeighborEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'EdgeEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'ViS_MP_Vertex_Edge.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+wandb: 
+wandb: Run history:
+wandb:                          epoch ▁
+wandb:                  learning_rate ▁
+wandb:                  train_kl_loss ▁
+wandb:                     train_loss ▁
+wandb:               train_recon_loss ▁
+wandb:                  val/bond_loss ▁█
+wandb:                val/latent_mean █▁
+wandb:                 val/latent_std ▁▁
+wandb: val/mean_bond_length_generated ▁█
+wandb:  val/mean_bond_length_original ▁▁
+wandb:                             +5 ...
+wandb: 
+wandb: Run summary:
+wandb:                          epoch 1
+wandb:                  gradient_norm nan
+wandb:                  learning_rate 0.0
+wandb:                  train_kl_loss 1e-05
+wandb:                     train_loss 68.83122
+wandb:               train_recon_loss 68.83121
+wandb:                  val/bond_loss 1.07018
+wandb:                val/latent_mean -0.0
+wandb:                 val/latent_std 0.00135
+wandb: val/mean_bond_length_generated 2.14533
+wandb:                             +5 ...
+wandb: 
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync /scratch/cz2200/aib9/wandb/offline-run-20251025_000432-8hljskxi
+wandb: Find logs at: ./wandb/offline-run-20251025_000432-8hljskxi/logs
+Original data shape: (10000, 58, 3)
+CV shape: (10000, 2)
+Using CUDA device: Tesla V100-SXM2-32GB
+CUDA memory: 34.1 GB
+Successfully initialized bias for log_var outputs to: 0.00
+
+============================================================
+Starting Training - 3784 samples
+Model parameters: 7,188,741
+Loss type: MSE (coordinate-based)
+============================================================
+
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.3909
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.0353
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.5413
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.0030
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.9226
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.3569
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.9214
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.4842
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.2374
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.5074
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.0480
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.7571
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.5524
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.6036
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.9249
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.9631
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.0261
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.2037
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.1426
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.6133
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.6055
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.7106
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.5226
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 72.5226
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.7700
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.2042
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.5512
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.2968
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 65.9158
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.6093
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.7130
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.4634
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.4637
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.7242
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.2222
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.4879
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.2803
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 72.6884
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.3544
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.3861
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.1720
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.8619
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 65.5259
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.3919
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.7526
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 72.2153
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.0779
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.7537
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.6257
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.3659
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.6641
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.7223
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.9430
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.0218
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.1569
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.5068
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.0549
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.9218
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.0533
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.6732
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.9567
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.9071
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.8221
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.3275
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.9462
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.8070
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.2267
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.7132
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 72.2025
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.2267
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.7154
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 72.0945
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.5736
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 72.9317
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 73.4090
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.2880
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.0971
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.5032
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.6400
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 65.4355
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.4389
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.5528
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.2899
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.2142
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.1346
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.8159
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.3428
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.3538
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.0268
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.6145
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.5658
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.5446
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 64.9561
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.9160
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.1414
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.8067
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.6550
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.3088
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.3837
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.1038
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.2346
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.7457
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 63.9348
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.5438
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.2661
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.2890
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.7717
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.9952
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.1139
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.6031
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.4071
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.8546
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.0382
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.7924
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.5384
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.8318
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 72.2150
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 65.0909
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 65.0491
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.9274
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.8233
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.9217
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 72.6756
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.0397
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 65.8696
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 63.9441
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.4920
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.6054
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.3414
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.3128
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.1214
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.0878
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.6315
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.9528
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.0581
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.8989
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.4317
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.2538
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.4784
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.1506
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.8024
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.7675
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 65.3685
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.3795
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.3866
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.7137
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.8157
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.9220
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.2536
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.7065
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.3126
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.9435
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.1776
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.4358
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 65.0234
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.7454
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.7014
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.4380
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.5198
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.9009
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.4225
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.5530
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.5681
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 64.1241
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.7638
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.3443
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.7625
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.2112
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.9903
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.8258
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.4804
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.3206
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.4002
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.6667
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.0272
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.4831
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.2201
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.2912
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.8127
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.3739
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.0352
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.9686
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.6219
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.8179
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.4146
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 72.6855
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 65.9315
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.5990
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.7258
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.9823
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.6211
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.0883
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.7177
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.0496
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.5648
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 72.4725
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.4655
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.8097
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.2547
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.7259
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.2200
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.6338
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.8162
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 64.9382
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 64.9425
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 71.0032
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.0798
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.6558
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.5279
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 65.6266
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.3275
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.6868
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.9952
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.1361
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.5386
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.7609
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.3405
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.7897
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.4414
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.3544
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 65.2147
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.1120
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.2132
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.5622
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.0582
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.5385
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.6106
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.3551
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 64.0986
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 66.3728
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 70.0934
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.1291
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.2218
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 74.1006
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 67.8543
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 68.3150
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+Warning: NaN in scalar features
+Warning: NaN in m_v
+Warning: NaN in pos_update_msg_v
+  Debug - kl: 0.0000, recon_loss: 69.3123
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Epoch   1: Loss=68.8312 (Recon=68.8312, KL=0.0000) LR=1.00e-06
+  → Generating samples and visualizations...
+
+============================================================
+Training complete! Generating final samples...
+============================================================
+
+Final model saved to: vae_model_pairwise_final_small_model_model.pth

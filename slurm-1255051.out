@@ -1,0 +1,46 @@
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+wandb: Tracking run with wandb version 0.22.1
+wandb: W&B syncing is set to `offline` in this directory. Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+wandb: Run data is saved locally in /scratch/cz2200/aib9/wandb/offline-run-20251024_235735-sqwhj4ii
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'NeighborEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'EdgeEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'ViS_MP_Vertex_Edge.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+Original data shape: (10000, 58, 3)
+CV shape: (10000, 2)
+Using CUDA device: Tesla V100-PCIE-32GB
+CUDA memory: 34.1 GB
+Successfully initialized bias for log_var outputs to: 0.00
+Traceback (most recent call last):
+  File "/scratch/cz2200/aib9/train_vae_equivar.py", line 393, in <module>
+    main()
+  File "/scratch/cz2200/aib9/train_vae_equivar.py", line 168, in main
+    model = MolecularVAEMSE(
+  File "/scratch/cz2200/aib9/mse_training/vae_model_new.py", line 33, in __init__
+    self.decoder = EquivariantDecoder(
+  File "/scratch/cz2200/aib9/mse_training/vae_decoder_new.py", line 247, in __init__
+    [EquivariantDecoderBlock(hidden_dim) for _ in range(num_layers)]
+  File "/scratch/cz2200/aib9/mse_training/vae_decoder_new.py", line 247, in <listcomp>
+    [EquivariantDecoderBlock(hidden_dim) for _ in range(num_layers)]
+  File "/scratch/cz2200/aib9/mse_training/vae_decoder_new.py", line 56, in __init__
+    self.reset_parameters()
+  File "/scratch/cz2200/aib9/mse_training/vae_decoder_new.py", line 219, in reset_parameters
+    module.reset_parameters()
+  File "/scratch/cz2200/aib9/mse_training/vae_decoder_new.py", line 219, in reset_parameters
+    module.reset_parameters()
+  File "/scratch/cz2200/aib9/mse_training/vae_decoder_new.py", line 219, in reset_parameters
+    module.reset_parameters()
+  [Previous line repeated 985 more times]
+  File "/scratch/cz2200/aib9/mse_training/vae_decoder_new.py", line 217, in reset_parameters
+    for module in self.modules():
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 2332, in modules
+    for _, module in self.named_modules():
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 2371, in named_modules
+    memo.add(self)
+RecursionError: maximum recursion depth exceeded while calling a Python object
+[1;34mwandb[0m: 
+[1;34mwandb[0m: You can sync this run to the cloud by running:
+[1;34mwandb[0m: [1mwandb sync /scratch/cz2200/aib9/wandb/offline-run-20251024_235735-sqwhj4ii[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/offline-run-20251024_235735-sqwhj4ii/logs[0m
