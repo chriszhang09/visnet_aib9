@@ -59,25 +59,16 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         # 1. Reconstruction: encode and decode a real molecule
         val_molecule = val_data.to(device)
         
-        # Handle different encoder types
-        if hasattr(model.encoder, 'forward') and 'pos' in model.encoder.forward.__code__.co_varnames:
-            # Vanilla encoder expects (pos, atom_types, edge_index, batch)
-            atom_types_one_hot = F.one_hot(val_data.z.long(), 
-                                    num_classes=model.decoder.atom_feature_dim).float().to(device)
-            batch = torch.zeros(val_data.z.size(0), dtype=torch.long, device=device)
-            mu, log_var = model.encoder(val_molecule.pos, atom_types_one_hot, 
-                                      val_molecule.edge_index, batch)
-        else:
-            # ViSNet encoder expects data object
-            mu, log_var = model.encoder(val_molecule)
-            atom_types_one_hot = F.one_hot(val_data.z.long(), 
-                                    num_classes=model.decoder.atom_feature_dim).float().to(device)
-            batch = torch.zeros(val_data.z.size(0), dtype=torch.long, device=device)
-        
+        v = model.encoder(val_molecule)
+        log_var = v[:, :, model.latent_dim:]
+        mu = v[:, :, :model.latent_dim]
+
         z = model.reparameterize(mu, log_var)
-        
+        z = z.transpose(1, 2)
+        atom_types_one_hot = F.one_hot(val_data.z.long(), num_classes=model.atom_feature_dim).float()
         # Use cutoff-based edges inside decoder
-        reconstructed = model.decoder(z, atom_types_one_hot, None, batch)
+        pos_rand = torch.randn(val_data.num_nodes, 3, device=val_data.pos.device)
+        reconstructed = model.decoder(z_v = z, z_s = atom_types_one_hot, pos_rand = pos_rand)
         
         # Move to CPU for visualization
         original_coords = val_data.pos.cpu().numpy()
@@ -86,9 +77,9 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         atomic_nums = atomic_numbers.cpu().numpy()
         
         # 2. Generate from isotropic Gaussian prior
-        random_z = model.sample_prior(1, device)
-        generated = model.decoder(random_z, atom_types_one_hot[:model.decoder.num_atoms], 
-                                  None, batch)
+        random_z = model.sample_prior(device)
+        generated = model.decoder(z_v = random_z, z_s = atom_types_one_hot, pos_rand = pos_rand)
+                                 
         # PyG decoder returns [num_atoms, 3] directly
         generated_coords = generated.cpu().numpy()
         

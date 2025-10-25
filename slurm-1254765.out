@@ -1,0 +1,275 @@
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+wandb: Tracking run with wandb version 0.22.1
+wandb: W&B syncing is set to `offline` in this directory. Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+wandb: Run data is saved locally in /scratch/cz2200/aib9/wandb/offline-run-20251024_232316-pswxqafx
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'NeighborEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'EdgeEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'ViS_MP_Vertex_Edge.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+wandb: 
+wandb: Run history:
+wandb:                              epoch ▁
+wandb:                      learning_rate ▁
+wandb:                      train_kl_loss ▁
+wandb:                      val/bond_loss █▁
+wandb:                    val/latent_mean █▁
+wandb:                     val/latent_std ▁█
+wandb:     val/mean_bond_length_generated █▁
+wandb:      val/mean_bond_length_original ▁▁
+wandb: val/mean_bond_length_reconstructed █▁
+wandb:      val/std_bond_length_generated █▁
+wandb:                                 +5 ...
+wandb: 
+wandb: Run summary:
+wandb:                          epoch 1
+wandb:                  gradient_norm nan
+wandb:                  learning_rate 1e-05
+wandb:                  train_kl_loss 9e-05
+wandb:                     train_loss nan
+wandb:               train_recon_loss nan
+wandb:                  val/bond_loss 1.28722
+wandb:                val/latent_mean -0.0
+wandb:                 val/latent_std 0.01114
+wandb: val/mean_bond_length_generated 2.30515
+wandb:                             +5 ...
+wandb: 
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync /scratch/cz2200/aib9/wandb/offline-run-20251024_232316-pswxqafx
+wandb: Find logs at: ./wandb/offline-run-20251024_232316-pswxqafx/logs
+Original data shape: (1000, 58, 3)
+CV shape: (1000, 2)
+Using CUDA device: Tesla V100-SXM2-32GB
+CUDA memory: 34.1 GB
+Successfully initialized bias for log_var outputs to: -3.00
+
+============================================================
+Starting Training - 142 samples
+Model parameters: 7,287,429
+Loss type: MSE (coordinate-based)
+============================================================
+
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 69.6415
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 75.5645
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 62.4454
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 76.5242
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 58.4317
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 71.3354
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 68.8002
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 58.4113
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 75.3674
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 73.7703
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 66.7498
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 62.8849
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 56.0826
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 62.2826
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 58.4502
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 67.4609
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 62.1687
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 69.7896
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: 67.8103
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([116, 3, 256])
+  Debug - kl: 0.0001, recon_loss: nan
+  Debug - μ²: 0.0001, log_var: -0.0000, exp(log_var): 1.0000
+Epoch   1: Loss=nan (Recon=nan, KL=0.0001) LR=5.00e-06
+  → Generating samples and visualizations...
+v: torch.Size([58, 3, 256])
+
+============================================================
+Training complete! Generating final samples...
+============================================================
+
+v: torch.Size([58, 3, 256])
+Final model saved to: vae_model_pairwise_final_small_model_model.pth

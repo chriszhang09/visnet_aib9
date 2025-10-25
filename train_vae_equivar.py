@@ -16,7 +16,7 @@ from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from pytorch_lightning.loggers import CSVLogger, TensorBoardLogger
 from pytorch_lightning.strategies import DDPStrategy
 from torch_geometric.data import Data
-
+from torch_geometric.nn import radius_graph
 from aib9_lib import aib9_tools as aib9
 
 def pairwise_distance_loss(true_coords, pred_coords, p=2):
@@ -30,13 +30,11 @@ def pairwise_distance_loss(true_coords, pred_coords, p=2):
     return loss
   
 
-from mse_training.visnet_vae_encoder_mse import ViSNetEncoderMSE
-from mse_training.vae_model_mse import MolecularVAEMSE, vae_loss_function_mse
-from vae_utils import validate_and_sample, visualize_molecule_3d, compute_bond_lengths
+from mse_training.vae_model_new import MolecularVAEMSE
+from vae_utils import validate_and_sample
 
 from torch_geometric.loader import DataLoader
 import torch.nn.functional as F
-from pathlib import Path
 import sys
 import wandb
 from torch.cuda.amp import autocast, GradScaler
@@ -51,22 +49,31 @@ def main():
     COORD_DIM = 3
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
     LATENT_DIM = 128 
-    EPOCHS = 250
+    EPOCHS = 1
     VISNET_HIDDEN_CHANNELS = 256
     ENCODER_NUM_LAYERS = 3
     DECODER_HIDDEN_DIM = 256
     DECODER_NUM_LAYERS = 5
-    BATCH_SIZE = 128
+    BATCH_SIZE = 16
     LEARNING_RATE = 5e-5  
     NUM_WORKERS = 2  # Parallel data loading
 
     data = np.load(aib9.FULL_DATA).reshape(-1, 58, 3)
+    data = data[0:10000]
     print(f"Original data shape: {data.shape}")
     cv = aib9.kai_calculator(data)
+    mask = cv[:, 0] > 0
+    filtered_data = data[mask]
+    filtered_cv = cv[mask]
     print(f"CV shape: {cv.shape}")
 
-    train_data_np, test_data_np = train_test_split(data, test_size=0.2, random_state=42)
-        # Initialize Weights & Biases
+    train_data_np, test_data_np = train_test_split(filtered_data, test_size=0.2, random_state=42)
+    
+    # Set wandb to offline mode to avoid API key requirement
+    import os
+    os.environ["WANDB_MODE"] = "offline"
+    
+    # Initialize Weights & Biases
     wandb.init(
         project="aib9-vae-pairwise",  # Different project name
         config={
@@ -91,8 +98,8 @@ def main():
         print(f'CUDA memory: {torch.cuda.get_device_properties(device).total_memory / 1e9:.1f} GB')
     elif torch.backends.mps.is_available():
         device = torch.device('mps')
-        print(f'Using MPS device: {torch.backends.mps.get_device()}')
-        print(f'MPS memory: {torch.backends.mps.get_device().total_memory / 1e9:.1f} GB')
+        print(f'Using MPS device: {device}')
+        print('MPS memory: Not available via PyTorch API')
     else:
         device = torch.device('cpu')
         print('CUDA not available, using CPU')
@@ -133,16 +140,17 @@ def main():
     # Use cutoff-based edge identification instead of predefined covalent edges
     train_data_list = []
     for i in range(train_data_np.shape[0]):
+        edge_index = radius_graph(torch.from_numpy(train_data_np[i]), r=5.0, batch=torch.zeros(train_data_np[i].shape[0], dtype=torch.long, device='cpu'))
         pos = torch.from_numpy(train_data_np[i]).float().to('cpu')
         # No edge_index - let ViSNet use cutoff-based edge identification
-        data = Data(z=z, pos=pos)
+        data = Data(z=z, pos=pos, edge_index=edge_index)
         train_data_list.append(data)
     train_loader = DataLoader(
         train_data_list,
         batch_size=BATCH_SIZE,
         shuffle=True,
-        num_workers=8,
-        pin_memory=True
+        num_workers=0,  # Disable multiprocessing to avoid macOS issues
+        pin_memory=False  # Disable pin_memory when num_workers=0
     )
     
     # Only 10 unique atomic types in the dataset
@@ -154,7 +162,7 @@ def main():
         'num_rbf': 32,
         'cutoff': 5.0,  # Used for cutoff-based edge identification
         'max_z': max(ATOMIC_NUMBERS) + 1,
-        'lmax': 1,
+        'lmax':1
     }
 
     model = MolecularVAEMSE(
@@ -229,7 +237,7 @@ def main():
         total_recon_loss = 0
         total_kl_loss = 0
 
-        if epoch >= 65:
+        if epoch >= 50:
             current_lr = LEARNING_RATE * 1/2
             for param_group in optimizer.param_groups:
                 param_group['lr'] = current_lr
@@ -251,7 +259,7 @@ def main():
             recon_loss = pairwise_distance_loss(recon_batch, molecules.pos, 2)
             kl_div = torch.clamp(kl_div, max = 2000)
                 # Debug KL components every 100 batches
-            if batch_idx % 500 == 0:
+            if batch_idx % 1 == 0:
                 mu_norm = torch.mean(mu.pow(2)).item()
                 log_var_mean = torch.mean(log_var).item()
                 exp_log_var_mean = torch.mean(torch.exp(log_var)).item()

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch_scatter import scatter
 from torch_geometric.nn import knn_graph
-
+from torch_geometric.nn import radius_graph
 # --- Helper MLP ---
 # A simple sequential MLP
 def build_mlp(dim_in, dim_hidden, dim_out, num_layers=2, act=nn.SiLU()):
@@ -164,7 +164,9 @@ class EquivariantDecoder(nn.Module):
         for layer in self.layers:
             # We re-compute the graph at each step based on the updated positions
             # This makes the graph dynamic
-            edges = knn_graph(pos, k=self.k_neighbors, loop=False)
+            # Move to CPU for knn_graph, then back to original device
+            device = pos.device
+            edges = radius_graph(pos, r=5.0, batch=torch.zeros(pos.shape[0], dtype=torch.long).to(device))
             
             # Update all features and positions
             s, v, pos = layer(s, v, pos, edges)
@@ -180,7 +182,7 @@ if __name__ == "__main__":
 
     # 1. Setup Model and Inputs
     N = 10         # Number of nodes
-    F_s = 64       # Scalar latent features
+    F_s = 310       # Scalar latent features
     F_v = 16       # Vector latent features
     H = 128        # Hidden dimension
     N_layers = 3
@@ -196,16 +198,16 @@ if __name__ == "__main__":
         hidden_dim=H,
         num_layers=N_layers,
         k_neighbors=K
-    ).to(device)
+    ).to(device).double() # <-- Convert model parameters to double
     decoder.eval()
 
     # Create random inputs
-    pos_rand = torch.randn(N, 3).to(device)
-    z_s = torch.randn(N, F_s).to(device)
-    z_v = torch.randn(N, F_v, 3).to(device)
+    pos_rand = torch.randn(N, 3).to(device).double() # <-- Use double
+    z_s = torch.randn(N, F_s).to(device).double() # <-- Use double
+    z_v = torch.randn(N, F_v, 3).to(device).double() # <-- Use double
 
     # 2. Generate a Random 3D Rotation Matrix (R)
-    A = torch.randn(3, 3).to(device)
+    A = torch.randn(3, 3).to(device).double() # <-- Use double
     R, _ = torch.linalg.qr(A)
     if torch.det(R) < 0:
         R[:, 0] *= -1  # Ensure determinant is +1
@@ -248,4 +250,5 @@ if __name__ == "__main__":
         
     print(f"Max difference between outputs: {(X_out_1_rotated - X_out_2).abs().max().item()}")
     print("Note: A very small difference (e.g., < 1e-5) is expected due to floating point error.")
+
 

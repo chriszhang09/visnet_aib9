@@ -1,0 +1,1010 @@
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+wandb: Tracking run with wandb version 0.22.1
+wandb: W&B syncing is set to `offline` in this directory. Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+wandb: Run data is saved locally in /scratch/cz2200/aib9/wandb/offline-run-20251024_232916-ae5da9b5
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'NeighborEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'EdgeEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'ViS_MP_Vertex_Edge.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+wandb: 
+wandb: Run history:
+wandb:                          epoch ▁
+wandb:                  learning_rate ▁
+wandb:                  train_kl_loss ▁
+wandb:                     train_loss ▁
+wandb:               train_recon_loss ▁
+wandb:                  val/bond_loss ▁█
+wandb:                val/latent_mean ▁█
+wandb:                 val/latent_std ▁▁
+wandb: val/mean_bond_length_generated ▁█
+wandb:  val/mean_bond_length_original ▁▁
+wandb:                             +5 ...
+wandb: 
+wandb: Run summary:
+wandb:                          epoch 1
+wandb:                  gradient_norm nan
+wandb:                  learning_rate 1e-05
+wandb:                  train_kl_loss 1e-05
+wandb:                     train_loss 68.89745
+wandb:               train_recon_loss 68.89745
+wandb:                  val/bond_loss 1.07015
+wandb:                val/latent_mean -0.0
+wandb:                 val/latent_std 0.00039
+wandb: val/mean_bond_length_generated 2.14508
+wandb:                             +5 ...
+wandb: 
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync /scratch/cz2200/aib9/wandb/offline-run-20251024_232916-ae5da9b5
+wandb: Find logs at: ./wandb/offline-run-20251024_232916-ae5da9b5/logs
+Original data shape: (10000, 58, 3)
+CV shape: (10000, 2)
+Using CUDA device: Tesla V100-PCIE-32GB
+CUDA memory: 34.1 GB
+Successfully initialized bias for log_var outputs to: 0.00
+
+============================================================
+Starting Training - 3784 samples
+Model parameters: 7,287,429
+Loss type: MSE (coordinate-based)
+============================================================
+
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.3157
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.6039
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.8926
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.3760
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.7946
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.2271
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.4769
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.1067
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.7889
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.6185
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.2227
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.0420
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.4648
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.6993
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.0003
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.5279
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.5034
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.8413
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.3833
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.2549
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.0070
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.4843
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.5674
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.3228
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.7870
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.5222
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.7736
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 65.6176
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.8867
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.8545
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.0848
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.5196
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.4408
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 62.9813
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.8440
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.8576
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.8761
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.5613
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.8132
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.8753
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.6552
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.3741
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.1185
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.7589
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 72.2952
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.3114
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 64.7798
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.8914
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 65.9223
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.9231
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.7963
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.9356
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.6303
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.4602
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.4280
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.4823
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 65.2758
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.8295
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 64.9502
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.3074
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.2703
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.6069
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.9060
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 63.8851
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.9531
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.6550
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.5324
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.9705
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.8105
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.4291
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.8471
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.8949
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.2039
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 65.2119
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.7947
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.7790
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.3227
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.7140
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 65.5561
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.8260
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.1904
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.9257
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.7489
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.5382
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.6499
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.0760
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.2004
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.9767
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.8962
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.7614
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.7863
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.1728
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.0177
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.9918
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.2903
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.5125
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.5262
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.3883
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.6736
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.1842
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.7337
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.1605
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.6769
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.2682
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 65.9952
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.9178
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.4290
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.5637
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.2767
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 72.9365
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.1011
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.3264
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.4253
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.2336
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.8581
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.7083
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.3993
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.0737
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 72.6052
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.6796
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.4264
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.1886
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.9929
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.0494
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.5090
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.4500
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.7238
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.8927
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.0002
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.6548
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.5665
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.8335
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.1867
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.6088
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.8541
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.8679
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.8315
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.0199
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.0682
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.2420
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.1431
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.8987
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.0159
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.2741
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.0132
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.8835
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.1233
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 65.0361
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.1091
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.2787
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.4334
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 65.4788
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 72.1545
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 73.2587
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.4915
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.5734
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.0307
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.2945
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.3745
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.7921
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 65.3162
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.2108
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.4112
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.2571
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.0104
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 73.4344
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.5881
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 72.4118
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.2588
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.8871
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 72.7779
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.4858
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.1075
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 65.9653
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.0345
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.8734
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.3806
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.5999
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.6819
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.3322
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.9788
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.1798
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.4878
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 72.2004
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.1086
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.5996
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.7317
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.0978
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.0813
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.1202
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.9914
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.1169
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 64.1528
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.5310
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.1227
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.9491
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.4436
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 73.1558
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 72.6378
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 72.2578
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 63.8603
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.7889
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.2984
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.9721
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 72.0266
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 64.9150
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.2640
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.8255
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.9396
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.9566
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.4893
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.6225
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 66.3663
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.2198
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.6657
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.9920
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.2375
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.8094
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.6101
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.4720
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.9674
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.1446
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.4456
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.2083
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.6845
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.5454
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 64.4602
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.5557
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 67.3028
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 65.4185
+  Debug - μ²: 0.0000, log_var: -0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 69.3022
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 65.5384
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.0929
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 70.9149
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 65.6122
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([928, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 71.7775
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+v: torch.Size([464, 3, 256])
+Warning: NaN detected in reconstructed_pos
+  Debug - kl: 0.0000, recon_loss: 68.8088
+  Debug - μ²: 0.0000, log_var: 0.0000, exp(log_var): 1.0000
+Epoch   1: Loss=68.8975 (Recon=68.8974, KL=0.0000) LR=5.00e-06
+  → Generating samples and visualizations...
+v: torch.Size([58, 3, 256])
+
+============================================================
+Training complete! Generating final samples...
+============================================================
+
+v: torch.Size([58, 3, 256])
+Final model saved to: vae_model_pairwise_final_small_model_model.pth
