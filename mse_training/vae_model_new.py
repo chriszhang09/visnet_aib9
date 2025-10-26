@@ -3,7 +3,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .visnet_vae_encoder_mse import ViSNetEncoderMSE
-from .vae_decoder_new import EquivariantDecoder
+from .vae_decoder_new import ViSNetDecoderMSE
+from visnet.models.output_modules import EquivariantVectorOutput, EquivariantEncoder, OutputModel, EquivariantVector
+from torch_geometric.data import Data
 class MolecularVAEMSE(nn.Module):
     """
     MSE-specific Molecular VAE with proper initialization for stable training.
@@ -30,17 +32,19 @@ class MolecularVAEMSE(nn.Module):
             visnet_hidden_channels=visnet_hidden_channels,
             **visnet_kwargs
         )
-        self.decoder = EquivariantDecoder(
-            scalar_lat_dim=atom_feature_dim,
-            vector_lat_dim=latent_dim,
-            hidden_dim=decoder_hidden_dim,
-            num_layers=decoder_num_layers,
-            k_neighbors=num_atoms-1
+        self.decoder = ViSNetDecoderMSE(
+            visnet_hidden_channels=decoder_hidden_dim,
+            **visnet_kwargs
         )
         self.latent_dim = latent_dim
         self.atom_feature_dim = atom_feature_dim
         self.num_atoms = num_atoms
-        
+        # Use the actual hidden channels from the encoder output
+        # The encoder output will have visnet_hidden_channels, so use that
+        self.pooling_model = EquivariantVector(hidden_channels=latent_dim)
+        self.linear_layer = nn.Linear(visnet_hidden_channels, visnet_hidden_channels)
+        self.activation = nn.ReLU()
+        self.linear_layer2 = nn.Linear(visnet_hidden_channels, latent_dim)
         # Check for NaN in model parameters after initialization
         for name, param in self.named_parameters():
             if torch.isnan(param).any():
@@ -55,147 +59,47 @@ class MolecularVAEMSE(nn.Module):
         Handles log_var shapes [batch], [batch, 1], or scalar.
         Uses soft bounds to prevent numerical issues while allowing learning.
         """
-        # Ensure log_var can broadcast to mu: make it [batch, 1]
-        if log_var.dim() == 1:
-            log_var = log_var.unsqueeze(1)
+        # Expand log_var to match mu's shape [58, 3, N] -> [58, 3, N]
+        # log_var is [58, N], we need [58, 3, N]
         
-        # Apply soft bounds only during sampling (not for KL computation)
-        log_var_clamped = torch.clamp(log_var, min=-5, max=2)
-        std = torch.exp(0.5 * log_var_clamped)
+        
+        std = torch.exp(0.5 * log_var)
         eps = torch.randn_like(mu)
         return mu + eps * std
     
     def sample_prior(self, device):
         """Sample from 3D isotropic Gaussian prior N(0, I) with shape (num_atoms, H, 3)"""
-        return torch.randn(self.num_atoms, self.latent_dim, 3, device=device)
+        return torch.randn(self.num_atoms, 3, self.latent_dim, device=device)
 
     def forward(self, data):
-        # Check input data for NaN
-        if torch.isnan(data.pos).any():
-            print("Warning: NaN in input positions")
-            data.pos = torch.nan_to_num(data.pos, nan=0.0)
-        if torch.isnan(data.z).any():
-            print("Warning: NaN in input atomic numbers")
-            data.z = torch.nan_to_num(data.z, nan=1.0)
-            
-        # Encode
-        v = self.encoder(data)
-        
-        # Check for NaN in encoder output
-        if torch.isnan(v).any():
-            print("Warning: NaN in encoder output - resetting encoder")
-            # Reset encoder parameters
-            for name, param in self.encoder.named_parameters():
-                if torch.isnan(param).any():
-                    print(f"Warning: NaN in encoder parameter {name} - resetting")
-                    with torch.no_grad():
-                        param.data = torch.randn_like(param.data) * 0.01
-            v = torch.nan_to_num(v, nan=0.0)
-            
-        # If encoder still produces NaN, use a fallback
-        if torch.isnan(v).any():
-            print("Warning: Encoder still produces NaN - using fallback")
-            v = torch.randn(v.shape[0], v.shape[1], v.shape[2], device=v.device) * 0.01
-        
-        log_var = v[:, :, self.latent_dim:]
-        mu = v[:, :, :self.latent_dim]
 
-        latent_vector = self.reparameterize(mu, log_var)
-        latent_vector = latent_vector.transpose(1, 2)
-        
-        # Check for NaN in latent vector
-        if torch.isnan(latent_vector).any():
-            print("Warning: NaN detected in latent_vector")
-            latent_vector = torch.nan_to_num(latent_vector, nan=0.0)
-      
-        # We need the one-hot atom types for the decoder
-        # This assumes data.z contains integer atom types
-        atom_types_one_hot = F.one_hot(data.z.long(), num_classes=self.atom_feature_dim).float()
+        x, v = self.encoder(data)
 
-        # Force cutoff-based edges inside the decoder (edge_index=None)
-        # Use smaller random positions for stability
-        pos_rand = torch.randn(data.num_nodes, 3, device=data.pos.device) * 0.1
+        log_var = x[:, :self.latent_dim]
+        log_var_expanded = log_var.unsqueeze(1).expand(-1, 3, -1)
+        mu = v
+
+        latent_vector = self.reparameterize(mu, log_var_expanded)
+
+        latent_vector = self.pooling_model.pre_reduce(torch.ones(latent_vector.shape[0], self.latent_dim, device=data.pos.device), latent_vector).squeeze(-1)
+
+        num_nodes = data.num_nodes
+
+        
+        # Create batch tensor for the edge_index
+        batch = torch.zeros(num_nodes, dtype=torch.long, device=data.pos.device)
        
-        # Try decoder, but if it produces NaN, use a simple fallback
-        try:
-            reconstructed_pos = self.decoder(z_v = latent_vector, z_s = atom_types_one_hot, pos_rand = pos_rand)
-            
-            # Check for NaN in reconstruction
-            if torch.isnan(reconstructed_pos).any():
-                print("Warning: NaN detected in reconstructed_pos - using fallback")
-                reconstructed_pos = torch.randn_like(pos_rand) * 0.1
-        except Exception as e:
-            print(f"Warning: Decoder failed with error: {e} - using fallback")
-            reconstructed_pos = torch.randn_like(pos_rand) * 0.1
-        
-        return reconstructed_pos, mu, log_var
+        data_decoder = Data(z=data.z, pos=latent_vector, edge_index=data.edge_index, batch=batch)
 
-def pairwise_distance_loss_mse(pred_coords, target_coords):
-    """
-    E(3) invariant loss using ALL pairwise distances between atoms.
-    Much more informative than bond-only loss, still rotationally invariant.
-    """
-    # Convert to float32
-    pred_coords = pred_coords.float()
-    target_coords = target_coords.float()
+        reconstructed_pos = self.decoder(data_decoder).squeeze(-1)
+        return reconstructed_pos, mu, log_var_expanded
     
-    # Handle both batch format [batch_size, num_atoms, 3] and PyG format [total_atoms, 3]
-    if pred_coords.dim() == 3:
-        # Batch format - flatten to PyG format for processing
-        batch_size, num_atoms, _ = pred_coords.shape
-        pred_flat = pred_coords.view(-1, 3)  # [total_atoms, 3]
-        target_flat = target_coords.view(-1, 3)
-        
-        # Process each molecule in the batch separately
-        total_loss = 0
-        for i in range(batch_size):
-            start_idx = i * num_atoms
-            end_idx = (i + 1) * num_atoms
-            
-            pred_mol = pred_flat[start_idx:end_idx]  # [num_atoms, 3]
-            target_mol = target_flat[start_idx:end_idx]  # [num_atoms, 3]
-            
-            # Compute pairwise distances for this molecule
-            pred_dists = torch.cdist(pred_mol, pred_mol)  # [num_atoms, num_atoms]
-            target_dists = torch.cdist(target_mol, target_mol)  # [num_atoms, num_atoms]
-            
-            # Only use upper triangular part (avoid diagonal and duplicates)
-            mask = torch.triu(torch.ones_like(pred_dists), diagonal=1).bool()
-            pred_dists_upper = pred_dists[mask]  # [num_pairs]
-            target_dists_upper = target_dists[mask]  # [num_pairs]
-            
-            # MSE on pairwise distances
-            mol_loss = F.mse_loss(pred_dists_upper, target_dists_upper)
-            total_loss += mol_loss
-        
-        return total_loss / batch_size
-    
-    else:
-        # PyG format - single molecule or already flattened batch
-        # Assume this is a single molecule for now
-        pred_dists = torch.cdist(pred_coords, pred_coords)  # [num_atoms, num_atoms]
-        target_dists = torch.cdist(target_coords, target_coords)  # [num_atoms, num_atoms]
-        
-        # Only use upper triangular part (avoid diagonal and duplicates)
-        mask = torch.triu(torch.ones_like(pred_dists), diagonal=1).bool()
-        pred_dists_upper = pred_dists[mask]  # [num_pairs]
-        target_dists_upper = target_dists[mask]  # [num_pairs]
-        
-        # MSE on pairwise distances
-        loss = F.mse_loss(pred_dists_upper, target_dists_upper)
-        
-        return loss
-
-
-def vae_loss_function_mse(reconstructed_pos, original_pos, mu, log_var):
-    """
-    Loss function for MSE training with non-centered isotropic Gaussian VAE.
-    Uses pairwise distance loss for E(3) invariance.
-    """
-    # Use pairwise distance loss for E(3) invariance
-    recon_loss = pairwise_distance_loss_mse(reconstructed_pos, original_pos)
-    
-    # KL divergence for non-centered isotropic Gaussian: KL(N(μ, σ²I) || N(0, I))
-    kl_div = 0.5 * torch.sum(mu.pow(2) + torch.exp(log_var) - log_var - 1)
-    
-    return recon_loss + kl_div
+    def reset_parameters(self):
+        """Reset all parameters in the model"""
+        # Reset encoder and decoder parameters
+        if hasattr(self.encoder, 'reset_parameters'):
+            self.encoder.reset_parameters()
+        if hasattr(self.decoder, 'reset_parameters'):
+            self.decoder.reset_parameters()
+        if hasattr(self.pooling_model, 'reset_parameters'):
+            self.pooling_model.reset_parameters()

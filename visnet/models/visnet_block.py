@@ -111,8 +111,10 @@ class ViSNetBlock(nn.Module):
         
         edge_attr = self.distance_expansion(edge_weight)
         mask = edge_index[0] != edge_index[1]
-        edge_vec[mask] = edge_vec[mask] / torch.norm(edge_vec[mask], dim=1).unsqueeze(1)
-        edge_vec = self.sphere(edge_vec)
+        # Create new tensor instead of modifying in-place
+        edge_vec_normalized = edge_vec.clone()
+        edge_vec_normalized[mask] = edge_vec[mask] / torch.norm(edge_vec[mask], dim=1).unsqueeze(1)
+        edge_vec = self.sphere(edge_vec_normalized)
         x = self.neighbor_embedding(z, x, edge_index, edge_weight, edge_attr)
         vec = torch.zeros(x.size(0), ((self.lmax + 1) ** 2) - 1, x.size(1), device=x.device)
         edge_attr = self.edge_embedding(edge_index, edge_attr, x)

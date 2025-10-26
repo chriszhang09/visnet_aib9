@@ -120,7 +120,7 @@ def main():
         project_path / "aib9_lib/aib9_atom_info.npy"
     )  
 
-
+    torch.autograd.set_detect_anomaly(True)
     ATOMICNUMBER_MAPPING = {
     "H": 1,
     "C": 6,
@@ -151,19 +151,10 @@ def main():
     # Use cutoff-based edge identification instead of predefined covalent edges
     train_data_list = []
     for i in range(train_data_np.shape[0]):
-        # Check for NaN in this molecule's coordinates
-        if np.isnan(train_data_np[i]).any():
-            print(f"Warning: NaN detected in molecule {i}")
-            train_data_np[i] = np.nan_to_num(train_data_np[i], nan=0.0)
+
             
         edge_index = radius_graph(torch.from_numpy(train_data_np[i]), r=5.0, batch=torch.zeros(train_data_np[i].shape[0], dtype=torch.long, device='cpu'))
         pos = torch.from_numpy(train_data_np[i]).float().to('cpu')
-        
-        # Final check for NaN in tensor
-        if torch.isnan(pos).any():
-            print(f"Warning: NaN detected in tensor for molecule {i}")
-            pos = torch.nan_to_num(pos, nan=0.0)
-            
         # No edge_index - let ViSNet use cutoff-based edge identification
         data = Data(z=z, pos=pos, edge_index=edge_index)
         train_data_list.append(data)

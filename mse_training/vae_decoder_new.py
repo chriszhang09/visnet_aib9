@@ -8,7 +8,7 @@ import torch.nn as nn
 from typing import List, Optional, Tuple
 from torch_geometric.nn import global_add_pool
 from visnet.models.visnet_block import ViSNetBlock
-from visnet.models.output_modules import EquivariantVectorOutput, EquivariantEncoder, OutputModel
+from visnet.models.output_modules import EquivariantVectorOutput, EquivariantEncoder, OutputModel, EquivariantVector
 from torch_geometric.data import Data
 from pytorch_lightning.utilities import rank_zero_warn
 from torch.autograd import grad
@@ -18,13 +18,13 @@ from visnet.models.output_modules import EquivariantVectorOutput
 import pathlib
 import numpy as np
 
-class ViSNetEncoderMSE(nn.Module):
+class ViSNetDecoderMSE(nn.Module):
     """
     MSE-specific ViSNet encoder with proper initialization to prevent variance explosion.
     This version includes initialization fixes for stable MSE training.
     """
     
-    def __init__(self, latent_dim, visnet_hidden_channels=128, prior_model=None, mean=None, std=None, **visnet_kwargs):
+    def __init__(self, visnet_hidden_channels=128, prior_model=None, mean=None, std=None, **visnet_kwargs):
         """
         Args:
             latent_dim (int): The dimension of the latent space.
@@ -32,20 +32,18 @@ class ViSNetEncoderMSE(nn.Module):
             **visnet_kwargs: Additional arguments to pass to the ViSNet model constructor.
         """
         super().__init__()
-        self.latent_dim = latent_dim
         
         self.representation_model = ViSNetBlock(**visnet_kwargs)
         
         actual_hidden_channels = visnet_kwargs.get('hidden_channels', visnet_hidden_channels)
         
-        self.output_model = EquivariantEncoder(hidden_channels=actual_hidden_channels, output_channels=latent_dim*2)
+        self.output_model = EquivariantVector(hidden_channels=actual_hidden_channels)
 
         
     def forward(self, data):
-        # Get atom-level features from ViSNetBlock
-        x, v = self.representation_model(data)
 
-        v = self.output_model.pre_reduce(x, v, data.z, data.pos, data.batch)
+        x, v = self.representation_model(data)
+        v = self.output_model.pre_reduce(x, v)
         return v
 
 
@@ -115,53 +113,51 @@ if __name__ == "__main__":
         'max_z': max(ATOMIC_NUMBERS) + 1,
         'lmax':1
     }
-    
-    # --- START OF FIX ---
-    
-    # 1. Get the cutoff from your params
-    cutoff = visnet_params['cutoff']
-    
-    # Create random inputs
-    pos_rand = torch.randn(ATOM_COUNT, 3).to(device).float()
-    
-    # 2. Create the edge_index ONCE based on the original positions
-    # We create a dummy batch tensor for radius_graph
-    batch = torch.zeros(ATOM_COUNT, dtype=torch.long).to(device)
-    edge_index = radius_graph(pos_rand, r=cutoff, batch=batch)
-    
+    pooling_model = EquivariantVector(hidden_channels=VISNET_HIDDEN_CHANNELS)
+    pos_rand = torch.randn(ATOM_COUNT, 3, 256).to(device).float()
+    print(pos_rand.shape)
     # 3. Create the Data object using the pre-computed edge_index
-    data = Data(z=z, pos=pos_rand, edge_index=edge_index)
+    x = torch.randn(ATOM_COUNT, 256).to(device).float()
+    v = pooling_model.pre_reduce(x, pos_rand)
+    
+    v= v.squeeze(-1)
+    print(v.shape)
+    # Create fully connected edge_index
+    edge_index = torch.combinations(torch.arange(ATOM_COUNT, device=device), 2).t().contiguous()
+    # Add both directions for undirected graph
+    edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
+    data = Data(z=z, pos=v, edge_index=edge_index)
 
     # 4. Generate a Random 3D Rotation Matrix (R)
     A = torch.randn(3, 3).to(device).float()
     R, _ = torch.linalg.qr(A)
     if torch.det(R) < 0:
         R[:, 0] *= -1
-    pos_rand_rotated = torch.matmul(pos_rand, R).float()
-    
-    # 5. Create the rotated Data object using the SAME edge_index
-    data_rotated = Data(z=z, pos=pos_rand_rotated, edge_index=edge_index)
+    pos_rand = pos_rand.transpose(1, 2)
+    pos_rand_rotated = torch.matmul(pos_rand, R).float().transpose(1, 2)
+    w = pooling_model.pre_reduce(x, pos_rand_rotated)
+    w = w.squeeze(-1)
+    data_rotated = Data(z=z, pos=w, edge_index=edge_index)
     
     # --- END OF FIX ---
 
-    encoder= ViSNetEncoderMSE(
-        latent_dim=LATENT_DIM,
+    decoder= ViSNetDecoderMSE(
         visnet_hidden_channels=VISNET_HIDDEN_CHANNELS,
         **visnet_params
     ).to(device).float()
-    encoder.eval()
+    decoder.eval()
 
     print("\nGenerated random 3x3 rotation matrix R.")
 
     # 3. Path 1: Encode original coordinates
     with torch.no_grad():
-        _, X_out_1 = encoder(data)
+        X_out_1 = decoder(data)
     
     print("Path 1 (Encode original) complete.")
 
     # 4. Path 2: Encode rotated coordinates  
     with torch.no_grad():
-        _, X_out_2 = encoder(data_rotated)
+        X_out_2 = decoder(data_rotated)
     print("Path 2 (Encode rotated) complete.")
     
     # --- TEST LOGIC ---
@@ -178,6 +174,7 @@ if __name__ == "__main__":
     
     # Compare: norm( R(f(x)) - f(R(x)) )
     mu_diff = torch.norm(X_out_1_rotated - X_out_2)
+    print(X_out_1_rotated - X_out_2)
   
     print(f"\nEquivariance difference: {mu_diff.item():.6f}")
 

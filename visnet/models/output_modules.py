@@ -78,6 +78,7 @@ class OutputModel(nn.Module, metaclass=ABCMeta):
         return x
 
 
+
 class Scalar(OutputModel):
     def __init__(self, hidden_channels, activation="silu", allow_prior_model=True):
         super(Scalar, self).__init__(allow_prior_model=allow_prior_model)
@@ -165,9 +166,36 @@ class EquivariantEncoder(OutputModel):
         # Return scalar features x (E(3) invariant) instead of vectors v (E(3) equivariant)
         # Include v.sum() * 0 to ensure all parameters get gradients
         return x.sum() * 0 + v
+
+class EquivariantVector(OutputModel):
+    def __init__(self, hidden_channels, activation="silu", allow_prior_model=True):
+        super(EquivariantVector, self).__init__(allow_prior_model=allow_prior_model)
+        self.output_network = nn.ModuleList([
+                GatedEquivariantBlock(
+                    hidden_channels,
+                    hidden_channels // 2,
+                    activation=activation,
+                    scalar_activation=True,
+                ),
+                GatedEquivariantBlock(
+                    hidden_channels // 2, 
+                    1, 
+                    activation=activation,
+                    scalar_activation=False,
+                ),
+        ])
         
+        self.reset_parameters()
 
-
+    def reset_parameters(self):
+        for layer in self.output_network:
+            layer.reset_parameters()
+    
+    def pre_reduce(self, x, v):
+        for layer in self.output_network:
+            x, v = layer(x, v)
+        # include v in output to make sure all parameters have a gradient
+        return v + x.sum() * 0
 
 class DipoleMoment(Scalar):
     def __init__(self, hidden_channels, activation="silu", allow_prior_model=False):

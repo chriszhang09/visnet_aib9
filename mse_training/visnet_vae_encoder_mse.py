@@ -38,7 +38,7 @@ class ViSNetEncoderMSE(nn.Module):
         
         actual_hidden_channels = visnet_kwargs.get('hidden_channels', visnet_hidden_channels)
         
-        self.output_model = EquivariantEncoder(hidden_channels=actual_hidden_channels, output_channels=latent_dim*2)
+        self.output_model = EquivariantEncoder(hidden_channels=actual_hidden_channels, output_channels=latent_dim)
 
         
     def forward(self, data):
@@ -46,7 +46,7 @@ class ViSNetEncoderMSE(nn.Module):
         x, v = self.representation_model(data)
 
         v = self.output_model.pre_reduce(x, v, data.z, data.pos, data.batch)
-        return v
+        return x, v
 
 
 if __name__ == "__main__":
@@ -140,6 +140,7 @@ if __name__ == "__main__":
     pos_rand_rotated = torch.matmul(pos_rand, R).float()
     
     # 5. Create the rotated Data object using the SAME edge_index
+    print(edge_index.shape)
     data_rotated = Data(z=z, pos=pos_rand_rotated, edge_index=edge_index)
     
     # --- END OF FIX ---
