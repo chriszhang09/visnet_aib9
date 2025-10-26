@@ -41,26 +41,6 @@ class ViSNetEncoderMSE(nn.Module):
         self.output_model = EquivariantEncoder(hidden_channels=actual_hidden_channels, output_channels=latent_dim*2)
 
         
-        with torch.no_grad():
-    # Target the final linear layer in the EquivariantEncoder
-            final_linear_layer = self.output_model.output_network[-1].update_net[-1]
-
-            # --- START OF FIX ---
-            # Create a slice to target ALL log_var output channels.
-            # They are the second half of the output, from latent_dim onwards.
-            log_var_slice = slice(self.latent_dim, None)
-
-            # Set log_var biases to start with reasonable variance (not near zero)
-            # exp(0.0) = 1.0 gives unit variance, which is a good starting point
-            final_linear_layer.bias.data[log_var_slice] = 0.0
-
-            # Keep weights at normal scale for better learning
-            # The colon (:) ensures we scale weights from ALL inputs to these outputs.
-            final_linear_layer.weight.data[log_var_slice, :] *= 1.0
-            # --- END OF FIX ---
-
-            print(f"Successfully initialized bias for log_var outputs to: {final_linear_layer.bias.data[log_var_slice].mean():.2f}")
-        
     def forward(self, data):
         # Get atom-level features from ViSNetBlock
         x, v = self.representation_model(data)

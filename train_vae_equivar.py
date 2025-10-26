@@ -18,6 +18,8 @@ from pytorch_lightning.strategies import DDPStrategy
 from torch_geometric.data import Data
 from torch_geometric.nn import radius_graph
 from aib9_lib import aib9_tools as aib9
+import warnings
+warnings.filterwarnings("default")  # Show all warnings
 
 def pairwise_distance_loss(true_coords, pred_coords, p=2):
     device = torch.device('cuda')
@@ -48,18 +50,18 @@ def main():
     ATOM_COUNT = 58
     COORD_DIM = 3
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
-    LATENT_DIM = 32 
-    EPOCHS = 1
-    VISNET_HIDDEN_CHANNELS = 256
+    LATENT_DIM = 16 
+    EPOCHS = 10
+    VISNET_HIDDEN_CHANNELS = 128
     ENCODER_NUM_LAYERS = 3
-    DECODER_HIDDEN_DIM = 256
-    DECODER_NUM_LAYERS = 5
+    DECODER_HIDDEN_DIM = 128
+    DECODER_NUM_LAYERS = 1
     BATCH_SIZE = 16
-    LEARNING_RATE = 1e-5  # Reduced learning rate for stability  
+    LEARNING_RATE = 1e-4  # Reduced learning rate for stability  
     NUM_WORKERS = 2  # Parallel data loading
 
     data = np.load(aib9.FULL_DATA).reshape(-1, 58, 3)
-    data = data[0:10000]
+    data = data[0:1000]
     print(f"Original data shape: {data.shape}")
     
     # Check for NaN in input data
@@ -109,10 +111,6 @@ def main():
         device = torch.device('cuda')
         print(f'Using CUDA device: {torch.cuda.get_device_name()}')
         print(f'CUDA memory: {torch.cuda.get_device_properties(device).total_memory / 1e9:.1f} GB')
-    elif torch.backends.mps.is_available():
-        device = torch.device('mps')
-        print(f'Using MPS device: {device}')
-        print('MPS memory: Not available via PyTorch API')
     else:
         device = torch.device('cpu')
         print('CUDA not available, using CPU')
@@ -318,6 +316,11 @@ def main():
                 print("Warning: NaN detected in loss, skipping this batch")
                 continue
                 
+            # GPU-specific gradient clipping for stability
+            if device.type == 'cuda':
+                # More aggressive gradient clipping for GPU stability
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
+                
             if use_amp:
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
@@ -374,12 +377,11 @@ def main():
         # Save checkpoint every 10 epochs with timestamp
         if epoch % 5 == 0:
             checkpoint_path = f'vae_model_pairwise_epoch{epoch}_small_model.pth'
-            torch.save({
+            # Prepare checkpoint data
+            checkpoint_data = {
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
-                'scheduler_state_dict': scheduler.state_dict(),
-                'scaler_state_dict': scaler.state_dict(),
                 'loss': avg_loss,
                 'config': {
                     'latent_dim': LATENT_DIM,
@@ -390,7 +392,15 @@ def main():
                     'decoder_num_layers': DECODER_NUM_LAYERS,
                     'loss_type': 'MSE'
                 }
-            }, checkpoint_path)
+            }
+            
+            # Only add scheduler and scaler state if they exist
+            if scheduler is not None:
+                checkpoint_data['scheduler_state_dict'] = scheduler.state_dict()
+            if scaler is not None:
+                checkpoint_data['scaler_state_dict'] = scaler.state_dict()
+            
+            torch.save(checkpoint_data, checkpoint_path)
             print(f"  → Checkpoint saved: {checkpoint_path}")
 
     # Final validation
@@ -408,12 +418,11 @@ def main():
     
     # Save final model with pairwise suffix
     final_model_path = 'vae_model_pairwise_final_small_model_model.pth'
-    torch.save({
+    # Prepare checkpoint data
+    checkpoint_data = {
         'epoch': EPOCHS,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
-        'scheduler_state_dict': scheduler.state_dict(),
-        'scaler_state_dict': scaler.state_dict(),
         'loss': avg_loss,
         'config': {
             'latent_dim': LATENT_DIM,
@@ -424,7 +433,15 @@ def main():
             'decoder_num_layers': DECODER_NUM_LAYERS,
             'loss_type': 'MSE'
         }
-    }, final_model_path)
+    }
+    
+    # Only add scheduler and scaler state if they exist
+    if scheduler is not None:
+        checkpoint_data['scheduler_state_dict'] = scheduler.state_dict()
+    if scaler is not None:
+        checkpoint_data['scaler_state_dict'] = scaler.state_dict()
+    
+    torch.save(checkpoint_data, final_model_path)
     
     print(f"Final model saved to: {final_model_path}")
     wandb.finish()
