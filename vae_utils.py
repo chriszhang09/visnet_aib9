@@ -77,7 +77,7 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         # In reconstruction: z.shape[0] = num_atoms = 58, so we use the same pattern
         latent_vector = model.pooling_model.pre_reduce(torch.ones(random_z.shape[0], model.latent_dim, device=device), random_z).squeeze(-1)
         print(f"Latent vector shape: {latent_vector.shape}")
-        edge_index = torch.combinations(torch.arange(num_nodes, device=val_data.pos.device), 2).t().contiguous()
+        edge_index = torch.combinations(torch.arange(val_data.num_nodes, device=val_data.pos.device), 2).t().contiguous()
         edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
         data_recon = Data(z=val_data.z, pos=latent_vector, edge_index=val_data.edge_index, batch=batch)
         generated = model.decoder(data_recon).squeeze(-1)

@@ -156,3 +156,4 @@ Epoch   1: Loss=8.6280 (Recon=7.6794, KL=0.9486) LR=1.00e-05
   → Generating samples and visualizations...
 Random z shape: torch.Size([58, 3, 4])
 Latent vector shape: torch.Size([58, 3])
+slurmstepd: error: *** JOB 1333937 ON gr019 CANCELLED AT 2025-10-27T21:38:14 ***

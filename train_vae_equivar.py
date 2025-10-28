@@ -62,7 +62,7 @@ def main():
     DECODER_HIDDEN_DIM = 256
     DECODER_NUM_LAYERS = 3
     BATCH_SIZE = 128
-    LEARNING_RATE = 1e-4  # Reduced learning rate for stability  
+    LEARNING_RATE = 5e-5 # Reduced learning rate for stability  
     NUM_WORKERS = 2  # Parallel data loading
 
     data = np.load(aib9.FULL_DATA).reshape(-1, 58, 3)
@@ -179,8 +179,10 @@ def main():
         'cutoff': 5.0,  # Used for cutoff-based edge identification
         'max_z': max(ATOMIC_NUMBERS) + 1,
         'lmax':1
+        
     }
-
+    edge_index = aib9.identify_all_covalent_edges(topo)
+    edge_index = torch.from_numpy(edge_index).to(device)
     model = MolecularVAEMSE(
         latent_dim=LATENT_DIM, 
         num_atoms=ATOM_COUNT, 
@@ -190,7 +192,8 @@ def main():
         decoder_num_layers=DECODER_NUM_LAYERS,         
         # No edge_index_template needed - PyG handles batching automatically
         visnet_kwargs=visnet_params,
-        cutoff=5.0
+        cutoff=5.0,
+        edge_index=edge_index
     ).to(device)
 
     parser = argparse.ArgumentParser(description='Train VAE with MSE loss')
@@ -286,10 +289,10 @@ def main():
             with autocast(enabled=use_amp):
                 recon_batch, mu, log_var = model(molecules)
                 # KL divergence for non-centered isotropic Gaussian: 0.5 * (||μ||² + σ² - log(σ²) - 1)
-                kl_div = -0.5 * torch.mean(1 + log_var - mu.pow(2) - log_var.exp())
+                kl_div = -0.5 * torch.sum(1 + log_var - mu.pow(2) - log_var.exp())
             # Use simple MSE loss with centering for E(3) invariance
             recon_loss = pairwise_distance_loss(recon_batch, molecules.pos, 2)
-            kl_div = torch.clamp(kl_div, max = 2000)
+            kl_div = torch.clamp(kl_div, max = 200)
                 # Debug KL components every 100 batches
             if batch_idx % 50 == 0:
                 mu_norm = torch.mean(mu.pow(2)).item()

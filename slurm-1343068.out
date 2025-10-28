@@ -1,0 +1,4 @@
+  File "/scratch/cz2200/aib9/train_vae_equivar.py", line 182
+    'edge_index': edge_index
+    ^
+SyntaxError: invalid syntax

@@ -6,13 +6,14 @@ from .visnet_vae_encoder_mse import ViSNetEncoderMSE
 from .vae_decoder_new import ViSNetDecoderMSE
 from visnet.models.output_modules import EquivariantVectorOutput, EquivariantEncoder, OutputModel, EquivariantVector
 from torch_geometric.data import Data
+from aib9_lib import aib9_tools as aib9
 class MolecularVAEMSE(nn.Module):
     """
     MSE-specific Molecular VAE with proper initialization for stable training.
     """
     def __init__(self, latent_dim, num_atoms, atom_feature_dim, 
                  visnet_hidden_channels=128, decoder_hidden_dim=128, 
-                 decoder_num_layers=6, visnet_kwargs=None, cutoff: float = 3.0):
+                 decoder_num_layers=6, visnet_kwargs=None, cutoff: float = 3.0, edge_index=None):
         """
         Args:
             latent_dim (int): Dimension of the latent space
@@ -51,6 +52,7 @@ class MolecularVAEMSE(nn.Module):
                 print(f"Warning: NaN detected in model parameter {name} after initialization")
                 with torch.no_grad():
                     param.data = torch.randn_like(param.data) * 0.01
+        self.edge_index = torch.from_numpy(edge_index).to(self.device)
 
     def reparameterize(self, mu, log_var):
         """
@@ -83,14 +85,13 @@ class MolecularVAEMSE(nn.Module):
 
         latent_vector = self.pooling_model.pre_reduce(torch.ones(latent_vector.shape[0], self.latent_dim, device=data.pos.device), latent_vector).squeeze(-1)
 
-        num_nodes = data.num_nodes
+        num_nodes = self.num_atoms
 
         
         # Create batch tensor for the edge_index
         batch = torch.zeros(num_nodes, dtype=torch.long, device=data.pos.device)
-        edge_index = torch.combinations(torch.arange(num_nodes, device=data.pos.device), 2).t().contiguous()
-        edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
-        data_decoder = Data(z=data.z, pos=latent_vector, edge_index=data.edge_index, batch=batch)
+        edge_index = self.edge_index
+        data_decoder = Data(z=data.z, pos=latent_vector, edge_index=edge_index, batch=batch)
 
         reconstructed_pos = self.decoder(data_decoder).squeeze(-1)
         return reconstructed_pos, mu, log_var_expanded

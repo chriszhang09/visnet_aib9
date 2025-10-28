@@ -5,11 +5,11 @@ wandb: Currently logged in as: chriszhang09 (chriszhang09-new-york-university) t
 /ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/wandb/analytics/sentry.py:263: DeprecationWarning: The `Scope.user` setter is deprecated in favor of `Scope.set_user()`.
   self.scope.user = {"email": email}
 wandb: Tracking run with wandb version 0.22.1
-wandb: Run data is saved locally in /scratch/cz2200/aib9/wandb/run-20251027_210632-qdkpdfy7
+wandb: Run data is saved locally in /scratch/cz2200/aib9/wandb/run-20251027_213208-pxkh1fg1
 wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run treasured-cherry-208
+wandb: Syncing run driven-firebrand-209
 wandb: ⭐️ View project at https://wandb.ai/chriszhang09-new-york-university/aib9-vae-pairwise
-wandb: 🚀 View run at https://wandb.ai/chriszhang09-new-york-university/aib9-vae-pairwise/runs/qdkpdfy7
+wandb: 🚀 View run at https://wandb.ai/chriszhang09-new-york-university/aib9-vae-pairwise/runs/pxkh1fg1
 /ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'NeighborEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
   warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
 /ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'EdgeEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
@@ -29,4 +29,4 @@ Model parameters: 7,770,100
 Loss type: MSE (coordinate-based)
 ============================================================
 
-slurmstepd: error: *** JOB 1340260 ON gr010 CANCELLED AT 2025-10-27T21:22:08 ***
+slurmstepd: error: *** JOB 1342026 ON gr048 CANCELLED AT 2025-10-27T21:38:09 ***

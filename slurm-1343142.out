@@ -1,0 +1,75 @@
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+wandb: Currently logged in as: chriszhang09 (chriszhang09-new-york-university) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/wandb/analytics/sentry.py:263: DeprecationWarning: The `Scope.user` setter is deprecated in favor of `Scope.set_user()`.
+  self.scope.user = {"email": email}
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/wandb/analytics/sentry.py:263: DeprecationWarning: The `Scope.user` setter is deprecated in favor of `Scope.set_user()`.
+  self.scope.user = {"email": email}
+wandb: Tracking run with wandb version 0.22.1
+wandb: Run data is saved locally in /scratch/cz2200/aib9/wandb/run-20251027_214345-c6b9v4hy
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run vocal-wood-210
+wandb: ⭐️ View project at https://wandb.ai/chriszhang09-new-york-university/aib9-vae-pairwise
+wandb: 🚀 View run at https://wandb.ai/chriszhang09-new-york-university/aib9-vae-pairwise/runs/c6b9v4hy
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'NeighborEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'EdgeEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'ViS_MP_Vertex_Edge.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+Original data shape: (1000000, 58, 3)
+CV shape: (1000000, 2)
+Using CUDA device: Quadro RTX 8000
+CUDA memory: 47.8 GB
+Testing model with dummy data...
+Model test passed - no NaN in dummy forward pass
+
+============================================================
+Starting Training - 389312 samples
+Model parameters: 7,770,100
+Loss type: MSE (coordinate-based)
+============================================================
+
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/autograd/__init__.py:251: UserWarning: Error detected in MmBackward0. Traceback of forward call that caused the error:
+  File "/scratch/cz2200/aib9/train_vae_equivar.py", line 445, in <module>
+    main()
+  File "/scratch/cz2200/aib9/train_vae_equivar.py", line 287, in main
+    recon_batch, mu, log_var = model(molecules)
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1568, in _call_impl
+    result = forward_call(*args, **kwargs)
+  File "/scratch/cz2200/aib9/mse_training/vae_model_new.py", line 84, in forward
+    latent_vector = self.pooling_model.pre_reduce(torch.ones(latent_vector.shape[0], self.latent_dim, device=data.pos.device), latent_vector).squeeze(-1)
+  File "/scratch/cz2200/aib9/visnet/models/output_modules.py", line 196, in pre_reduce
+    x, v = layer(x, v)
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/scratch/cz2200/aib9/visnet/models/output_modules.py", line 54, in forward
+    vec2 = self.vec2_proj(v)
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/linear.py", line 114, in forward
+    return F.linear(input, self.weight, self.bias)
+ (Triggered internally at ../torch/csrc/autograd/python_anomaly_mode.cpp:114.)
+  Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+  Debug - kl: 0.1324, recon_loss: 72.6533
+  Debug - μ²: 0.0000, log_var: 0.1313, exp(log_var): 1.3961
+  Debug - kl: 0.0398, recon_loss: 72.1632
+  Debug - μ²: 0.0000, log_var: -0.0427, exp(log_var): 1.0368
+Traceback (most recent call last):
+  File "/scratch/cz2200/aib9/train_vae_equivar.py", line 445, in <module>
+    main()
+  File "/scratch/cz2200/aib9/train_vae_equivar.py", line 319, in main
+    scaler.scale(loss).backward()
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/_tensor.py", line 492, in backward
+    torch.autograd.backward(
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/autograd/__init__.py", line 251, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+RuntimeError: Function 'MmBackward0' returned nan values in its 1th output.
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mvocal-wood-210[0m at: [34m[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/run-20251027_214345-c6b9v4hy/logs[0m

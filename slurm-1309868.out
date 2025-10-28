@@ -775,3 +775,4 @@ Epoch   5: Loss=0.0881 (Recon=0.0502, KL=0.0379) LR=5.00e-05
 Epoch   6: Loss=0.0633 (Recon=0.0357, KL=0.0275) LR=6.00e-05
   → Generating samples and visualizations...
 torch.Size([58, 3, 128])
+slurmstepd: error: *** JOB 1309868 ON gr011 CANCELLED AT 2025-10-27T21:38:19 ***
