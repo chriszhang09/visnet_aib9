@@ -1,0 +1,59 @@
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+wandb: Currently logged in as: chriszhang09 (chriszhang09-new-york-university) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/wandb/analytics/sentry.py:263: DeprecationWarning: The `Scope.user` setter is deprecated in favor of `Scope.set_user()`.
+  self.scope.user = {"email": email}
+wandb: setting up run erv1qzw3
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/wandb/analytics/sentry.py:263: DeprecationWarning: The `Scope.user` setter is deprecated in favor of `Scope.set_user()`.
+  self.scope.user = {"email": email}
+wandb: Tracking run with wandb version 0.22.1
+wandb: Run data is saved locally in /scratch/cz2200/aib9/wandb/run-20251026_143756-erv1qzw3
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run stilted-deluge-201
+wandb: ⭐️ View project at https://wandb.ai/chriszhang09-new-york-university/aib9-vae-pairwise
+wandb: 🚀 View run at https://wandb.ai/chriszhang09-new-york-university/aib9-vae-pairwise/runs/erv1qzw3
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'NeighborEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'EdgeEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'ViS_MP_Vertex_Edge.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+Original data shape: (1000000, 58, 3)
+CV shape: (1000000, 2)
+Using CUDA device: Quadro RTX 8000
+CUDA memory: 47.8 GB
+Testing model with dummy data...
+Model test passed - no NaN in dummy forward pass
+
+============================================================
+Starting Training - 389312 samples
+Model parameters: 7,936,260
+Loss type: MSE (coordinate-based)
+============================================================
+
+Traceback (most recent call last):
+  File "/scratch/cz2200/aib9/train_vae_equivar.py", line 440, in <module>
+    main()
+  File "/scratch/cz2200/aib9/train_vae_equivar.py", line 282, in main
+    recon_batch, mu, log_var = model(molecules)
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1568, in _call_impl
+    result = forward_call(*args, **kwargs)
+  File "/scratch/cz2200/aib9/mse_training/vae_model_new.py", line 94, in forward
+    reconstructed_pos = self.decoder(data_decoder).squeeze(-1)
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/scratch/cz2200/aib9/mse_training/vae_decoder_new.py", line 45, in forward
+    x, v = self.representation_model(data)
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/scratch/cz2200/aib9/visnet/models/visnet_block.py", line 119, in forward
+    edge_vec_normalized[mask] = edge_vec_masked / edge_norms
+RuntimeError: Index put requires the source and destination dtypes match, got Half for the destination and Float for the source.
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mstilted-deluge-201[0m at: [34m[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/run-20251026_143756-erv1qzw3/logs[0m

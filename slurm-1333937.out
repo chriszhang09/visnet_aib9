@@ -1,0 +1,158 @@
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+wandb: Currently logged in as: chriszhang09 (chriszhang09-new-york-university) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/wandb/analytics/sentry.py:263: DeprecationWarning: The `Scope.user` setter is deprecated in favor of `Scope.set_user()`.
+  self.scope.user = {"email": email}
+wandb: setting up run r5ev675l
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/wandb/analytics/sentry.py:263: DeprecationWarning: The `Scope.user` setter is deprecated in favor of `Scope.set_user()`.
+  self.scope.user = {"email": email}
+wandb: Tracking run with wandb version 0.22.1
+wandb: Run data is saved locally in /scratch/cz2200/aib9/wandb/run-20251027_182417-r5ev675l
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run effortless-oath-207
+wandb: ⭐️ View project at https://wandb.ai/chriszhang09-new-york-university/aib9-vae-pairwise
+wandb: 🚀 View run at https://wandb.ai/chriszhang09-new-york-university/aib9-vae-pairwise/runs/r5ev675l
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'NeighborEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'EdgeEmbedding.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py:1032: UserWarning: 'ViS_MP_Vertex_Edge.jittable' is deprecated and a no-op. Please remove its usage.
+  warnings.warn(f"'{self.__class__.__name__}.jittable' is deprecated "
+Original data shape: (1000000, 58, 3)
+CV shape: (1000000, 2)
+Using CUDA device: Quadro RTX 8000
+CUDA memory: 47.8 GB
+Testing model with dummy data...
+Model test passed - no NaN in dummy forward pass
+
+============================================================
+Starting Training - 389312 samples
+Model parameters: 7,770,100
+Loss type: MSE (coordinate-based)
+============================================================
+
+  Debug - kl: 0.1324, recon_loss: 72.6268
+  Debug - μ²: 0.0000, log_var: 0.1313, exp(log_var): 1.3961
+  Debug - kl: 0.0659, recon_loss: 68.0296
+  Debug - μ²: 0.0000, log_var: -0.0721, exp(log_var): 1.0596
+  Debug - kl: 0.1235, recon_loss: 30.6985
+  Debug - μ²: 0.0000, log_var: -0.5739, exp(log_var): 0.6731
+  Debug - kl: 0.2132, recon_loss: 22.7934
+  Debug - μ²: 0.0003, log_var: -0.8066, exp(log_var): 0.6194
+  Debug - kl: 0.2376, recon_loss: 19.5767
+  Debug - μ²: 0.0041, log_var: -0.9824, exp(log_var): 0.4886
+  Debug - kl: 0.2759, recon_loss: 18.4596
+  Debug - μ²: 0.0018, log_var: -1.1282, exp(log_var): 0.4218
+  Debug - kl: 0.2942, recon_loss: 17.7781
+  Debug - μ²: 0.0021, log_var: -1.1894, exp(log_var): 0.3969
+  Debug - kl: 0.3077, recon_loss: 17.4268
+  Debug - μ²: 0.0005, log_var: -1.2470, exp(log_var): 0.3679
+  Debug - kl: 0.3091, recon_loss: 17.0273
+  Debug - μ²: 0.0004, log_var: -1.2654, exp(log_var): 0.3524
+  Debug - kl: 0.3087, recon_loss: 17.0877
+  Debug - μ²: 0.0003, log_var: -1.2812, exp(log_var): 0.3360
+  Debug - kl: 0.3048, recon_loss: 17.4399
+  Debug - μ²: 0.0002, log_var: -1.2758, exp(log_var): 0.3336
+  Debug - kl: 0.3131, recon_loss: 16.6082
+  Debug - μ²: 0.0002, log_var: -1.3044, exp(log_var): 0.3215
+  Debug - kl: 0.3202, recon_loss: 16.7126
+  Debug - μ²: 0.0001, log_var: -1.3194, exp(log_var): 0.3208
+  Debug - kl: 0.3079, recon_loss: 16.8690
+  Debug - μ²: 0.0001, log_var: -1.2949, exp(log_var): 0.3208
+  Debug - kl: 0.3119, recon_loss: 16.3124
+  Debug - μ²: 0.0002, log_var: -1.3027, exp(log_var): 0.3210
+  Debug - kl: 0.3099, recon_loss: 17.0206
+  Debug - μ²: 0.0008, log_var: -1.3010, exp(log_var): 0.3180
+  Debug - kl: 0.3482, recon_loss: 16.8888
+  Debug - μ²: 0.0340, log_var: -1.3360, exp(log_var): 0.3264
+  Debug - kl: 0.5041, recon_loss: 15.5459
+  Debug - μ²: 0.1044, log_var: -1.6418, exp(log_var): 0.2619
+  Debug - kl: 0.6919, recon_loss: 14.7215
+  Debug - μ²: 0.1179, log_var: -2.1004, exp(log_var): 0.1655
+  Debug - kl: 0.8839, recon_loss: 10.1844
+  Debug - μ²: 0.0898, log_var: -2.5670, exp(log_var): 0.1109
+  Debug - kl: 1.1327, recon_loss: 5.3751
+  Debug - μ²: 0.1083, log_var: -3.0885, exp(log_var): 0.0685
+  Debug - kl: 1.3066, recon_loss: 3.4653
+  Debug - μ²: 0.1151, log_var: -3.4498, exp(log_var): 0.0482
+  Debug - kl: 1.4190, recon_loss: 2.4428
+  Debug - μ²: 0.1142, log_var: -3.6861, exp(log_var): 0.0378
+  Debug - kl: 1.4785, recon_loss: 2.0224
+  Debug - μ²: 0.1133, log_var: -3.8102, exp(log_var): 0.0335
+  Debug - kl: 1.4914, recon_loss: 1.8378
+  Debug - μ²: 0.1194, log_var: -3.8304, exp(log_var): 0.0328
+  Debug - kl: 1.4923, recon_loss: 1.5261
+  Debug - μ²: 0.1196, log_var: -3.8321, exp(log_var): 0.0329
+  Debug - kl: 1.4841, recon_loss: 1.3811
+  Debug - μ²: 0.1201, log_var: -3.8146, exp(log_var): 0.0335
+  Debug - kl: 1.4691, recon_loss: 1.4282
+  Debug - μ²: 0.1153, log_var: -3.7888, exp(log_var): 0.0342
+  Debug - kl: 1.4519, recon_loss: 1.0537
+  Debug - μ²: 0.1151, log_var: -3.7538, exp(log_var): 0.0349
+  Debug - kl: 1.4331, recon_loss: 1.0349
+  Debug - μ²: 0.1209, log_var: -3.7087, exp(log_var): 0.0366
+  Debug - kl: 1.4079, recon_loss: 0.9599
+  Debug - μ²: 0.1179, log_var: -3.6596, exp(log_var): 0.0384
+  Debug - kl: 1.3846, recon_loss: 0.8662
+  Debug - μ²: 0.1188, log_var: -3.6102, exp(log_var): 0.0403
+  Debug - kl: 1.3587, recon_loss: 0.9498
+  Debug - μ²: 0.1191, log_var: -3.5555, exp(log_var): 0.0427
+  Debug - kl: 1.3437, recon_loss: 0.9021
+  Debug - μ²: 0.1206, log_var: -3.5229, exp(log_var): 0.0439
+  Debug - kl: 1.3201, recon_loss: 0.9320
+  Debug - μ²: 0.1162, log_var: -3.4782, exp(log_var): 0.0458
+  Debug - kl: 1.3122, recon_loss: 0.8390
+  Debug - μ²: 0.1223, log_var: -3.4550, exp(log_var): 0.0472
+  Debug - kl: 1.2958, recon_loss: 0.7747
+  Debug - μ²: 0.1170, log_var: -3.4260, exp(log_var): 0.0487
+  Debug - kl: 1.2736, recon_loss: 0.8568
+  Debug - μ²: 0.1171, log_var: -3.3790, exp(log_var): 0.0511
+  Debug - kl: 1.2604, recon_loss: 0.7917
+  Debug - μ²: 0.1169, log_var: -3.3514, exp(log_var): 0.0525
+  Debug - kl: 1.2437, recon_loss: 0.7435
+  Debug - μ²: 0.1135, log_var: -3.3197, exp(log_var): 0.0542
+  Debug - kl: 1.2283, recon_loss: 0.7311
+  Debug - μ²: 0.1149, log_var: -3.2850, exp(log_var): 0.0567
+  Debug - kl: 1.2190, recon_loss: 0.7162
+  Debug - μ²: 0.1155, log_var: -3.2648, exp(log_var): 0.0577
+  Debug - kl: 1.1997, recon_loss: 0.7402
+  Debug - μ²: 0.1091, log_var: -3.2310, exp(log_var): 0.0594
+  Debug - kl: 1.1958, recon_loss: 0.6432
+  Debug - μ²: 0.1141, log_var: -3.2171, exp(log_var): 0.0604
+  Debug - kl: 1.1848, recon_loss: 0.6913
+  Debug - μ²: 0.1146, log_var: -3.1933, exp(log_var): 0.0617
+  Debug - kl: 1.1726, recon_loss: 0.6302
+  Debug - μ²: 0.1136, log_var: -3.1680, exp(log_var): 0.0636
+  Debug - kl: 1.1622, recon_loss: 0.6532
+  Debug - μ²: 0.1116, log_var: -3.1476, exp(log_var): 0.0652
+  Debug - kl: 1.1471, recon_loss: 0.6703
+  Debug - μ²: 0.1111, log_var: -3.1157, exp(log_var): 0.0674
+  Debug - kl: 1.1393, recon_loss: 0.6992
+  Debug - μ²: 0.1127, log_var: -3.0966, exp(log_var): 0.0693
+  Debug - kl: 1.1363, recon_loss: 0.6593
+  Debug - μ²: 0.1219, log_var: -3.0800, exp(log_var): 0.0707
+  Debug - kl: 1.1209, recon_loss: 0.6061
+  Debug - μ²: 0.1130, log_var: -3.0569, exp(log_var): 0.0719
+  Debug - kl: 1.1070, recon_loss: 0.7088
+  Debug - μ²: 0.1180, log_var: -3.0209, exp(log_var): 0.0752
+  Debug - kl: 1.1004, recon_loss: 0.6110
+  Debug - μ²: 0.1204, log_var: -3.0041, exp(log_var): 0.0763
+  Debug - kl: 1.0923, recon_loss: 0.5889
+  Debug - μ²: 0.1221, log_var: -2.9848, exp(log_var): 0.0777
+  Debug - kl: 1.0773, recon_loss: 0.5499
+  Debug - μ²: 0.1242, log_var: -2.9499, exp(log_var): 0.0805
+  Debug - kl: 1.0688, recon_loss: 0.6573
+  Debug - μ²: 0.1257, log_var: -2.9305, exp(log_var): 0.0815
+  Debug - kl: 1.0572, recon_loss: 0.5707
+  Debug - μ²: 0.1282, log_var: -2.9028, exp(log_var): 0.0834
+  Debug - kl: 1.0426, recon_loss: 0.5803
+  Debug - μ²: 0.1208, log_var: -2.8783, exp(log_var): 0.0860
+  Debug - kl: 1.0409, recon_loss: 0.5623
+  Debug - μ²: 0.1278, log_var: -2.8675, exp(log_var): 0.0866
+  Debug - kl: 1.0355, recon_loss: 0.5028
+  Debug - μ²: 0.1277, log_var: -2.8555, exp(log_var): 0.0877
+  Debug - kl: 1.0267, recon_loss: 0.5654
+  Debug - μ²: 0.1293, log_var: -2.8355, exp(log_var): 0.0887
+Epoch   1: Loss=8.6280 (Recon=7.6794, KL=0.9486) LR=1.00e-05
+  → Generating samples and visualizations...
+Random z shape: torch.Size([58, 3, 4])
+Latent vector shape: torch.Size([58, 3])

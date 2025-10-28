@@ -79,7 +79,7 @@ class MolecularVAEMSE(nn.Module):
         log_var_expanded = log_var.unsqueeze(1).expand(-1, 3, -1)
         mu = v
 
-        latent_vector = self.reparameterize(mu, log_var_expanded)
+        latent_vector = self.reparameterize(mu, log_var_expanded).float()
 
         latent_vector = self.pooling_model.pre_reduce(torch.ones(latent_vector.shape[0], self.latent_dim, device=data.pos.device), latent_vector).squeeze(-1)
 
@@ -88,7 +88,8 @@ class MolecularVAEMSE(nn.Module):
         
         # Create batch tensor for the edge_index
         batch = torch.zeros(num_nodes, dtype=torch.long, device=data.pos.device)
-       
+        edge_index = torch.combinations(torch.arange(num_nodes, device=data.pos.device), 2).t().contiguous()
+        edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
         data_decoder = Data(z=data.z, pos=latent_vector, edge_index=data.edge_index, batch=batch)
 
         reconstructed_pos = self.decoder(data_decoder).squeeze(-1)

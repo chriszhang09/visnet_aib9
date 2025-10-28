@@ -10,16 +10,7 @@ class MolecularVAEMSE(nn.Module):
     def __init__(self, latent_dim, num_atoms, atom_feature_dim, 
                  visnet_hidden_channels=128, decoder_hidden_dim=128, 
                  decoder_num_layers=6, visnet_kwargs=None, cutoff: float = 3.0):
-        """
-        Args:
-            latent_dim (int): Dimension of the latent space
-            num_atoms (int): Number of atoms in each molecule
-            atom_feature_dim (int): Dimension for one-hot encoding of atom types (max_atomic_number + 1)
-            visnet_hidden_channels (int): Hidden dimension for ViSNet encoder
-            decoder_hidden_dim (int): Hidden dimension for EGNN decoder
-            decoder_num_layers (int): Number of EGNN layers in decoder
-            visnet_kwargs (dict): Additional parameters for ViSNetBlock
-        """
+       
         super().__init__()
         if visnet_kwargs is None:
             visnet_kwargs = {}
@@ -65,12 +56,9 @@ class MolecularVAEMSE(nn.Module):
         
         z = self.reparameterize(mu, log_var)
         
-        # Decode
-        # We need the one-hot atom types for the decoder
-        # This assumes data.z contains integer atom types
+  
         atom_types_one_hot = F.one_hot(data.z.long(), num_classes=self.decoder.atom_feature_dim).float()
         
-        # Force cutoff-based edges inside the decoder (edge_index=None)
         reconstructed_pos = self.decoder(z, atom_types_one_hot, None, data.batch)
         
         return reconstructed_pos, mu, log_var

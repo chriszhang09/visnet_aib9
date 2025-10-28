@@ -59,18 +59,9 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         # 1. Reconstruction: encode and decode a real molecule
         val_molecule = val_data.to(device)
         
-        x, v = model.encoder(val_molecule)
-        log_var = x[:, :model.latent_dim]
-        mu = v
-        log_var_expanded = log_var.unsqueeze(1).expand(-1, 3, -1)
-        z = model.reparameterize(mu, log_var_expanded)
+        reconstructed_pos, _ , _= model(val_molecule)
 
-       
-        latent_vector = model.pooling_model.pre_reduce(torch.ones(z.shape[0], model.latent_dim, device=device), z).squeeze(-1)
-        num_nodes = val_data.num_nodes
-        batch = torch.zeros(num_nodes, dtype=torch.long, device=val_data.pos.device)
-        data_decoder = Data(z=val_data.z, pos=latent_vector, edge_index=val_data.edge_index, batch=batch)
-        reconstructed_coords = model.decoder(data_decoder).squeeze(-1).cpu().numpy()
+        reconstructed_coords = reconstructed_pos.cpu().numpy()
 
         # Move to CPU for visualization
         original_coords = val_data.pos.cpu().numpy()
@@ -78,11 +69,18 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         atomic_nums = atomic_numbers.cpu().numpy()
         
         # 2. Generate from isotropic Gaussian prior
-        random_z = model.sample_prior(device)
-        print(random_z.shape)
+        # Sample from prior with correct shape: (58, 3, latent_dim) to match reconstruction
+        random_z = model.sample_prior(device)  # Shape: (58, 3, latent_dim)
+        print(f"Random z shape: {random_z.shape}")
+        
+        # Apply the EXACT same pooling process as in reconstruction
+        # In reconstruction: z.shape[0] = num_atoms = 58, so we use the same pattern
         latent_vector = model.pooling_model.pre_reduce(torch.ones(random_z.shape[0], model.latent_dim, device=device), random_z).squeeze(-1)
+        print(f"Latent vector shape: {latent_vector.shape}")
+        edge_index = torch.combinations(torch.arange(num_nodes, device=val_data.pos.device), 2).t().contiguous()
+        edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
         data_recon = Data(z=val_data.z, pos=latent_vector, edge_index=val_data.edge_index, batch=batch)
-        generated = model.decoder(data_recon)
+        generated = model.decoder(data_recon).squeeze(-1)
                                  
         # PyG decoder returns [num_atoms, 3] directly
         generated_coords = generated.cpu().numpy()
