@@ -12,7 +12,7 @@ class MolecularVAEMSE(nn.Module):
     """
     def __init__(self, latent_dim, num_atoms, atom_feature_dim, 
                  visnet_hidden_channels=128, decoder_hidden_dim=128, 
-                 decoder_num_layers=6, visnet_kwargs=None, cutoff: float = 3.0):
+                 decoder_num_layers=6, visnet_kwargs=None, cutoff: float = 3.0, edge_index=None, batch_size=128):
         """
         Args:
             latent_dim (int): Dimension of the latent space
@@ -51,6 +51,10 @@ class MolecularVAEMSE(nn.Module):
                 print(f"Warning: NaN detected in model parameter {name} after initialization")
                 with torch.no_grad():
                     param.data = torch.randn_like(param.data) * 0.01
+        self.edge_index = edge_index
+        self.batch_size = batch_size
+                # Create batched edge_index from template with offsets
+  
 
     def reparameterize(self, mu, log_var):
         """
@@ -84,13 +88,30 @@ class MolecularVAEMSE(nn.Module):
         latent_vector = self.pooling_model.pre_reduce(torch.ones(latent_vector.shape[0], self.latent_dim, device=data.pos.device), latent_vector).squeeze(-1)
 
         num_nodes = data.num_nodes
-
         
         # Create batch tensor for the edge_index
+        batch = data.batch if hasattr(data, 'batch') and data.batch is not None else torch.zeros(num_nodes, dtype=torch.long, device=data.pos.device)
+        if self.edge_index is not None:
+            batch_size = batch.max().item() + 1
+            num_atoms_per_mol = self.num_atoms
+            
+            # Create edge_index for each molecule with proper offset
+            edge_index_list = []
+            for i in range(batch_size):
+                offset = i * num_atoms_per_mol
+                edge_index_i = self.edge_index + offset
+                edge_index_list.append(edge_index_i)
+        
+            edge_index = torch.cat(edge_index_list, dim=1)
+        
         batch = torch.zeros(num_nodes, dtype=torch.long, device=data.pos.device)
-       
-        data_decoder = Data(z=data.z, pos=latent_vector, edge_index=data.edge_index, batch=batch)
-
+        # Create data_decoder with same structure as input data (for ViSNet decoder)
+        data_decoder = Data(
+            z=data.z,                    # Atomic numbers (same as input)
+            pos=latent_vector,           # Positions (now the latent representation)
+            edge_index=edge_index,  # Edge connectivity (same as input)
+            batch=batch                   # Batch assignment (same as input)
+        )
         reconstructed_pos = self.decoder(data_decoder).squeeze(-1)
         return reconstructed_pos, mu, log_var_expanded
     

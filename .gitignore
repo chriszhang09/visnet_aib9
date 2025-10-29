@@ -3,5 +3,6 @@ aib9_lib/
 *.pth
 *.npy
 *.png
+*.out
 
 molecule_coords.npy

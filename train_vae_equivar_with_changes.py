@@ -35,7 +35,7 @@ def pairwise_distance_loss(true_coords, pred_coords, p=2):
   
 
 from mse_training.vae_model_new import MolecularVAEMSE
-from vae_utils_new import validate_and_sample
+from vae_utils import validate_and_sample
 
 from torch_geometric.loader import DataLoader
 import torch.nn.functional as F
@@ -281,10 +281,12 @@ def main():
             optimizer.zero_grad(set_to_none=True)  # Faster than zero_grad()
             
             # Mixed precision forward pass
+      # Mixed precision forward pass
             with autocast(enabled=use_amp):
                 recon_batch, mu, log_var = model(molecules)
                 # KL divergence for non-centered isotropic Gaussian: 0.5 * (||μ||² + σ² - log(σ²) - 1)
                 kl_div = -0.5 * torch.mean(1 + log_var - mu.pow(2) - log_var.exp())
+
             # Use simple MSE loss with centering for E(3) invariance
             recon_loss = pairwise_distance_loss(recon_batch, molecules.pos, 2)
             kl_div = torch.clamp(kl_div, max = 2000)
@@ -295,13 +297,21 @@ def main():
                 exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
                 print(f"  Debug - kl: {kl_div:.4f}, recon_loss: {recon_loss:.4f}")
                 print(f"  Debug - μ²: {mu_norm:.4f}, log_var: {log_var_mean:.4f}, exp(log_var): {exp_log_var_mean:.4f}")
-
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max = 1000)  # Lower clamp for MSE
-            kl_weight = 10
+            kl_weight = 1
+            z_sample = sample_gaussians(mu, log_var)
 
-            loss = recon_loss + kl_weight*kl_div 
-            
+            try:
+                z_reshaped = z_sample[::58, :, :3].reshape(-1, 3, 3)
+            except RuntimeError as e:
+                raise RuntimeError(f"Could not reshape latent space 'z_sample' with shape {z_sample.shape} to (-1, 3, 3). "
+                                    "Please ensure your latent space has at least 9 dimensions. Error: {e}")
+
+            dets = torch.det(z_reshaped.float())
+            h_vals = torch.clamp(dets, max=M)
+            log_f_z_term = torch.mean(h_vals)
+            loss = recon_loss + kl_weight*(kl_div - log_f_z_term)
             
             # Check for NaN in loss before backpropagation
             if torch.isnan(loss):
@@ -365,10 +375,10 @@ def main():
             for fig_name, fig in figures.items():
                 wandb.log({fig_name: wandb.Image(fig)})
                 plt.close(fig)
-        
+        os.makedirs('checkpoints', exist_ok=True)
         # Save checkpoint every 10 epochs with timestamp
         if epoch % 5 == 0:
-            checkpoint_path = f'vae_model_pairwise_epoch{epoch}_small_model.pth'
+            checkpoint_path = f'checkpoints/vae_model_pairwise_epoch{epoch}_small_model.pth'
             # Prepare checkpoint data
             checkpoint_data = {
                 'epoch': epoch,
@@ -409,7 +419,7 @@ def main():
         plt.close(fig)
     
     # Save final model with pairwise suffix
-    final_model_path = 'vae_model_pairwise_final_small_model_model.pth'
+    final_model_path = 'checkpoints/vae_model_pairwise_final_small_model_model.pth'
     # Prepare checkpoint data
     checkpoint_data = {
         'epoch': EPOCHS,

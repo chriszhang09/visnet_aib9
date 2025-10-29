@@ -52,6 +52,21 @@ def visualize_molecule_3d(coords, atomic_numbers, title="Molecule"):
     return fig
 
 
+def generate_latent_samples(model, device):
+
+    while True:
+        z = model.sample_prior(device)
+        z_reshaped = z[::model.num_atoms, :, :3].reshape(-1, 3, 3)
+          
+        dets = torch.det(z_reshaped.float())
+        h_vals = torch.clamp(dets, max=1.0)
+        prob_accept = torch.exp(h_vals - 1)
+    
+        u = torch.rand(1)
+        
+        if u < prob_accept:
+             return z
+
 def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epoch):
     """Generate samples and visualizations for validation."""
     model.eval()
@@ -72,7 +87,7 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         
         # 2. Generate from isotropic Gaussian prior
         # Sample from prior with correct shape: (58, 3, latent_dim) to match reconstruction
-        random_z = model.sample_prior(device)  # Shape: (58, 3, latent_dim)
+        random_z = generate_latent_samples(model, device)  # Shape: (58, 3, latent_dim)
         print(f"Random z shape: {random_z.shape}")
         
         # Apply the EXACT same pooling process as in reconstruction
@@ -86,6 +101,7 @@ def validate_and_sample(model, val_data, device, atomic_numbers, edge_index, epo
         )  
         topo = np.load(TOPO_FILE)
         edge_index = model.edge_index
+        edge_index = edge_index.to(device)
         batch = torch.zeros(val_data.num_nodes, dtype=torch.long, device=device)
         data_recon = Data(z=val_data.z, pos=latent_vector, edge_index=edge_index, batch=batch)
         generated = model.decoder(data_recon).squeeze(-1)
