@@ -11,4 +11,4 @@
 module purge
 
 # Corrected the source path to be absolute and removed the :ro flag from the overlay
-singularity exec --nv --overlay /scratch/cz2200/visnetoverlay/visnet_env.ext3:ro /scratch/work/public/singularity/cuda12.1.1-cudnn8.9.0-devel-ubuntu22.04.2.sif /bin/bash -c "source /ext3/env.sh; conda activate visnet; python train_vae_equivar.py"
+singularity exec --nv --overlay /scratch/cz2200/visnetoverlay/visnet_env.ext3:ro /scratch/work/public/singularity/cuda12.1.1-cudnn8.9.0-devel-ubuntu22.04.2.sif /bin/bash -c "source /ext3/env.sh; conda activate visnet; python train_vae_equivar_with_changes.py"

@@ -46,13 +46,8 @@ class MolecularVAEMSE(nn.Module):
         self.linear_layer = nn.Linear(visnet_hidden_channels, visnet_hidden_channels)
         self.activation = nn.ReLU()
         self.linear_layer2 = nn.Linear(visnet_hidden_channels, latent_dim)
-        # Check for NaN in model parameters after initialization
-        for name, param in self.named_parameters():
-            if torch.isnan(param).any():
-                print(f"Warning: NaN detected in model parameter {name} after initialization")
-                with torch.no_grad():
-                    param.data = torch.randn_like(param.data) * 0.01
-        self.edge_index = torch.from_numpy(edge_index).to(self.device)
+        self.edge_index = edge_index
+        self.reset_parameters() 
 
     def reparameterize(self, mu, log_var):
         """
@@ -74,7 +69,7 @@ class MolecularVAEMSE(nn.Module):
         return torch.randn(self.num_atoms, 3, self.latent_dim, device=device)
 
     def forward(self, data):
-
+        
         x, v = self.encoder(data)
 
         log_var = x[:, :self.latent_dim]
@@ -82,16 +77,35 @@ class MolecularVAEMSE(nn.Module):
         mu = v
 
         latent_vector = self.reparameterize(mu, log_var_expanded).float()
-
-        latent_vector = self.pooling_model.pre_reduce(torch.ones(latent_vector.shape[0], self.latent_dim, device=data.pos.device), latent_vector).squeeze(-1)
+        
+        with torch.cuda.amp.autocast(enabled=False):
+            latent_vector = self.pooling_model.pre_reduce(torch.ones(latent_vector.shape[0], self.latent_dim, device=data.pos.device), latent_vector).squeeze(-1)
 
         num_nodes = self.num_atoms
-
         
+        # Get or create batch tensor
+        batch = data.batch if hasattr(data, 'batch') and data.batch is not None else torch.zeros(num_nodes, dtype=torch.long, device=data.pos.device)
+        """
+        # Create batched edge_index from template with offsets
+        if self.edge_index is not None:
+            batch_size = batch.max().item() + 1
+            num_atoms_per_mol = self.num_atoms
+            
+            # Create edge_index for each molecule with proper offset
+            edge_index_list = []
+            for i in range(batch_size):
+                offset = i * num_atoms_per_mol
+                edge_index_i = self.edge_index + offset
+                edge_index_list.append(edge_index_i)
+            
+            edge_index = torch.cat(edge_index_list, dim=1)
+        else:
+            print("No edge_index provided")
+        """
         # Create batch tensor for the edge_index
         batch = torch.zeros(num_nodes, dtype=torch.long, device=data.pos.device)
         edge_index = self.edge_index
-        data_decoder = Data(z=data.z, pos=latent_vector, edge_index=edge_index, batch=batch)
+        data_decoder = Data(z=data.z, pos=latent_vector, edge_index=data.edge_index, batch=batch)
 
         reconstructed_pos = self.decoder(data_decoder).squeeze(-1)
         return reconstructed_pos, mu, log_var_expanded

@@ -36,7 +36,7 @@ def pairwise_distance_loss(true_coords, pred_coords, p=2):
     loss = F.mse_loss(pred_distances, true_distances)
     return loss
   
-
+# 32 latent dimension, same edge_index for all 
 from mse_training.vae_model_new import MolecularVAEMSE
 from vae_utils import validate_and_sample
 
@@ -55,14 +55,14 @@ def main():
     ATOM_COUNT = 58
     COORD_DIM = 3
     ORIGINAL_DIM = ATOM_COUNT * COORD_DIM  
-    LATENT_DIM = 4
+    LATENT_DIM = 64
     EPOCHS = 110
     VISNET_HIDDEN_CHANNELS = 256
     ENCODER_NUM_LAYERS = 3
     DECODER_HIDDEN_DIM = 256
     DECODER_NUM_LAYERS = 3
     BATCH_SIZE = 128
-    LEARNING_RATE = 5e-5 # Reduced learning rate for stability  
+    LEARNING_RATE = 1e-4
     NUM_WORKERS = 2  # Parallel data loading
 
     data = np.load(aib9.FULL_DATA).reshape(-1, 58, 3)
@@ -153,10 +153,9 @@ def main():
     # Create a list of Data objects, one for each molecule
     # Use cutoff-based edge identification instead of predefined covalent edges
     train_data_list = []
+    edge_index = radius_graph(torch.from_numpy(train_data_np[0]), r=5.0, batch=torch.zeros(train_data_np[i].shape[0], dtype=torch.long, device='cpu'))
     for i in range(train_data_np.shape[0]):
-
-            
-        edge_index = radius_graph(torch.from_numpy(train_data_np[i]), r=5.0, batch=torch.zeros(train_data_np[i].shape[0], dtype=torch.long, device='cpu'))
+        #edge_index = radius_graph(torch.from_numpy(train_data_np[i]), r=5.0, batch=torch.zeros(train_data_np[i].shape[0], dtype=torch.long, device='cpu'))
         pos = torch.from_numpy(train_data_np[i]).float().to('cpu')
         # No edge_index - let ViSNet use cutoff-based edge identification
         data = Data(z=z, pos=pos, edge_index=edge_index)
@@ -181,8 +180,8 @@ def main():
         'lmax':1
         
     }
-    edge_index = aib9.identify_all_covalent_edges(topo)
-    edge_index = torch.from_numpy(edge_index).to(device)
+    #edge_index = train_data_list[0].edge_index
+    #edge_index = edge_index.to(device)
     model = MolecularVAEMSE(
         latent_dim=LATENT_DIM, 
         num_atoms=ATOM_COUNT, 
@@ -289,7 +288,7 @@ def main():
             with autocast(enabled=use_amp):
                 recon_batch, mu, log_var = model(molecules)
                 # KL divergence for non-centered isotropic Gaussian: 0.5 * (||μ||² + σ² - log(σ²) - 1)
-                kl_div = -0.5 * torch.sum(1 + log_var - mu.pow(2) - log_var.exp())
+                kl_div = -0.5 * torch.mean(1 + log_var - mu.pow(2) - log_var.exp())
             # Use simple MSE loss with centering for E(3) invariance
             recon_loss = pairwise_distance_loss(recon_batch, molecules.pos, 2)
             kl_div = torch.clamp(kl_div, max = 200)
@@ -300,7 +299,7 @@ def main():
                 exp_log_var_mean = torch.mean(torch.exp(log_var)).item()
                 print(f"  Debug - kl: {kl_div:.4f}, recon_loss: {recon_loss:.4f}")
                 print(f"  Debug - μ²: {mu_norm:.4f}, log_var: {log_var_mean:.4f}, exp(log_var): {exp_log_var_mean:.4f}")
-
+                print(f"  Debug - first few sigmas: {mu[0, 0, :3]}, log_var: {log_var[0, 0, :3]}")
             # Clamp reconstruction loss to prevent explosion
             recon_loss = torch.clamp(recon_loss, max = 1000)  # Lower clamp for MSE
             kl_weight = 1

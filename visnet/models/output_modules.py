@@ -165,7 +165,7 @@ class EquivariantEncoder(OutputModel):
     
         # Return scalar features x (E(3) invariant) instead of vectors v (E(3) equivariant)
         # Include v.sum() * 0 to ensure all parameters get gradients
-        return x.sum() * 0 + v
+        return (x.sum() - x.sum().detach()) + v
 
 class EquivariantVector(OutputModel):
     def __init__(self, hidden_channels, activation="silu", allow_prior_model=True):
@@ -195,7 +195,7 @@ class EquivariantVector(OutputModel):
         for layer in self.output_network:
             x, v = layer(x, v)
         # include v in output to make sure all parameters have a gradient
-        return v + x.sum() * 0
+        return v + (x.sum() - x.sum().detach())
 
 class DipoleMoment(Scalar):
     def __init__(self, hidden_channels, activation="silu", allow_prior_model=False):
@@ -288,6 +288,6 @@ class EquivariantVectorOutput(EquivariantScalar):
             l1_v, l2_v = torch.split(v.squeeze(), [3, 5], dim=1)
             return l1_v + x.sum() * 0 + l2_v.sum() * 0
         else:
-            return v + x.sum() * 0
+            return v + (x.sum() - x.sum().detach())
 
 
