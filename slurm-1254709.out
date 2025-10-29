@@ -1,8 +1,0 @@
-/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
-Traceback (most recent call last):
-  File "/scratch/cz2200/aib9/train_vae_equivar.py", line 34, in <module>
-    from vae_utils import validate_and_sample
-  File "/scratch/cz2200/aib9/vae_utils.py", line 63
-    log_var = v[:, :, ,model.latent_dim:]
-                      ^
-SyntaxError: invalid syntax

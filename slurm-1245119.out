@@ -1,7 +1,0 @@
-/ext3/miniforge3/envs/visnet/lib/python3.9/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
-Traceback (most recent call last):
-  File "/scratch/cz2200/aib9/test_equivariant.py", line 4, in <module>
-    from mse_training.vae_model_equivariant import EquivariantMolecularVAE, equivariant_vae_loss_function
-  File "/scratch/cz2200/aib9/mse_training/vae_model_equivariant.py", line 6, in <module>
-    from mse_training.vae_decoder_mse import MolecularDecoderMSE
-ImportError: cannot import name 'MolecularDecoderMSE' from 'mse_training.vae_decoder_mse' (/scratch/cz2200/aib9/mse_training/vae_decoder_mse.py)
